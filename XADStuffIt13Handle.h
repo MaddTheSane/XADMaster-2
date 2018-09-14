@@ -7,8 +7,7 @@
 	XADPrefixCode *currcode;
 }
 
--(id)initWithHandle:(CSHandle *)handle length:(off_t)length;
--(void)dealloc;
+-(instancetype)initWithHandle:(CSHandle *)handle length:(off_t)length;
 
 -(void)resetLZSSHandle;
 -(XADPrefixCode *)allocAndParseCodeOfSize:(int)numcodes metaCode:(XADPrefixCode *)metacode;

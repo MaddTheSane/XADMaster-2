@@ -1,15 +1,41 @@
 #import "CSStreamHandle.h"
 
-@implementation CSStreamHandle
+#if !__has_feature(objc_arc)
+#error this file needs to be compiled with Automatic Reference Counting (ARC)
+#endif
 
--(id)initWithName:(NSString *)descname
+@implementation CSStreamHandle
+@synthesize fileSize = streamlength;
+@synthesize offsetInFile = streampos;
+
+/*-(id)initWithName:(NSString *)descname
 {
 	return [self initWithName:descname length:CSHandleMaxLength];
 }
 
 -(id)initWithName:(NSString *)descname length:(off_t)length
 {
-	if((self=[super initWithName:descname]))
+	if(self=[super initWithName:descname])
+	{
+		streampos=0;
+		streamlength=length;
+		endofstream=NO;
+		needsreset=YES;
+		nextstreambyte=-1;
+
+		input=NULL;
+	}
+	return self;
+}*/
+
+-(id)initWithParentHandle:(CSHandle *)handle
+{
+	return [self initWithParentHandle:handle length:CSHandleMaxLength];
+}
+
+-(id)initWithParentHandle:(CSHandle *)handle length:(off_t)length
+{
+	if(self=[super initWithParentHandle:handle])
 	{
 		streampos=0;
 		streamlength=length;
@@ -22,24 +48,24 @@
 	return self;
 }
 
--(id)initWithHandle:(CSHandle *)handle
+-(id)initWithInputBufferForHandle:(CSHandle *)handle
 {
-	return [self initWithHandle:handle length:CSHandleMaxLength bufferSize:4096];
+	return [self initWithInputBufferForHandle:handle length:CSHandleMaxLength bufferSize:4096];
 }
 
--(id)initWithHandle:(CSHandle *)handle length:(off_t)length
+-(id)initWithInputBufferForHandle:(CSHandle *)handle length:(off_t)length
 {
-	return [self initWithHandle:handle length:length bufferSize:4096];
+	return [self initWithInputBufferForHandle:handle length:length bufferSize:4096];
 }
 
--(id)initWithHandle:(CSHandle *)handle bufferSize:(int)buffersize
+-(id)initWithInputBufferForHandle:(CSHandle *)handle bufferSize:(int)buffersize
 {
-	return [self initWithHandle:handle length:CSHandleMaxLength bufferSize:buffersize];
+	return [self initWithInputBufferForHandle:handle length:CSHandleMaxLength bufferSize:buffersize];
 }
 
--(id)initWithHandle:(CSHandle *)handle length:(off_t)length bufferSize:(int)buffersize;
+-(id)initWithInputBufferForHandle:(CSHandle *)handle length:(off_t)length bufferSize:(int)buffersize;
 {
-	if((self=[super initWithName:[handle name]]))
+	if(self=[super initWithParentHandle:handle])
 	{
 		streampos=0;
 		streamlength=length;
@@ -61,14 +87,8 @@
 -(void)dealloc
 {
 	CSInputBufferFree(input);
-	[super dealloc];
 }
 
-
-
--(off_t)fileSize { return streamlength; }
-
--(off_t)offsetInFile { return streampos; }
 
 -(BOOL)atEndOfFile
 {

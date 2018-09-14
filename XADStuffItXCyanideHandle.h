@@ -7,8 +7,7 @@
 	size_t currsize;
 }
 
--(id)initWithHandle:(CSHandle *)handle length:(off_t)length;
--(void)dealloc;
+-(instancetype)initWithHandle:(CSHandle *)handle length:(off_t)length;
 
 -(void)resetBlockStream;
 -(int)produceBlockAtOffset:(off_t)pos;

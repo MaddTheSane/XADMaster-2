@@ -8,8 +8,7 @@
 	uint8_t inbuffer[32768+6144];
 }
 
--(id)initWithBlockReader:(XADCABBlockReader *)blockreader;
--(void)dealloc;
+-(instancetype)initWithBlockReader:(XADCABBlockReader *)blockreader;
 
 -(void)resetBlockStream;
 -(int)produceBlockAtOffset:(off_t)pos;

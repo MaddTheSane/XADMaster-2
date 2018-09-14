@@ -5,7 +5,7 @@
 
 @interface XADCRCSuffixHandle:CSStreamHandle
 {
-	CSHandle *parent,*crcparent;
+	CSHandle *crcparent;
 
 	int crcsize;
 	BOOL bigend;
@@ -20,15 +20,14 @@ bigEndianCRC:(BOOL)bigendian conditioned:(BOOL)conditioned;
 +(XADCRCSuffixHandle *)CCITTCRC16SuffixHandleWithHandle:(CSHandle *)handle CRCHandle:(CSHandle *)crchandle
 bigEndianCRC:(BOOL)bigendian conditioned:(BOOL)conditioned;
 
--(id)initWithHandle:(CSHandle *)handle CRCHandle:(CSHandle *)crchandle initialCRC:(uint32_t)initialcrc
+-(instancetype)initWithHandle:(CSHandle *)handle CRCHandle:(CSHandle *)crchandle initialCRC:(uint32_t)initialcrc
 CRCSize:(int)crcbytes bigEndianCRC:(BOOL)bigendian CRCTable:(const uint32_t *)crctable;
--(void)dealloc;
 
 -(void)resetStream;
 -(int)streamAtMost:(int)num toBuffer:(void *)buffer;
 
--(BOOL)hasChecksum;
--(BOOL)isChecksumCorrect;
+@property (NS_NONATOMIC_IOSONLY, readonly) BOOL hasChecksum;
+@property (NS_NONATOMIC_IOSONLY, readonly, getter=isChecksumCorrect) BOOL checksumCorrect;
 
 @end
 

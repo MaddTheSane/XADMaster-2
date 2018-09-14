@@ -42,13 +42,13 @@ static BOOL IsHighSierraPrimaryVolumeDescriptor(const uint8_t *bytes,int length,
 +(BOOL)recognizeFileWithHandle:(CSHandle *)handle firstBytes:(NSData *)data
 name:(NSString *)name propertiesToAdd:(NSMutableDictionary *)props
 {
-	const uint8_t *bytes=[data bytes];
-	int length=[data length];
+	const uint8_t *bytes=data.bytes;
+	NSInteger length=data.length;
 
 	// Scan for a primary volume descriptor to find the start of the image.
 	for(int i=0x8000;i<length-2048-6;i++)
 	{
-		if(IsISO9660PrimaryVolumeDescriptor(bytes,length,i))
+		if(IsISO9660PrimaryVolumeDescriptor(bytes,(int)length,i))
 		{
 			// Then, scan for the volume descriptor on the next block to find the block size.
 			for(int j=2048;j<2448;j++)
@@ -56,14 +56,14 @@ name:(NSString *)name propertiesToAdd:(NSMutableDictionary *)props
 				if(i+j+6>length) break;
 				if(memcmp(&bytes[i+j+1],"CD001",5)==0)
 				{
-					[props setObject:[NSNumber numberWithInt:j] forKey:@"ISO9660ImageBlockSize"];
-					[props setObject:[NSNumber numberWithInt:i-j*16] forKey:@"ISO9660ImageBlockOffset"];
+					props[@"ISO9660ImageBlockSize"] = @(j);
+					props[@"ISO9660ImageBlockOffset"] = @(i-j*16);
 					return YES;
 				}
 			}
 		}
 
-		if(IsHighSierraPrimaryVolumeDescriptor(bytes,length,i))
+		if(IsHighSierraPrimaryVolumeDescriptor(bytes,(int)length,i))
 		{
 			// Then, scan for the volume descriptor on the next block to find the block size.
 			for(int j=2048;j<2448;j++)
@@ -71,9 +71,9 @@ name:(NSString *)name propertiesToAdd:(NSMutableDictionary *)props
 				if(i+j+6>length) break;
 				if(memcmp(&bytes[i+j+9],"CDROM",5)==0)
 				{
-					[props setObject:[NSNumber numberWithBool:YES] forKey:@"ISO9660ImageIsHighSierra"];
-					[props setObject:[NSNumber numberWithInt:j] forKey:@"ISO9660ImageBlockSize"];
-					[props setObject:[NSNumber numberWithInt:i-j*16] forKey:@"ISO9660ImageBlockOffset"];
+					props[@"ISO9660ImageIsHighSierra"] = @YES;
+					props[@"ISO9660ImageBlockSize"] = @(j);
+					props[@"ISO9660ImageBlockOffset"] = @(i-j*16);
 					return YES;
 				}
 			}
@@ -108,23 +108,23 @@ name:(NSString *)name propertiesToAdd:(NSMutableDictionary *)props
 
 -(void)parse
 {
-	NSDictionary *props=[self properties];
-	int blockoffset=[[props objectForKey:@"ISO9660ImageBlockOffset"] intValue];
-	blocksize=[[props objectForKey:@"ISO9660ImageBlockSize"] intValue];
-	ishighsierra=[[props objectForKey:@"ISO9660ImageIsHighSierra"] boolValue];
+	NSDictionary *props=self.properties;
+	int blockoffset=[props[@"ISO9660ImageBlockOffset"] intValue];
+	blocksize=[props[@"ISO9660ImageBlockSize"] intValue];
+	ishighsierra=[props[@"ISO9660ImageIsHighSierra"] boolValue];
 
 	if(blocksize!=2048)
 	{
-		fh=[[XADPaddedBlockHandle alloc] initWithHandle:[self handle]
+		fh=[[XADPaddedBlockHandle alloc] initWithHandle:self.handle
 		startOffset:blockoffset logicalBlockSize:2048 physicalBlockSize:blocksize];
 	}
 	else if(blockoffset!=0)
 	{
-		fh=[[[self handle] nonCopiedSubHandleToEndOfFileFrom:blockoffset] retain];
+		fh=[[self.handle nonCopiedSubHandleToEndOfFileFrom:blockoffset] retain];
 	}
 	else
 	{
-		fh=[[self handle] retain];
+		fh=[self.handle retain];
 	}
 
 	if(!ishighsierra)
@@ -156,7 +156,7 @@ name:(NSString *)name propertiesToAdd:(NSMutableDictionary *)props
 			if(esc3!=0x40 && esc3!=0x43 && esc3!=0x45) continue;
 
 			isjoliet=YES;
-			[self setObject:[NSNumber numberWithBool:YES] forPropertyKey:@"ISO9660IsJoliet"];
+			[self setObject:@YES forPropertyKey:@"ISO9660IsJoliet"];
 
 			[self parseVolumeDescriptorAtBlock:block];
 			return;
@@ -185,8 +185,8 @@ name:(NSString *)name propertiesToAdd:(NSMutableDictionary *)props
 	{
 		[fh seekToFileOffset:block*2048+8];
 
-		system=[self readStringOfLength:32]; 
-		volume=[self readStringOfLength:32]; 
+		system=[self readStringOfLength:32];
+		volume=[self readStringOfLength:32];
 		[fh skipBytes:8];
 		/*uint32_t volumespacesize=*/[fh readUInt32LE];
 		[fh skipBytes:36];
@@ -209,8 +209,8 @@ name:(NSString *)name propertiesToAdd:(NSMutableDictionary *)props
 		rootlength=[fh readUInt32LE];
 		[fh skipBytes:20];
 
-		volumeset=[self readStringOfLength:128]; 
-		publisher=[self readStringOfLength:128]; 
+		volumeset=[self readStringOfLength:128];
+		publisher=[self readStringOfLength:128];
 		datapreparer=[self readStringOfLength:128];
 		application=[self readStringOfLength:128];
 		copyrightfile=[self readStringOfLength:37];
@@ -226,8 +226,8 @@ name:(NSString *)name propertiesToAdd:(NSMutableDictionary *)props
 	{
 		[fh seekToFileOffset:block*2048+16];
 
-		system=[self readStringOfLength:32]; 
-		volume=[self readStringOfLength:32]; 
+		system=[self readStringOfLength:32];
+		volume=[self readStringOfLength:32];
 		[fh skipBytes:8];
 		/*uint32_t volumespacesize=*/[fh readUInt32LE];
 		[fh skipBytes:36];
@@ -245,8 +245,8 @@ name:(NSString *)name propertiesToAdd:(NSMutableDictionary *)props
 		rootlength=[fh readUInt32LE];
 		[fh skipBytes:20];
 
-		volumeset=[self readStringOfLength:128]; 
-		publisher=[self readStringOfLength:128]; 
+		volumeset=[self readStringOfLength:128];
+		publisher=[self readStringOfLength:128];
 		datapreparer=[self readStringOfLength:128];
 		application=[self readStringOfLength:128];
 		[fh skipBytes:192]; // Not sure what this part is.
@@ -281,10 +281,10 @@ name:(NSString *)name propertiesToAdd:(NSMutableDictionary *)props
 	if(expiration) [self setObject:expiration forPropertyKey:@"ISO9660ExpirationDateAndTime"];
 	if(effective) [self setObject:effective forPropertyKey:@"ISO9660EffectiveDateAndTime"];
 
-	[self setObject:[NSNumber numberWithInt:volumesetsize] forPropertyKey:@"ISO9660VolumeSetSize"];
-	[self setObject:[NSNumber numberWithInt:volumesequencenumber] forPropertyKey:@"ISO9660VolumeSequenceNumber"];
+	[self setObject:@(volumesetsize) forPropertyKey:@"ISO9660VolumeSetSize"];
+	[self setObject:@(volumesequencenumber) forPropertyKey:@"ISO9660VolumeSequenceNumber"];
 
-	[self parseDirectoryWithPath:[self XADPath] atBlock:rootblock length:rootlength];
+	[self parseDirectoryWithPath:self.XADPath atBlock:rootblock length:rootlength];
 }
 
 #define TypeID(a,b) (((a)<<8)|(b))
@@ -303,9 +303,9 @@ length:(uint32_t)length
 	int parentlength=[fh readUInt8];
 	[fh skipBytes:parentlength-1];
 
-	while([fh offsetInFile]<extentend)
+	while(fh.offsetInFile<extentend)
 	{
-		off_t startpos=[fh offsetInFile];
+		off_t startpos=fh.offsetInFile;
 
 		int recordlength=[fh readUInt8];
 		off_t endpos=startpos+recordlength;
@@ -373,18 +373,18 @@ length:(uint32_t)length
 		NSMutableDictionary *dict=[NSMutableDictionary dictionaryWithObjectsAndKeys:
 			currpath,XADFileNameKey,
 			date,XADLastModificationDateKey,
-			[NSNumber numberWithUnsignedInt:length],XADFileSizeKey,
-			[NSNumber numberWithUnsignedInt:((length+2047)/2048)*blocksize],XADCompressedSizeKey,
-			[NSNumber numberWithUnsignedInt:location],@"ISO9660LocationOfExtent",
-			[NSNumber numberWithUnsignedInt:flags],@"ISO9660FileFlags",
-			[NSNumber numberWithUnsignedInt:unitsize],@"ISO9660FileUnitSize",
-			[NSNumber numberWithUnsignedInt:gapsize],@"ISO9660InterleaveGapSize",
-			[NSNumber numberWithUnsignedInt:volumesequencenumber],@"ISO9660VolumeSequenceNumber",
+			@(length),XADFileSizeKey,
+			@(((length+2047)/2048)*blocksize),XADCompressedSizeKey,
+			@(location),@"ISO9660LocationOfExtent",
+			@(flags),@"ISO9660FileFlags",
+			@(unitsize),@"ISO9660FileUnitSize",
+			@(gapsize),@"ISO9660InterleaveGapSize",
+			@(volumesequencenumber),@"ISO9660VolumeSequenceNumber",
 		nil];
 
-		if(flags&0x01) [dict setObject:[NSNumber numberWithBool:YES] forKey:XADIsHiddenKey];
-		if(flags&0x02) [dict setObject:[NSNumber numberWithBool:YES] forKey:XADIsDirectoryKey];
-		if(flags&0x04) [dict setObject:[NSNumber numberWithBool:YES] forKey:XADIsDirectoryKey];
+		if(flags&0x01) dict[XADIsHiddenKey] = @YES;
+		if(flags&0x02) dict[XADIsDirectoryKey] = @YES;
+		if(flags&0x04) dict[XADIsDirectoryKey] = @YES;
 
 		int systemlength=recordlength-33-namelength-((namelength&1)^1);
 		if(systemlength)
@@ -393,7 +393,7 @@ length:(uint32_t)length
 			NSMutableData *linkdata=nil;
 			NSMutableData *commentdata=nil;
 
-			off_t nextoffset=[fh offsetInFile];
+			off_t nextoffset=fh.offsetInFile;
 			int nextlength=systemlength;
 
 			while(nextlength)
@@ -433,9 +433,9 @@ length:(uint32_t)length
 							uint32_t filecreator=CSUInt32BE(&system[pos+8]);
 							int finderflags=CSUInt16BE(&system[pos+12]);
 
-							if(filetype) [dict setObject:[NSNumber numberWithUnsignedInt:filetype] forKey:XADFileTypeKey];
-							if(filecreator) [dict setObject:[NSNumber numberWithUnsignedInt:filecreator] forKey:XADFileCreatorKey];
-							if(finderflags) [dict setObject:[NSNumber numberWithInt:finderflags] forKey:XADFinderFlagsKey];
+							if(filetype) dict[XADFileTypeKey] = @(filetype);
+							if(filecreator) dict[XADFileCreatorKey] = @(filecreator);
+							if(finderflags) dict[XADFinderFlagsKey] = @(finderflags);
 						}
 						break;
 
@@ -448,9 +448,9 @@ length:(uint32_t)length
 							uint32_t user=CSUInt32LE(&system[pos+20]);
 							uint32_t group=CSUInt32LE(&system[pos+28]);
 
-							[dict setObject:[NSNumber numberWithUnsignedInt:mode] forKey:XADPosixPermissionsKey];
-							[dict setObject:[NSNumber numberWithUnsignedInt:user] forKey:XADPosixUserKey];
-							[dict setObject:[NSNumber numberWithUnsignedInt:group] forKey:XADPosixGroupKey];
+							dict[XADPosixPermissionsKey] = @(mode);
+							dict[XADPosixUserKey] = @(user);
+							dict[XADPosixGroupKey] = @(group);
 						}
 						break;
 
@@ -462,8 +462,8 @@ length:(uint32_t)length
 							uint32_t devmajor=CSUInt32LE(&system[pos+4]);
 							uint32_t devminor=CSUInt32LE(&system[pos+12]);
 
-							[dict setObject:[NSNumber numberWithUnsignedInt:devmajor] forKey:XADDeviceMajorKey];
-							[dict setObject:[NSNumber numberWithUnsignedInt:devminor] forKey:XADDeviceMinorKey];
+							dict[XADDeviceMajorKey] = @(devmajor);
+							dict[XADDeviceMinorKey] = @(devminor);
 						}
 						break;
 
@@ -545,7 +545,7 @@ length:(uint32_t)length
 							{
 								if(offs+datelen>length) break;
 								NSDate *date=[self parseDateAndTimeWithBytes:&system[pos+offs] long:flags&0x80];
-								[dict setObject:date forKey:XADCreationDateKey];
+								dict[XADCreationDateKey] = date;
 								offs+=datelen;
 							}
 
@@ -553,7 +553,7 @@ length:(uint32_t)length
 							{
 								if(offs+datelen>length) break;
 								NSDate *date=[self parseDateAndTimeWithBytes:&system[pos+offs] long:flags&0x80];
-								[dict setObject:date forKey:XADLastModificationDateKey];
+								dict[XADLastModificationDateKey] = date;
 								offs+=datelen;
 							}
 
@@ -561,7 +561,7 @@ length:(uint32_t)length
 							{
 								if(offs+datelen>length) break;
 								NSDate *date=[self parseDateAndTimeWithBytes:&system[pos+offs] long:flags&0x80];
-								[dict setObject:date forKey:XADLastAccessDateKey];
+								dict[XADLastAccessDateKey] = date;
 								offs+=datelen;
 							}
 
@@ -569,7 +569,7 @@ length:(uint32_t)length
 							{
 								if(offs+datelen>length) break;
 								NSDate *date=[self parseDateAndTimeWithBytes:&system[pos+offs] long:flags&0x80];
-								[dict setObject:date forKey:XADLastAttributeChangeDateKey];
+								dict[XADLastAttributeChangeDateKey] = date;
 								offs+=datelen;
 							}
 
@@ -577,7 +577,7 @@ length:(uint32_t)length
 							{
 								if(offs+datelen>length) break;
 								NSDate *date=[self parseDateAndTimeWithBytes:&system[pos+offs] long:flags&0x80];
-								[dict setObject:date forKey:@"ISO9660BackupDate"];
+								dict[@"ISO9660BackupDate"] = date;
 								offs+=datelen;
 							}
 
@@ -585,7 +585,7 @@ length:(uint32_t)length
 							{
 								if(offs+datelen>length) break;
 								NSDate *date=[self parseDateAndTimeWithBytes:&system[pos+offs] long:flags&0x80];
-								[dict setObject:date forKey:@"ISO9660ExpirationDate"];
+								dict[@"ISO9660ExpirationDate"] = date;
 								offs+=datelen;
 							}
 
@@ -593,7 +593,7 @@ length:(uint32_t)length
 							{
 								if(offs+datelen>length) break;
 								NSDate *date=[self parseDateAndTimeWithBytes:&system[pos+offs] long:flags&0x80];
-								[dict setObject:date forKey:@"ISO9660EffectiveDate"];
+								dict[@"ISO9660EffectiveDate"] = date;
 							}
 						}
 						break;
@@ -610,7 +610,7 @@ length:(uint32_t)length
 							{
 								if(length<9) break;
 								uint32_t protection=CSUInt32BE(&system[pos+5]);
-								[dict setObject:[NSNumber numberWithUnsignedInt:protection] forKey:XADAmigaProtectionBitsKey];
+								dict[XADAmigaProtectionBitsKey] = @(protection);
 								commentoffs=9;
 							}
 
@@ -657,14 +657,14 @@ length:(uint32_t)length
 			{
 				XADString *correctfilename=[self XADStringWithData:namedata];
 				currpath=[path pathByAppendingXADStringComponent:correctfilename];
-				[dict setObject:filename forKey:@"ISO9660OriginalFileName"];
-				[dict setObject:currpath forKey:XADFileNameKey];
+				dict[@"ISO9660OriginalFileName"] = filename;
+				dict[XADFileNameKey] = currpath;
 			}
 
 			if(linkdata)
 			{
 				XADString *linkdest=[self XADStringWithData:linkdata];
-				[dict setObject:linkdest forKey:XADLinkDestinationKey];
+				dict[XADLinkDestinationKey] = linkdest;
 			}
 		}
 
@@ -780,8 +780,8 @@ length:(uint32_t)length
 
 -(CSHandle *)handleForEntryWithDictionary:(NSDictionary *)dict wantChecksum:(BOOL)checksum
 {
-	uint32_t startblock=[[dict objectForKey:@"ISO9660LocationOfExtent"] unsignedIntValue];
-	uint32_t length=[[dict objectForKey:XADFileSizeKey] unsignedIntValue];
+	uint32_t startblock=[dict[@"ISO9660LocationOfExtent"] unsignedIntValue];
+	uint32_t length=[dict[XADFileSizeKey] unsignedIntValue];
 
 	return [fh nonCopiedSubHandleFrom:startblock*2048 length:length];
 }

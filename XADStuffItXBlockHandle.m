@@ -1,13 +1,13 @@
 #import "XADStuffItXBlockHandle.h"
 #import "StuffItXUtilities.h"
+#import "XADException.h"
 
 @implementation XADStuffItXBlockHandle
 
 -(id)initWithHandle:(CSHandle *)handle
 {
-	if((self=[super initWithName:[handle name]]))
+	if((self=[super initWithParentHandle:handle]))
 	{
-		parent=[handle retain];
 		startoffs=[parent offsetInFile];
 		buffer=NULL;
 		currsize=0;
@@ -18,7 +18,6 @@
 -(void)dealloc
 {
 	free(buffer);
-	[parent release];
 	[super dealloc];
 }
 
@@ -29,13 +28,14 @@
 
 -(int)produceBlockAtOffset:(off_t)pos
 {
-	int size=(int)ReadSitxP2(parent);
+	unsigned int size=(unsigned int)ReadSitxP2(parent);
 	if(!size) return -1;
 
 	if(size>currsize)
 	{
 		free(buffer);
 		buffer=malloc(size);
+		if(!buffer) [XADException raiseOutOfMemoryException];
 		currsize=size;
 		[self setBlockPointer:buffer];
 	}

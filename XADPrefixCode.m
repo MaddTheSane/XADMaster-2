@@ -1,7 +1,7 @@
 #import "XADPrefixCode.h"
 #import "Realloc.h"
 
-NSString *XADInvalidPrefixCodeException=@"XADInvalidPrefixCodeException";
+NSString *const XADInvalidPrefixCodeException=@"XADInvalidPrefixCodeException";
 
 
 struct XADCodeTreeNode
@@ -139,7 +139,7 @@ maximumLength:(int)maxlength shortestCodeIsZeros:(BOOL)zeros
 	maximumLength:maxlength shortestCodeIsZeros:zeros] autorelease];
 }
 
--(id)init
+-(instancetype)init
 {
 	if((self=[super init]))
 	{
@@ -157,7 +157,7 @@ maximumLength:(int)maxlength shortestCodeIsZeros:(BOOL)zeros
 	return self;
 }
 
--(id)initWithStaticTable:(int (*)[2])statictable
+-(instancetype)initWithStaticTable:(int (*)[2])statictable
 {
 	if((self=[super init]))
 	{
@@ -170,7 +170,7 @@ maximumLength:(int)maxlength shortestCodeIsZeros:(BOOL)zeros
 	return self;
 }
 
--(id)initWithLengths:(const int *)lengths numberOfSymbols:(int)numsymbols
+-(instancetype)initWithLengths:(const int *)lengths numberOfSymbols:(int)numsymbols
 maximumLength:(int)maxcodelength shortestCodeIsZeros:(BOOL)zeros
 {
 	if((self=[self init]))
@@ -326,32 +326,32 @@ static uint32_t ReverseN(uint32_t val,int length)
 
 -(void)_pushNode
 {
-	[stack addObject:[NSNumber numberWithInt:currnode]];
+	[stack addObject:@(currnode)];
 }
 
 -(void)_popNode
 {
-	if(![stack count]) return; // the final pop will underflow the stack otherwise
-	NSNumber *num=[stack lastObject];
+	if(!stack.count) return; // the final pop will underflow the stack otherwise
+	NSNumber *num=stack.lastObject;
 	[stack removeLastObject];
-	currnode=[num intValue];
+	currnode=num.intValue;
 }
 
 static void MakeTable(XADPrefixCode *code,int node,XADCodeTableEntry *table,int depth,int maxdepth)
 {
 	int currtablesize=1<<(maxdepth-depth);
 
-	if(IsLeafNode(code,node))
+	if(IsInvalidNode(code,node))
+	{
+		for(int i=0;i<currtablesize;i++) table[i].length=-1;
+	}
+	else if(IsLeafNode(code,node))
 	{
 		for(int i=0;i<currtablesize;i++)
 		{
 			table[i].length=depth;
 			table[i].value=LeafValue(code,node);
 		}
-	}
-	else if(IsInvalidNode(code,node))
-	{
-		for(int i=0;i<currtablesize;i++) table[i].length=-1;
 	}
 	else
 	{
@@ -373,17 +373,17 @@ static void MakeTableLE(XADPrefixCode *code,int node,XADCodeTableEntry *table,in
 	int currtablesize=1<<(maxdepth-depth);
 	int currstride=1<<depth;
 
-	if(IsLeafNode(code,node))
+	if(IsInvalidNode(code,node))
+	{
+		for(int i=0;i<currtablesize;i++) table[i*currstride].length=-1;
+	}
+	else if(IsLeafNode(code,node))
 	{
 		for(int i=0;i<currtablesize;i++)
 		{
 			table[i*currstride].length=depth;
 			table[i*currstride].value=LeafValue(code,node);
 		}
-	}
-	else if(IsInvalidNode(code,node))
-	{
-		for(int i=0;i<currtablesize;i++) table[i*currstride].length=-1;
 	}
 	else
 	{

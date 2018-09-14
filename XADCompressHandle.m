@@ -10,10 +10,14 @@
 
 -(id)initWithHandle:(CSHandle *)handle length:(off_t)length flags:(int)compressflags
 {
-	if((self=[super initWithHandle:handle length:length]))
+	if((self=[super initWithInputBufferForHandle:handle length:length]))
 	{
 		blockmode=(compressflags&0x80)!=0;
-		lzw=AllocLZW(1<<(compressflags&0x1f),blockmode?1:0);
+
+		int maxsymbols=1<<(compressflags&0x1f);
+		if(maxsymbols<=256) [XADException raiseDecrunchException];
+
+		lzw=AllocLZW(maxsymbols,blockmode?1:0);
 	}
 	return self;
 }

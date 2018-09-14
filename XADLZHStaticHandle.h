@@ -8,7 +8,7 @@
 	int windowbits;
 }
 
--(id)initWithHandle:(CSHandle *)handle length:(off_t)length windowBits:(int)bits;
+-(instancetype)initWithHandle:(CSHandle *)handle length:(off_t)length windowBits:(int)bits;
 -(void)dealloc;
 
 -(void)resetLZSSHandle;

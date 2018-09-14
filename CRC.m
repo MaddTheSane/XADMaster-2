@@ -5,7 +5,7 @@ uint32_t XADCRC(uint32_t prevcrc,uint8_t byte,const uint32_t *table)
 	return table[(prevcrc^byte)&0xff]^(prevcrc>>8);
 }
 
-uint32_t XADCalculateCRC(uint32_t prevcrc,const uint8_t *buffer,int length,const uint32_t *table)
+uint32_t XADCalculateCRC(uint32_t prevcrc,const uint8_t *buffer,size_t length,const uint32_t *table)
 {
 	uint32_t crc=prevcrc;
 	for(int i=0;i<length;i++) crc=XADCRC(crc,buffer[i],table);
@@ -17,7 +17,7 @@ uint64_t XADCRC64(uint64_t prevcrc,uint8_t byte,const uint64_t *table)
 	return table[(prevcrc^byte)&0xff]^(prevcrc>>8);
 }
 
-uint64_t XADCalculateCRC64(uint64_t prevcrc,const uint8_t *buffer,int length,const uint64_t *table)
+uint64_t XADCalculateCRC64(uint64_t prevcrc,const uint8_t *buffer,size_t length,const uint64_t *table)
 {
 	uint64_t crc=prevcrc;
 	for(int i=0;i<length;i++) crc=XADCRC64(crc,buffer[i],table);

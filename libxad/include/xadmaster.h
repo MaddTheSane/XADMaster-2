@@ -5,7 +5,7 @@
     xadmaster.library defines and structures
 
     XAD library system for archive handling
-    Copyright (C) 1998 and later by Dirk Stöcker <soft@dstoecker.de>
+    Copyright (C) 1998 and later by Dirk StÃ¶cker <soft@dstoecker.de>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
@@ -22,11 +22,14 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
+#include <CoreFoundation/CoreFoundation.h>
+#include <stdint.h>
+#include <stdio.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#include <stdint.h>
 typedef uint32_t           xadUINT32;
 typedef int32_t            xadINT32;
 typedef uint16_t           xadUINT16;
@@ -42,7 +45,10 @@ typedef xadSTRING *        xadSTRPTR;
 typedef unsigned int       xadUINT;
 typedef int                xadINT;
 typedef xadINT             xadERROR;
-typedef xadINT             xadBOOL;
+typedef CF_ENUM(xadINT,    xadBOOL) {
+  XADFALSE        CF_SWIFT_NAME(xadBOOL.FALSE) = 0 ,
+  XADTRUE         CF_SWIFT_NAME(xadBOOL.TRUE) = 1
+};
 
 #define XADFALSE        0
 #define XADTRUE         1
@@ -61,7 +67,6 @@ struct TagItem {
   xadSize ti_Data;
 };
 
-#include <stdio.h>
 typedef int xadFileHandle;
 typedef const struct TagItem * xadTAGPTR;
 
@@ -79,12 +84,12 @@ typedef const struct TagItem * xadTAGPTR;
 /* ignore the next [(xadUINT32) ti_Data] tags */
 #define TAG_SKIP   (TAG_INT + 0x10000003UL)
 
-/* a standard callback system */
+/*! a standard callback system */
 struct Hook {
   /* h_MinNode, used for hook linking on Amiga, is not needed by XAD */
-  xadUINT32 (*h_Entry)();    /* entry point of callback */
+  xadUINT32 (*h_Entry)(struct Hook *,xadPTR ,void*);    /*!< entry point of callback */
   /* h_SubEntry, used when h_Entry on Amiga is an asm stub, is not needed */
-  xadPTR *h_Data;            /* data parameter always passed to callback */
+  xadPTR *h_Data;            /*!< data parameter always passed to callback */
 };
 
 /* NOTE: Nearly all structures need to be allocated using the
@@ -274,51 +279,55 @@ struct xadMasterBase {
 *                                                                       *
 ************************************************************************/
 
-#define XADHC_READ      1       /* read data into buffer */
-#define XADHC_WRITE     2       /* write buffer data to file/memory */
-#define XADHC_SEEK      3       /* seek in file */
-#define XADHC_INIT      4       /* initialize the hook */
-#define XADHC_FREE      5       /* end up hook work, free stuff */
-#define XADHC_ABORT     6       /* an error occured, delete partial stuff */
-#define XADHC_FULLSIZE  7       /* complete input size is needed */
-#define XADHC_IMAGEINFO 8       /* return disk image info (V4) */
+typedef CF_ENUM(xadUINT32, xadHookCommands) {
+  xadHookCommandsRead       = 1,       /*!< read data into buffer */
+  xadHookCommandsWrite      = 2,       /*!< write buffer data to file/memory */
+  xadHookCommandsSeek       = 3,       /*!< seek in file */
+  xadHookCommandsInit       = 4,       /*!< initialize the hook */
+  xadHookCommandsFree       = 5,       /*!< end up hook work, free stuff */
+  xadHookCommandsAbort      = 6,       /*!< an error occured, delete partial stuff */
+  xadHookCommandsFullSize   = 7,       /*!< complete input size is needed */
+  xadHookCommandsImageInfo  = 8,       /*!< return disk image info (V4) */
+};
+  
+#define XADHC_READ      xadHookCommandsRead       /* read data into buffer */
+#define XADHC_WRITE     xadHookCommandsWrite      /* write buffer data to file/memory */
+#define XADHC_SEEK      xadHookCommandsSeek       /* seek in file */
+#define XADHC_INIT      xadHookCommandsInit       /* initialize the hook */
+#define XADHC_FREE      xadHookCommandsFree       /* end up hook work, free stuff */
+#define XADHC_ABORT     xadHookCommandsAbort      /* an error occured, delete partial stuff */
+#define XADHC_FULLSIZE  xadHookCommandsFullSize   /* complete input size is needed */
+#define XADHC_IMAGEINFO xadHookCommandsImageInfo  /* return disk image info (V4) */
 
 struct xadHookParam {
-  xadUINT32    xhp_Command;
-  xadSignSize  xhp_CommandData;
-  xadPTR       xhp_BufferPtr;
-  xadSize      xhp_BufferSize;
-  xadSize      xhp_DataPos;        /* current seek position */
-  xadPTR       xhp_PrivatePtr;
-  xadTAGPTR    xhp_TagList;        /* allows to transport tags to hook (V9) */
+  xadHookCommands xhp_Command;
+  xadSignSize     xhp_CommandData;
+  xadPTR          xhp_BufferPtr;
+  xadSize         xhp_BufferSize;
+  xadSize         xhp_DataPos;        /*!< current seek position */
+  xadPTR          xhp_PrivatePtr;
+  xadTAGPTR       xhp_TagList;        /*!< allows to transport tags to hook (V9) */
 };
 
-/* xadHookAccess commands */
-#define XADAC_READ              10      /* get data */
-#define XADAC_WRITE             11      /* write data */
-#define XADAC_COPY              12      /* copy input to output */
-#define XADAC_INPUTSEEK         13      /* seek in input file */
-#define XADAC_OUTPUTSEEK        14      /* seek in output file */
+/*! xadHookAccess commands */
+typedef CF_ENUM(xadUINT32, xadHookAccessCommands) {
+  xadHookAccessRead       = 10, /*!< get data */
+  xadHookAccessWrite      = 11, /*!< write data */
+  xadHookAccessCopy       = 12, /*!< copy input to output */
+  xadHookAccessInputSeek  = 13, /*!< seek in input file */
+  xadHookAccessOutputSeek = 14, /*!< seek in output file */
+};
+#define XADAC_READ              xadHookAccessRead      /*!< get data */
+#define XADAC_WRITE             xadHookAccessWrite      /*!< write data */
+#define XADAC_COPY              xadHookAccessCopy      /*!< copy input to output */
+#define XADAC_INPUTSEEK         xadHookAccessInputSeek      /*!< seek in input file */
+#define XADAC_OUTPUTSEEK        xadHookAccessOutputSeek      /*!< seek in output file */
 
 /************************************************************************
 *                                                                       *
 *    support structures                                                 *
 *                                                                       *
 ************************************************************************/
-
-/* Own date structure to cover all possible dates in a human friendly
-   format. xadConvertDates may be used to convert between different date
-   structures and variables. */
-struct xadDate {
-  xadUINT32 xd_Micros;  /* values 0 to 999999     */
-  xadINT32  xd_Year;    /* values 1 to 2147483648 */
-  xadUINT8  xd_Month;   /* values 1 to 12         */
-  xadUINT8  xd_WeekDay; /* values 1 to 7          */
-  xadUINT8  xd_Day;     /* values 1 to 31         */
-  xadUINT8  xd_Hour;    /* values 0 to 23         */
-  xadUINT8  xd_Minute;  /* values 0 to 59         */
-  xadUINT8  xd_Second;  /* values 0 to 59         */
-};
 
 #define XADDAY_MONDAY           1       /* monday is the first day and */
 #define XADDAY_TUESDAY          2
@@ -328,35 +337,63 @@ struct xadDate {
 #define XADDAY_SATURDAY         6
 #define XADDAY_SUNDAY           7       /* sunday the last day of a week */
 
+typedef CF_ENUM(xadUINT8, xadWeekDay) {
+  //! monday is the first day and...
+  XADWeekDayMonday    = 1,
+  
+  XADWeekDayTuesday   = 2,
+  
+  XADWeekDayWednesday = 3,
+  XADWeekDayThursday  = 4,
+  XADWeekDayFriday    = 5,
+  XADWeekDaySaturday  = 6,
+  //! ...sunday the last day of a week
+  XADWeekDaySunday    = 7
+};
+  
+/*! Own date structure to cover all possible dates in a human friendly
+   format. xadConvertDates may be used to convert between different date
+   structures and variables. */
+struct xadDate {
+  xadUINT32   xd_Micros;  /*!< values 0 to 999999     */
+  xadINT32    xd_Year;    /*!< values 1 to 2147483648 */
+  xadUINT8    xd_Month;   /*!< values 1 to 12         */
+  xadWeekDay  xd_WeekDay; /*!< values 1 to 7          */
+  xadUINT8    xd_Day;     /*!< values 1 to 31         */
+  xadUINT8    xd_Hour;    /*!< values 0 to 23         */
+  xadUINT8    xd_Minute;  /*!< values 0 to 59         */
+  xadUINT8    xd_Second;  /*!< values 0 to 59         */
+};
+
 struct xadDeviceInfo { /* for XAD_OUTDEVICE tag */
-  xadSTRPTR xdi_DeviceName; /* name of device */
-  xadUINT32 xdi_Unit;       /* unit of device */
-  xadSTRPTR xdi_DOSName;    /* instead of Device+Unit, dos name without ':' */
+  xadSTRPTR xdi_DeviceName; /*!< name of device */
+  xadUINT32 xdi_Unit;       /*!< unit of device */
+  xadSTRPTR xdi_DOSName;    /*!< instead of Device+Unit, dos name without ':' */
 };
 
 struct xadSplitFile { /* for XAD_INSPLITTED */
   struct xadSplitFile *xsf_Next;
-  xadUINT32            xsf_Type; /* XAD_INFILENAME, XAD_INFILEHANDLE, XAD_INMEMORY, XAD_INHOOK */
-  xadSize              xsf_Size; /* necessary for XAD_INMEMORY, useful for others */
-  xadSize            xsf_Data; /* FileName, Filehandle, Hookpointer or Memory */
+  xadUINT32           xsf_Type; /*!< XAD_INFILENAME, XAD_INFILEHANDLE, XAD_INMEMORY, XAD_INHOOK */
+  xadSize             xsf_Size; /*!< necessary for XAD_INMEMORY, useful for others */
+  xadSize             xsf_Data; /*!< FileName, Filehandle, Hookpointer or Memory */
 };
 
 struct xadSkipInfo {
   struct xadSkipInfo *xsi_Next;
-  xadSize             xsi_Position; /* position, where it should be skipped */
-  xadSize             xsi_SkipSize; /* size to skip */
+  xadSize             xsi_Position; /*!< position, where it should be skipped */
+  xadSize             xsi_SkipSize; /*!< size to skip */
 };
 
-struct xadImageInfo { /* for XADHC_IMAGEINFO */
-  xadUINT32 xii_SectorSize;   /* usually 512 */
-  xadUINT32 xii_FirstSector;  /* of the image file */
-  xadUINT32 xii_NumSectors;   /* of the image file */
-  xadUINT32 xii_TotalSectors; /* of this device type */
-};
 /* If the image file holds total data of disk xii_TotalSectors equals
    xii_NumSectors and xii_FirstSector is zero. Addition of xii_FirstSector
    and xii_NumSectors cannot exceed xii_TotalSectors value!
 */
+struct xadImageInfo { /* for XADHC_IMAGEINFO */
+  xadUINT32 xii_SectorSize;   /*!< usually 512 */
+  xadUINT32 xii_FirstSector;  /*!< of the image file */
+  xadUINT32 xii_NumSectors;   /*!< of the image file */
+  xadUINT32 xii_TotalSectors; /*!< of this device type */
+};
 
 /************************************************************************
 *                                                                       *
@@ -364,9 +401,9 @@ struct xadImageInfo { /* for XADHC_IMAGEINFO */
 *                                                                       *
 ************************************************************************/
 struct xadSystemInfo {
-  xadUINT16                xsi_Version;   /* master library version */
-  xadUINT16                xsi_Revision;  /* master library revision */
-  xadSize                  xsi_RecogSize; /* size for recognition */
+  xadUINT16                xsi_Version;   /*!< master library version */
+  xadUINT16                xsi_Revision;  /*!< master library revision */
+  xadSize                  xsi_RecogSize; /*!< size for recognition */
 };
 
 /************************************************************************
@@ -374,33 +411,6 @@ struct xadSystemInfo {
 *    information structures                                             *
 *                                                                       *
 ************************************************************************/
-
-struct xadArchiveInfo {
-  struct xadClient *   xai_Client;   /* pointer to unarchiving client */
-  xadPTR               xai_PrivateClient; /* private client data */
-  xadSTRPTR            xai_Password; /* password for crypted archives */
-  xadUINT32            xai_Flags;    /* read only XADAIF_ flags */
-  xadUINT32            xai_LowCyl;   /* lowest cylinder to unarchive */
-  xadUINT32            xai_HighCyl;  /* highest cylinder to unarchive */
-  xadSize              xai_InPos;    /* input position, read only */
-  xadSize              xai_InSize;   /* input size, read only */
-  xadSize              xai_OutPos;   /* output position, read only */
-  xadSize              xai_OutSize;  /* output file size, read only */
-  struct xadFileInfo * xai_FileInfo; /* data pointer for file arcs */
-  struct xadDiskInfo * xai_DiskInfo; /* data pointer for disk arcs */
-  struct xadFileInfo * xai_CurFile;  /* data pointer for current file arc */
-  struct xadDiskInfo * xai_CurDisk;  /* data pointer for current disk arc */
-  xadERROR             xai_LastError;   /* last error, when XADAIF_FILECORRUPT (V2) */
-  xadSize *            xai_MultiVolume; /* array of start offsets from parts (V2) */
-  struct xadSkipInfo * xai_SkipInfo;    /* linked list of skip entries (V3) */
-  struct xadImageInfo *xai_ImageInfo;   /* for filesystem clients (V5) */
-  xadSTRPTR            xai_InName;   /* Input archive name if available (V7) */
-};
-/* This structure is nearly complete private to either xadmaster or its
-clients. An application program may access for reading only xai_Client,
-xai_Flags, xai_FileInfo and xai_DiskInfo. For xai_Flags only XADAIF_CRYPTED
-and XADAIF_FILECORRUPT are useful. All the other stuff is private and should
-not be accessed! */
 
 #define XADAIB_CRYPTED           0 /* archive entries are encrypted */
 #define XADAIB_FILECORRUPT       1 /* file is corrupt, but valid entries are in the list */
@@ -434,104 +444,65 @@ not be accessed! */
 #define XADAIF_ONLYOUT          (1<<XADAIB_ONLYOUT)
 #define XADAIF_USESECTORLABELS  (1<<XADAIB_USESECTORLABELS)
 
-struct xadFileInfo {
-  struct xadFileInfo * xfi_Next;
-  xadUINT32            xfi_EntryNumber;/* number of entry */
-  xadSTRPTR            xfi_EntryInfo;  /* additional archiver text */
-  xadPTR               xfi_PrivateInfo;/* client private, see XAD_OBJPRIVINFOSIZE */
-  xadUINT32            xfi_Flags;      /* see XADFIF_xxx defines */
-  xadSTRPTR            xfi_FileName;   /* see XAD_OBJNAMESIZE tag */
-  xadSTRPTR            xfi_Comment;    /* see XAD_OBJCOMMENTSIZE tag */
-  xadUINT32            xfi_Protection; /* AmigaOS3 bits (including multiuser) */
-  xadUINT32            xfi_OwnerUID;   /* user ID */
-  xadUINT32            xfi_OwnerGID;   /* group ID */
-  xadSTRPTR            xfi_UserName;   /* user name */
-  xadSTRPTR            xfi_GroupName;  /* group name */
-  xadSize              xfi_Size;       /* size of this file */
-  xadSize              xfi_GroupCrSize;/* crunched size of group */
-  xadSize              xfi_CrunchSize; /* crunched size */
-  xadSTRPTR            xfi_LinkName;   /* name and path of link */
-  struct xadDate       xfi_Date;
-  xadUINT16            xfi_Generation; /* File Generation [0...0xFFFF] (V3) */
-  xadSize              xfi_DataPos;    /* crunched data position (V3) */
-  struct xadFileInfo * xfi_MacFork;    /* pointer to 2nd fork for Mac (V7) */
-  xadUINT16            xfi_UnixProtect;/* protection bits for Unix (V11) */
-  xadUINT8             xfi_DosProtect; /* protection bits for MS-DOS (V11) */
-  xadUINT8             xfi_FileType;   /* XADFILETYPE to define type of exe files (V11) */
-  struct xadSpecial *  xfi_Special;    /* pointer to special data (V11) */
+typedef CF_OPTIONS(xadUINT32, XADArchiveInfoFlags) {
+  /*! archive entries are encrypted */
+  XADArchiveInfoCrypted = XADAIF_CRYPTED,
+  /*! file is corrupt, but valid entries are in the list */
+  XADArchiveInfoFileCorrupt = XADAIF_FILECORRUPT,
+  /*! unarchive file entry */
+  XADArchiveInfoFileArchive = XADAIF_FILEARCHIVE,
+  /*! unarchive disk entry */
+  XADArchiveInfoDiskArchive = XADAIF_DISKIMAGE,
+  /*! overwrite the file (PRIVATE) */
+  XADArchiveInfoOverwrite = XADAIF_OVERWRITE,
+  /*! create directory when missing (PRIVATE) */
+  XADArchiveInfoMakeDirectory = XADAIF_MAKEDIRECTORY,
+  /*! ignore drive geometry (PRIVATE) */
+  XADArchiveInfoIgnoreGeometry = XADAIF_IGNOREGEOMETRY,
+  /*! verify is turned on for disk hook (PRIVATE) */
+  XADArchiveInfoVerify = XADAIF_VERIFY,
+  /*! do not delete partial files (PRIVATE) */
+  XADArchiveInfoNoKillPartial = XADAIF_NOKILLPARTIAL,
+  /*! is disk image extraction (V5) */
+  XADArchiveInfoDiskImage = XADAIF_DISKIMAGE,
+  /*! format in disk hook (PRIVATE) */
+  XADArchiveInfoFormat = XADAIF_FORMAT,
+  /*! do not create empty error (PRIVATE) */
+  XADArchiveInfoNoEmptyError = XADAIF_NOEMPTYERROR,
+  /*! in stuff only (PRIVATE) */
+  XADArchiveInfoOnlyIn = XADAIF_ONLYIN,
+  /*! out stuff only (PRIVATE) */
+  XADArchiveInfoOnlyOut = XADAIF_ONLYOUT,
+  /*! use SectorLabels (PRIVATE) */
+  XADArchiveInfoUseSectorLabels = XADAIF_USESECTORLABELS
 };
 
-/* These are used for xfi_FileType to define file type. (V11) */
-#define XADFILETYPE_DATACRUNCHER     1   /* infile was only one data file */
-#define XADFILETYPE_TEXTLINKER       2   /* infile was text-linked */
-
-#define XADFILETYPE_AMIGAEXECRUNCHER 11  /* infile was an Amiga exe cruncher */
-#define XADFILETYPE_AMIGAEXELINKER   12  /* infile was an Amiga exe linker */
-#define XADFILETYPE_AMIGATEXTLINKER  13  /* infile was an Amiga text-exe linker */
-#define XADFILETYPE_AMIGAADDRESS     14  /* infile was an Amiga address cruncher */
-
-#define XADFILETYPE_UNIXBLOCKDEVICE  21  /* this file is a block device */
-#define XADFILETYPE_UNIXCHARDEVICE   22  /* this file is a character device */
-#define XADFILETYPE_UNIXFIFO         23  /* this file is a named pipe */
-#define XADFILETYPE_UNIXSOCKET       24  /* this file is a socket */
-
-#define XADFILETYPE_MSDOSEXECRUNCHER 31  /* infile was an MSDOS exe cruncher */
-
-#define XADSPECIALTYPE_UNIXDEVICE    1 /* xadSpecial entry is xadSpecialUnixDevice */
-#define XADSPECIALTYPE_AMIGAADDRESS  2 /* xadSpecial entry is xadSpecialAmigaAddress */
-#define XADSPECIALTYPE_CBM8BIT       3 /* xadSpecial entry is xadSpecialCBM8bit */
-
-struct xadSpecialUnixDevice
-{
-  xadUINT32 xfis_MajorVersion;    /* major device version */
-  xadUINT32 xfis_MinorVersion;    /* minor device version */
+/*! This structure is nearly complete private to either xadmaster or its
+   clients. An application program may access for reading only xai_Client,
+   xai_Flags, xai_FileInfo and xai_DiskInfo. For xai_Flags only XADAIF_CRYPTED
+   and \c XADAIF_FILECORRUPT are useful. All the other stuff is private and should
+   not be accessed! */
+struct xadArchiveInfo {
+  struct xadClient *   xai_Client;   /*!< pointer to unarchiving client */
+  xadPTR               xai_PrivateClient; /*!< private client data */
+  xadSTRPTR            xai_Password; /*!< password for crypted archives */
+  XADArchiveInfoFlags  xai_Flags;    /*!< read only XADAIF_ flags */
+  xadUINT32            xai_LowCyl;   /*!< lowest cylinder to unarchive */
+  xadUINT32            xai_HighCyl;  /*!< highest cylinder to unarchive */
+  xadSize              xai_InPos;    /*!< input position, read only */
+  xadSize              xai_InSize;   /*!< input size, read only */
+  xadSize              xai_OutPos;   /*!< output position, read only */
+  xadSize              xai_OutSize;  /*!< output file size, read only */
+  struct xadFileInfo * xai_FileInfo; /*!< data pointer for file arcs */
+  struct xadDiskInfo * xai_DiskInfo; /*!< data pointer for disk arcs */
+  struct xadFileInfo * xai_CurFile;  /*!< data pointer for current file arc */
+  struct xadDiskInfo * xai_CurDisk;  /*!< data pointer for current disk arc */
+  xadERROR             xai_LastError;   /*!< last error, when XADAIF_FILECORRUPT (V2) */
+  xadSize *            xai_MultiVolume; /*!< array of start offsets from parts (V2) */
+  struct xadSkipInfo * xai_SkipInfo;    /*!< linked list of skip entries (V3) */
+  struct xadImageInfo *xai_ImageInfo;   /*!< for filesystem clients (V5) */
+  xadSTRPTR            xai_InName;   /*!< Input archive name if available (V7) */
 };
-
-struct xadSpecialAmigaAddress
-{
-  xadUINT32 xfis_JumpAddress;     /* code execution start address */
-  xadUINT32 xfis_DecrunchAddress; /* decrunch start of code */
-};
-
-struct xadSpecialCBM8bit
-{
-  xadUINT8 xfis_FileType;        /* File type XADCBM8BITTYPE_xxx */
-  xadUINT8 xfis_RecordLength;    /* record length if relative file */
-};
-#define XADCBM8BITTYPE_UNKNOWN  0x00    /*        Unknown / Unused */
-#define XADCBM8BITTYPE_BASIC    0x01    /* Tape - BASIC program file */
-#define XADCBM8BITTYPE_DATA     0x02    /* Tape - Data block (SEQ file) */
-#define XADCBM8BITTYPE_FIXED    0x03    /* Tape - Fixed addres program file */
-#define XADCBM8BITTYPE_SEQDATA  0x04    /* Tape - Sequential data file */
-#define XADCBM8BITTYPE_SEQ      0x81    /* Disk - Sequential file "SEQ" */
-#define XADCBM8BITTYPE_PRG      0x82    /* Disk - Program file "PRG" */
-#define XADCBM8BITTYPE_USR      0x83    /* Disk - User-defined file "USR" */
-#define XADCBM8BITTYPE_REL      0x84    /* Disk - Relative records file "REL" */
-#define XADCBM8BITTYPE_CBM      0x85    /* Disk - CBM (partition) "CBM" */
-
-struct xadSpecial
-{
-  xadUINT32          xfis_Type; /* XADSPECIALTYPE to define type of block (V11) */
-  struct xadSpecial *xfis_Next; /* pointer to next entry */
-  union
-  {
-    struct xadSpecialUnixDevice   xfis_UnixDevice;
-    struct xadSpecialAmigaAddress xfis_AmigaAddress;
-    struct xadSpecialCBM8bit      xfis_CBM8bit;
-  } xfis_Data;
-};
-
-/* Multiuser fields (xfi_OwnerUID, xfi_OwnerUID, xfi_UserName, xfi_GroupName)
-   and multiuser bits (see <dos/dos.h>) are currently not supported with normal
-   Amiga filesystem. But the clients support them, if archive format holds
-   such information.
-
-   The protection bits (all 3 fields) should always be set using the
-   xadConvertProtection procedure. Call it with as much protection information
-   as possible. It extracts the relevant data at best (and also sets the 2 flags).
-   DO NOT USE these fields directly, but always through xadConvertProtection
-   call.
-*/
 
 #define XADFIB_CRYPTED          0 /* entry is crypted */
 #define XADFIB_DIRECTORY        1 /* entry is a directory */
@@ -577,7 +548,219 @@ struct xadSpecial
 #define XADFIF_XADSTRLINKNAME   (1<<XADFIB_XADSTRLINKNAME)
 #define XADFIF_XADSTRCOMMENT    (1<<XADFIB_XADSTRCOMMENT)
 
-/* NOTE: the texts passed with that structure must not always be printable.
+typedef CF_OPTIONS(uint32_t, XADFileInfoFlags) {
+  /** entry is crypted */
+  XADFileInfoCrypted = (1<<XADFIB_CRYPTED),
+  /** entry is a directory */
+  XADFileInfoDirectory = (1<<XADFIB_DIRECTORY),
+  /** entry is a link */
+  XADFileInfoLink = (1<<XADFIB_LINK),
+  /** file is an information text */
+  XADFileInfoInfoText = (1<<XADFIB_INFOTEXT),
+  /** file is in a crunch group */
+  XADFileInfoGrouped = (1<<XADFIB_GROUPED),
+  /** crunch group ends here */
+  XADFileInfoEndOfGroup = (1<<XADFIB_ENDOFGROUP),
+  /** no date supported, CURRENT date is set */
+  XADFileInfoNoDate = (1<<XADFIB_NODATE),
+  /** file is marked as deleted (V3) */
+  XADFileInfoDeleted = (1<<XADFIB_DELETED),
+  /** before unarchiving the datapos is set (V3) */
+  XADFileInfoSeekDataPosition = (1<<XADFIB_SEEKDATAPOS),
+  /** there was no filename, using internal one (V6) */
+  XADFileInfoNoFileName = (1<<XADFIB_NOFILENAME),
+  /** file size is unknown and thus set to zero (V6) */
+  XADFileInfoNoUncrunchSize = (1<<XADFIB_NOUNCRUNCHSIZE),
+  /** file is only partial (V6) */
+  XADFileInfoPartialFile = (1<<XADFIB_PARTIALFILE),
+  /** file is Apple data fork (V7) */
+  XADFileInfoMacData = (1<<XADFIB_MACDATA),
+  /** file is Apple resource fork (V7) */
+  XADFileInfoMacResource = (1<<XADFIB_MACRESOURCE),
+  /** allows extract file during scanning (V10) */
+  XADFileInfoExtractionBuild = (1<<XADFIB_EXTRACTONBUILD),
+  /** UNIX protection bits are present (V11) */
+  XADFileInfoUnixProtection = (1<<XADFIB_UNIXPROTECTION),
+  /** MSDOS protection bits are present (V11) */
+  XADFileInfoDOSProtection = (1<<XADFIB_DOSPROTECTION),
+  /** this entry may change until GetInfo is finished (V11) */
+  XADFileInfoEntryMayChange = (1<<XADFIB_ENTRYMAYCHANGE),
+  /** the xfi_FileName fields is an XAD string (V12) */
+  XADFileInfoXADStrFileName = (1<<XADFIB_XADSTRFILENAME),
+  /** the xfi_LinkName fields is an XAD string (V12) */
+  XADFileInfoXADStrLinkName = (1<<XADFIB_XADSTRLINKNAME),
+  /** the xfi_Comment fields is an XAD string (V12) */
+  XADFileInfoXADStrComment = (1<<XADFIB_XADSTRCOMMENT),
+};
+
+/* These are used for xfi_FileType to define file type. (V11) */
+#define XADFILETYPE_DATACRUNCHER     1   /* infile was only one data file */
+#define XADFILETYPE_TEXTLINKER       2   /* infile was text-linked */
+  
+#define XADFILETYPE_AMIGAEXECRUNCHER 11  /* infile was an Amiga exe cruncher */
+#define XADFILETYPE_AMIGAEXELINKER   12  /* infile was an Amiga exe linker */
+#define XADFILETYPE_AMIGATEXTLINKER  13  /* infile was an Amiga text-exe linker */
+#define XADFILETYPE_AMIGAADDRESS     14  /* infile was an Amiga address cruncher */
+  
+#define XADFILETYPE_UNIXBLOCKDEVICE  21  /* this file is a block device */
+#define XADFILETYPE_UNIXCHARDEVICE   22  /* this file is a character device */
+#define XADFILETYPE_UNIXFIFO         23  /* this file is a named pipe */
+#define XADFILETYPE_UNIXSOCKET       24  /* this file is a socket */
+  
+#define XADFILETYPE_MSDOSEXECRUNCHER 31  /* infile was an MSDOS exe cruncher */
+
+/*! These are used for xfi_FileType to define file type. (V11) */
+typedef CF_ENUM(xadUINT8, XADFileType) {
+  /*! infile was only one data file */
+  XADFileTypeDataCruncher = XADFILETYPE_DATACRUNCHER,
+  /*! infile was text-linked */
+  XADFileTypeTextLinker = XADFILETYPE_TEXTLINKER,
+  
+  /*! infile was an Amiga exe cruncher */
+  XADFileTypeAmigaExeCruncher = XADFILETYPE_AMIGAEXECRUNCHER,
+  /*! infile was an Amiga exe linker */
+  XADFileTypeAmigaExeLinker = XADFILETYPE_AMIGAEXELINKER,
+  /*! infile was an Amiga text-exe linker */
+  XADFileTypeAmigaTextLinker = XADFILETYPE_AMIGATEXTLINKER,
+  /*! infile was an Amiga address cruncher */
+  XADFileTypeAmigaAddress = XADFILETYPE_AMIGAADDRESS,
+  
+  /*! this file is a block device */
+  XADFileTypeUnixBlockDevice = XADFILETYPE_UNIXBLOCKDEVICE,
+  /*! this file is a character device */
+  XADFileTypeUnixCharDevice = XADFILETYPE_UNIXCHARDEVICE,
+  /*! this file is a named pipe */
+  XADFileTypeUnixFifo = XADFILETYPE_UNIXFIFO,
+  /*! this file is a socket */
+  XADFileTypeUnixSocket = XADFILETYPE_UNIXSOCKET,
+  
+  /*! infile was an MSDOS exe cruncher */
+  XADFileTypeMSDOSExeCruncher = XADFILETYPE_MSDOSEXECRUNCHER,
+};
+
+/* Multiuser fields (xfi_OwnerUID, xfi_OwnerUID, xfi_UserName, xfi_GroupName)
+   and multiuser bits (see <dos/dos.h>) are currently not supported with normal
+   Amiga filesystem. But the clients support them, if archive format holds
+   such information.
+   
+   The protection bits (all 3 fields) should always be set using the
+   \c xadConvertProtection procedure. Call it with as much protection information
+   as possible. It extracts the relevant data at best (and also sets the 2 flags).
+   DO NOT USE these fields directly, but always through \c xadConvertProtection
+   call.
+*/
+struct xadFileInfo {
+  struct xadFileInfo * xfi_Next;
+  xadUINT32            xfi_EntryNumber;/*!< number of entry */
+  xadSTRPTR            xfi_EntryInfo;  /*!< additional archiver text */
+  xadPTR               xfi_PrivateInfo;/*!< client private, see XAD_OBJPRIVINFOSIZE */
+  XADFileInfoFlags     xfi_Flags;      /*!< see XADFIF_xxx defines */
+  xadSTRPTR            xfi_FileName;   /*!< see \c XAD_OBJNAMESIZE tag */
+  xadSTRPTR            xfi_Comment;    /*!< see \c XAD_OBJCOMMENTSIZE tag */
+  xadUINT32            xfi_Protection; /*!< AmigaOS3 bits (including multiuser) */
+  xadUINT32            xfi_OwnerUID;   /*!< user ID */
+  xadUINT32            xfi_OwnerGID;   /*!< group ID */
+  xadSTRPTR            xfi_UserName;   /*!< user name */
+  xadSTRPTR            xfi_GroupName;  /*!< group name */
+  xadSize              xfi_Size;       /*!< size of this file */
+  xadSize              xfi_GroupCrSize;/*!< crunched size of group */
+  xadSize              xfi_CrunchSize; /*!< crunched size */
+  xadSTRPTR            xfi_LinkName;   /*!< name and path of link */
+  struct xadDate       xfi_Date;
+  xadUINT16            xfi_Generation; /*!< File Generation [0...0xFFFF] (V3) */
+  xadSize              xfi_DataPos;    /*!< crunched data position (V3) */
+  struct xadFileInfo * xfi_MacFork;    /*!< pointer to 2nd fork for Mac (V7) */
+  xadUINT16            xfi_UnixProtect;/*!< protection bits for Unix (V11) */
+  xadUINT8             xfi_DosProtect; /*!< protection bits for MS-DOS (V11) */
+  XADFileType          xfi_FileType;   /*!< XADFILETYPE to define type of exe files (V11) */
+  struct xadSpecial *  xfi_Special;    /*!< pointer to special data (V11) */
+};
+
+#define XADSPECIALTYPE_UNIXDEVICE    1 /* xadSpecial entry is xadSpecialUnixDevice */
+#define XADSPECIALTYPE_AMIGAADDRESS  2 /* xadSpecial entry is xadSpecialAmigaAddress */
+#define XADSPECIALTYPE_CBM8BIT       3 /* xadSpecial entry is xadSpecialCBM8bit */
+
+typedef CF_ENUM(xadUINT32, xadSpecialType) {
+  /*! xadSpecial entry is \c xadSpecialUnixDevice */
+  xadSpecialTypeUnixDevice = XADSPECIALTYPE_UNIXDEVICE,
+  /*! xadSpecial entry is \c xadSpecialAmigaAddress */
+  xadSpecialTypeAmigaAddress = XADSPECIALTYPE_AMIGAADDRESS,
+  /*! xadSpecial entry is \c xadSpecialCBM8bit */
+  xadSpecialTypeCBM8Bit = XADSPECIALTYPE_CBM8BIT,
+};
+
+struct xadSpecialUnixDevice
+{
+  xadUINT32 xfis_MajorVersion;    /*!< major device version */
+  xadUINT32 xfis_MinorVersion;    /*!< minor device version */
+};
+
+struct xadSpecialAmigaAddress
+{
+  xadUINT32 xfis_JumpAddress;     /*!< code execution start address */
+  xadUINT32 xfis_DecrunchAddress; /*!< decrunch start of code */
+};
+
+#define XADCBM8BITTYPE_UNKNOWN  0x00    /*        Unknown / Unused */
+#define XADCBM8BITTYPE_BASIC    0x01    /* Tape - BASIC program file */
+#define XADCBM8BITTYPE_DATA     0x02    /* Tape - Data block (SEQ file) */
+#define XADCBM8BITTYPE_FIXED    0x03    /* Tape - Fixed addres program file */
+#define XADCBM8BITTYPE_SEQDATA  0x04    /* Tape - Sequential data file */
+#define XADCBM8BITTYPE_SEQ      0x81    /* Disk - Sequential file "SEQ" */
+#define XADCBM8BITTYPE_PRG      0x82    /* Disk - Program file "PRG" */
+#define XADCBM8BITTYPE_USR      0x83    /* Disk - User-defined file "USR" */
+#define XADCBM8BITTYPE_REL      0x84    /* Disk - Relative records file "REL" */
+#define XADCBM8BITTYPE_CBM      0x85    /* Disk - CBM (partition) "CBM" */
+
+typedef CF_ENUM(xadUINT8, xadCBM8BitType) {
+  xadCBM8BitTypeUnknown  = XADCBM8BITTYPE_UNKNOWN, /*!< Unknown / Unused */
+  xadCBM8BitTypeBASIC    = XADCBM8BITTYPE_BASIC,   /*!< Tape - BASIC program file */
+  xadCBM8BitTypeData     = XADCBM8BITTYPE_DATA,    /*!< Tape - Data block (SEQ file) */
+  xadCBM8BitTypeFixed    = XADCBM8BITTYPE_FIXED,   /*!< Tape - Fixed addres program file */
+  xadCBM8BitTypeSequentialData  = XADCBM8BITTYPE_SEQDATA, /*!< Tape - Sequential data file */
+  xadCBM8BitTypeSequentialFile  = XADCBM8BITTYPE_SEQ,     /*!< Disk - Sequential file "SEQ" */
+  xadCBM8BitTypeProgramFile     = XADCBM8BITTYPE_PRG,     /*!< Disk - Program file "PRG" */
+  xadCBM8BitTypeUserFile        = XADCBM8BITTYPE_USR,     /*!< Disk - User-defined file "USR" */
+  xadCBM8BitTypeRelativeFile    = XADCBM8BITTYPE_REL,     /*!< Disk - Relative records file "REL" */
+  xadCBM8BitTypeCBMPartition    = XADCBM8BITTYPE_CBM,     /*!< Disk - CBM (partition) "CBM" */
+};
+  
+struct xadSpecialCBM8bit
+{
+  xadCBM8BitType  xfis_FileType;        /*!< File type XADCBM8BITTYPE_xxx */
+  xadUINT8        xfis_RecordLength;    /*!< record length if relative file */
+};
+
+struct xadSpecial
+{
+  xadSpecialType     xfis_Type; /*!< XADSPECIALTYPE to define type of block (V11) */
+  struct xadSpecial *xfis_Next; /*!< pointer to next entry */
+  union
+  {
+    struct xadSpecialUnixDevice   xfis_UnixDevice;
+    struct xadSpecialAmigaAddress xfis_AmigaAddress;
+    struct xadSpecialCBM8bit      xfis_CBM8bit;
+  } xfis_Data;
+};
+
+#define XADTIB_CRYPTED          0 /* entry is empty, as data was crypted */
+#define XADTIB_BANNER           1 /* text is a banner */
+#define XADTIB_FILEDIZ          2 /* text is a file description */
+	
+#define XADTIF_CRYPTED          (1<<XADTIB_CRYPTED)
+#define XADTIF_BANNER           (1<<XADTIB_BANNER)
+#define XADTIF_FILEDIZ          (1<<XADTIB_FILEDIZ)
+	
+typedef CF_OPTIONS(xadUINT32, XADTextInfoFlags) {
+  /** entry is empty, as data was crypted */
+  XADTextInfoCrypted          = (1<<XADTIB_CRYPTED),
+  /** text is a banner */
+  XADTextInfoBanner           = (1<<XADTIB_BANNER),
+  /** text is a file description */
+  XADTextInfoFileDescription  = (1<<XADTIB_FILEDIZ),
+};
+
+/*! NOTE: the texts passed with that structure must not always be printable.
    Although the clients should add an additional (not counted) zero at the text
    end, the whole file may contain other unprintable stuff (e.g. for DMS).
    So when printing this texts do it on a byte for byte base including
@@ -585,37 +768,9 @@ struct xadSpecial
 */
 struct xadTextInfo {
   struct xadTextInfo *  xti_Next;
-  xadSize               xti_Size;  /* maybe zero - no text - e.g. when crypted */
-  xadSTRPTR             xti_Text;  /* and there is no password in xadGetInfo() */
-  xadUINT32             xti_Flags; /* see XADTIF_xxx defines */
-};
-
-#define XADTIB_CRYPTED          0 /* entry is empty, as data was crypted */
-#define XADTIB_BANNER           1 /* text is a banner */
-#define XADTIB_FILEDIZ          2 /* text is a file description */
-
-#define XADTIF_CRYPTED          (1<<XADTIB_CRYPTED)
-#define XADTIF_BANNER           (1<<XADTIB_BANNER)
-#define XADTIF_FILEDIZ          (1<<XADTIB_FILEDIZ)
-
-struct xadDiskInfo {
-  struct xadDiskInfo *  xdi_Next;
-  xadUINT32             xdi_EntryNumber;  /* number of entry */
-  xadSTRPTR             xdi_EntryInfo;    /* additional archiver text */
-  xadPTR                xdi_PrivateInfo;  /* client private, see XAD_OBJPRIVINFOSIZE */
-  xadUINT32             xdi_Flags;        /* see XADDIF_xxx defines */
-  xadUINT32             xdi_SectorSize;
-  xadUINT32             xdi_TotalSectors; /* see devices/trackdisk.h */
-  xadUINT32             xdi_Cylinders;    /* to find out what these */
-  xadUINT32             xdi_CylSectors;   /* fields mean, they are equal */
-  xadUINT32             xdi_Heads;        /* to struct DriveGeometry */
-  xadUINT32             xdi_TrackSectors;
-  xadUINT32             xdi_LowCyl;       /* lowest cylinder stored */
-  xadUINT32             xdi_HighCyl;      /* highest cylinder stored */
-  xadUINT32             xdi_BlockInfoSize;/* number of BlockInfo entries */
-  xadUINT8 *            xdi_BlockInfo;    /* see XADBIF_xxx defines and XAD_OBJBLOCKENTRIES tag */
-  struct xadTextInfo *  xdi_TextInfo;     /* linked list with info texts */
-  xadSize               xdi_DataPos;      /* crunched data position (V3) */
+  xadSize               xti_Size;  /*!< maybe zero - no text - e.g. when crypted */
+  xadSTRPTR             xti_Text;  /*!< and there is no password in xadGetInfo() */
+  XADTextInfoFlags      xti_Flags; /*!< see XADTIF_xxx defines */
 };
 
 /* BlockInfo points to a xadUINT8 field for every track from first sector of
@@ -655,13 +810,13 @@ possible values for the missing fields. */
 #define XADDIB_NOTRACKSECTORS    18 /* tracksectors is not set */
 #define XADDIB_NOLOWCYL          19 /* lowcyl is not set */
 #define XADDIB_NOHIGHCYL         20 /* highcyl is not set */
-
+  
 #define XADDIF_CRYPTED           (1<<XADDIB_CRYPTED)
 #define XADDIF_SEEKDATAPOS       (1<<XADDIB_SEEKDATAPOS)
 #define XADDIF_SECTORLABELS      (1<<XADDIB_SECTORLABELS)
 #define XADDIF_EXTRACTONBUILD    (1<<XADDIB_EXTRACTONBUILD)
 #define XADDIF_ENTRYMAYCHANGE    (1<<XADDIB_ENTRYMAYCHANGE)
-
+  
 #define XADDIF_GUESSSECTORSIZE   (1<<XADDIB_GUESSSECTORSIZE)
 #define XADDIF_GUESSTOTALSECTORS (1<<XADDIB_GUESSTOTALSECTORS)
 #define XADDIF_GUESSCYLINDERS    (1<<XADDIB_GUESSCYLINDERS)
@@ -670,42 +825,78 @@ possible values for the missing fields. */
 #define XADDIF_GUESSTRACKSECTORS (1<<XADDIB_GUESSTRACKSECTORS)
 #define XADDIF_GUESSLOWCYL       (1<<XADDIB_GUESSLOWCYL)
 #define XADDIF_GUESSHIGHCYL      (1<<XADDIB_GUESSHIGHCYL)
-
+  
 #define XADDIF_NOCYLINDERS       (1<<XADDIB_NOCYLINDERS)
 #define XADDIF_NOCYLSECTORS      (1<<XADDIB_NOCYLSECTORS)
 #define XADDIF_NOHEADS           (1<<XADDIB_NOHEADS)
 #define XADDIF_NOTRACKSECTORS    (1<<XADDIB_NOTRACKSECTORS)
 #define XADDIF_NOLOWCYL          (1<<XADDIB_NOLOWCYL)
 #define XADDIF_NOHIGHCYL         (1<<XADDIB_NOHIGHCYL)
+  
+typedef CF_OPTIONS(xadUINT32, XADDiskInfoFlags) {
+  XADDiskInfoCrypted          = (1<<XADDIB_CRYPTED),
+  XADDiskInfoSeekDataPosition = (1<<XADDIB_SEEKDATAPOS),
+  XADDiskInfoSectorLabels     = (1<<XADDIB_SECTORLABELS),
+  XADDiskInfoExtractionBuild  = (1<<XADDIB_EXTRACTONBUILD),
+  XADDiskInfoEntryMayChange   = (1<<XADDIB_ENTRYMAYCHANGE),
+  
+  XADDiskInfoGuessSectorSize    = (1<<XADDIB_GUESSSECTORSIZE),
+  XADDiskInfoGuessTotalSectors  = (1<<XADDIB_GUESSTOTALSECTORS),
+  XADDiskInfoGuessCylinders     = (1<<XADDIB_GUESSCYLINDERS),
+  XADDiskInfoGuessCylselectors  = (1<<XADDIB_GUESSCYLSECTORS),
+  XADDiskInfoGuessHeads         = (1<<XADDIB_GUESSHEADS),
+  XADDiskInfoGuessTrackSectors  = (1<<XADDIB_GUESSTRACKSECTORS),
+  XADDiskInfoGuessLowCyl        = (1<<XADDIB_GUESSLOWCYL),
+  XADDiskInfoGuessHighCyl       = (1<<XADDIB_GUESSHIGHCYL),
+  
+  XADDiskInfoNoCylinders        = (1<<XADDIB_NOCYLINDERS),
+  XADDiskInfoNoCylsectors       = (1<<XADDIB_NOCYLSECTORS),
+  XADDiskInfoNoHeads            = (1<<XADDIB_NOHEADS),
+  XADDiskInfoNoTrackSectors     = (1<<XADDIB_NOTRACKSECTORS),
+  XADDiskInfoNoLowCyl           = (1<<XADDIB_NOLOWCYL),
+  XADDiskInfoNoHighCyl          = (1<<XADDIB_NOHIGHCYL),
+};
 
 /* defines for BlockInfo */
 #define XADBIB_CLEARED          0 /* this block was cleared for archiving */
 #define XADBIB_UNUSED           1 /* this block was not archived */
-
+  
 #define XADBIF_CLEARED          (1<<XADBIB_CLEARED)
 #define XADBIF_UNUSED           (1<<XADBIB_UNUSED)
+
+typedef CF_OPTIONS(xadUINT8, XADBlockInfoFlags) {
+  /** this block was cleared for archiving */
+  XADBlockInfoCleared = XADBIF_CLEARED,
+  /** this block was not archived */
+  XADBlockInfoUnused  = XADBIF_UNUSED,
+};
+  
+struct xadDiskInfo {
+  struct xadDiskInfo *  xdi_Next;
+  xadUINT32             xdi_EntryNumber;  /*!< number of entry */
+  xadSTRPTR             xdi_EntryInfo;    /*!< additional archiver text */
+  xadPTR                xdi_PrivateInfo;  /*!< client private, see XAD_OBJPRIVINFOSIZE */
+  XADDiskInfoFlags      xdi_Flags;        /*!< see XADDIF_xxx defines */
+  xadUINT32             xdi_SectorSize;
+  xadUINT32             xdi_TotalSectors; /* see devices/trackdisk.h */
+  xadUINT32             xdi_Cylinders;    /* to find out what these */
+  xadUINT32             xdi_CylSectors;   /* fields mean, they are equal */
+  xadUINT32             xdi_Heads;        /* to struct DriveGeometry */
+  xadUINT32             xdi_TrackSectors;
+  xadUINT32             xdi_LowCyl;       /*!< lowest cylinder stored */
+  xadUINT32             xdi_HighCyl;      /*!< highest cylinder stored */
+  xadUINT32             xdi_BlockInfoSize;/*!< number of BlockInfo entries */
+  XADBlockInfoFlags *   xdi_BlockInfo;    /*!< see XADBIF_xxx defines and XAD_OBJBLOCKENTRIES tag */
+  struct xadTextInfo *  xdi_TextInfo;     /*!< linked list with info texts */
+  xadSize               xdi_DataPos;      /*!< crunched data position (V3) */
+};
+
 
 /************************************************************************
 *                                                                       *
 *    progress report stuff                                              *
 *                                                                       *
 ************************************************************************/
-
-struct xadProgressInfo {
-  xadUINT32             xpi_Mode;       /* work modus */
-  struct xadClient *    xpi_Client;     /* the client doing the work */
-  struct xadDiskInfo *  xpi_DiskInfo;   /* current diskinfo, for disks */
-  struct xadFileInfo *  xpi_FileInfo;   /* current info for files */
-  xadSize               xpi_CurrentSize;/* current filesize */
-  xadUINT32             xpi_LowCyl;     /* for disks only */
-  xadUINT32             xpi_HighCyl;    /* for disks only */
-  xadUINT32             xpi_Status;     /* see XADPIF flags */
-  xadERROR              xpi_Error;      /* any of the error codes */
-  xadSTRPTR             xpi_FileName;   /* name of file to overwrite (V2) */
-  xadSTRPTR             xpi_NewName;    /* new name buffer, passed by hook (V2) */
-};
-/* NOTE: For disks CurrentSize is Sector*SectorSize, where SectorSize can
-be found in xadDiskInfo structure. So you may output the sector value. */
 
 /* different progress modes */
 #define XADPMODE_ASK            1
@@ -715,6 +906,15 @@ be found in xadDiskInfo structure. So you may output the sector value. */
 #define XADPMODE_NEWENTRY       5 /* (V10) */
 #define XADPMODE_GETINFOEND     6 /* (V11) */
 
+typedef CF_ENUM(xadUINT32, XADProgressMode) {
+  XADProgressModeAsk        = 1,
+  XADProgressModeProgress   = 2,
+  XADProgressModeEnd        = 3,
+  XADProgressModeError      = 4,
+  XADProgressModeNewEntry   = 5,
+  XADProgressModeGetInfoEnd = 6,
+};
+  
 /* flags for progress hook and ProgressInfo status field */
 #define XADPIB_OVERWRITE         0 /* overwrite the file */
 #define XADPIB_MAKEDIRECTORY     1 /* create the directory */
@@ -731,6 +931,40 @@ be found in xadDiskInfo structure. So you may output the sector value. */
 #define XADPIF_RENAME           (1<<XADPIB_RENAME)
 #define XADPIF_OK               (1<<XADPIB_OK)
 #define XADPIF_SKIP             (1<<XADPIB_SKIP)
+
+/*! flags for progress hook and ProgressInfo status field */
+typedef CF_OPTIONS(xadUINT32, XADProgressInfoStatus) {
+  /*! overwrite the file */
+  XADProgressInfoStatusOverwrite = XADPIF_OVERWRITE,
+  /*! create the directory */
+  XADProgressInfoStatusMakeDirectory = XADPIF_MAKEDIRECTORY,
+  /*! ignore drive geometry */
+  XADProgressInfoStatusIgnoreGeometry = XADPIF_IGNOREGEOMETRY,
+  /*! destination is a directory (V10) */
+  XADProgressInfoStatusIsDirectory = XADPIF_ISDIRECTORY,
+  /*! rename the file (V2) */
+  XADProgressInfoStatusRename = XADPIF_RENAME,
+  /*! all ok, proceed */
+  XADProgressInfoStatusOkay = XADPIF_OK,
+  /*! skip file */
+  XADProgressInfoStatusSkip = XADPIF_SKIP,
+};
+
+/*! NOTE: For disks \c CurrentSize is \c Sector*SectorSize, where \c SectorSize can
+ be found in \c xadDiskInfo structure. So you may output the sector value. */
+struct xadProgressInfo {
+  XADProgressMode       xpi_Mode;       /*!< work modus */
+  struct xadClient *    xpi_Client;     /*!< the client doing the work */
+  struct xadDiskInfo *  xpi_DiskInfo;   /*!< current diskinfo, for disks */
+  struct xadFileInfo *  xpi_FileInfo;   /*!< current info for files */
+  xadSize               xpi_CurrentSize;/*!< current filesize */
+  xadUINT32             xpi_LowCyl;     /*!< for disks only */
+  xadUINT32             xpi_HighCyl;    /*!< for disks only */
+  XADProgressInfoStatus xpi_Status;     /*!< see XADPIF flags */
+  xadERROR              xpi_Error;      /*!< any of the error codes */
+  xadSTRPTR             xpi_FileName;   /*!< name of file to overwrite (V2) */
+  xadSTRPTR             xpi_NewName;    /*!< new name buffer, passed by hook (V2) */
+};
 
 /************************************************************************
 *                                                                       *
@@ -802,39 +1036,7 @@ be found in xadDiskInfo structure. So you may output the sector value. */
 *                                                                       *
 ************************************************************************/
 
-struct xadClient {
-  struct xadClient * xc_Next;
-  xadUINT16          xc_Version;    /* set to XADCLIENT_VERSION */
-  xadUINT16          xc_MasterVersion;
-  xadUINT16          xc_ClientVersion;
-  xadUINT16          xc_ClientRevision;
-  xadSize            xc_RecogSize;  /* needed size to recog the type */
-  xadUINT32          xc_Flags;      /* see XADCF_xxx defines */
-  xadUINT32          xc_Identifier; /* ID of internal clients */
-  const char       * xc_ArchiverName;
-  xadBOOL         (* xc_RecogData)(xadSize size, const xadUINT8 *data,
-                  struct xadMasterBase *xadMasterBase);
-  xadERROR        (* xc_GetInfo)(struct xadArchiveInfo *ai,
-                  struct xadMasterBase *xadMasterBase);
-  xadERROR        (* xc_UnArchive)(struct xadArchiveInfo *ai,
-                  struct xadMasterBase *xadMasterBase);
-  void            (* xc_Free)(struct xadArchiveInfo *ai,
-                  struct xadMasterBase *xadMasterBase);
-};
-
-/* xc_RecogData returns 1 when recognized and 0 when not, all the others
-   return 0 when ok and XADERR values on error. xc_Free has no return
-   value.
-
-   Filesystem clients need to clear xc_RecogSize and xc_RecogData. The
-   recognition is automatically done by GetInfo. XADERR_FILESYSTEM is
-   returned in case of unknown format. If it is known detection should
-   go on and any other code may be returned, if it fails.
-   The field xc_ArchiverName means xc_FileSystemName for filesystem
-   clients.
-*/
-
-#define XADCLIENT_VERSION       1
+#define XADCLIENT_VERSION       ((xadUINT16)1)
 
 #define XADCB_FILEARCHIVER       0 /* archiver is a file archiver */
 #define XADCB_DISKARCHIVER       1 /* archiver is a disk archiver */
@@ -869,10 +1071,76 @@ struct xadClient {
 #define XADCF_FREETEXTINFOTEXT  (1UL<<XADCB_FREETEXTINFOTEXT)
 #define XADCF_FREEFILEINFO      (1UL<<XADCB_FREEFILEINFO)
 #define XADCF_FREEDISKINFO      (1UL<<XADCB_FREEDISKINFO)
+  
+/*! The types 5 to 9 always need XADCB_FILEARCHIVER set also. These only specify
+ the type of the archiver somewhat better. Do not mix real archivers and these
+ single file data clients. */
+typedef CF_OPTIONS(xadUINT32, XADClientFlags) {
+  /*! archiver is a file archiver */
+  XADClientFileArchiver = XADCF_FILEARCHIVER,
+  /*! archiver is a disk archiver */
+  XADClientDiskArchiver = XADCF_DISKARCHIVER,
+  /*! external client, set by xadmaster */
+  XADClientExternal = XADCF_EXTERN,
+  /*! filesystem clients (V5) */
+  XADClientFileSystem = XADCF_FILESYSTEM,
+  /*! do not check size for recog call (V6) */
+  XADClientNoCheckTime = XADCF_NOCHECKSIZE,
+  /*! file archiver is plain data file (V11) */
+  XADClientDataCruncher = XADCF_DATACRUNCHER,
+  /*! file archiver is executable file (V11) */
+  XADClientExecutableCruncher = XADCF_EXECRUNCHER,
+  /*! file archiver is address crunched file (V11) */
+  XADClientAddressCruncher = XADCF_ADDRESSCRUNCHER,
+  /*! file archiver is a linker file (V11) */
+  XADClientIsLinker = XADCF_LINKER,
+  /*! master frees XAD strings (V12) */
+  XADClientFreesXADStrings = XADCF_FREEXADSTRINGS,
+  /*! master frees xadSpecial  structures (V11) */
+  XADClientFreesSpecialInfo = XADCF_FREESPECIALINFO,
+  /*! master frees xadSkipInfo structures (V3) */
+  XADClientFreesSkipInfo = XADCF_FREESKIPINFO,
+  /*! master frees xadTextInfo structures (V2) */
+  XADClientFreesTextInfo = XADCF_FREETEXTINFO,
+  /*! master frees xadTextInfo text block (V2) */
+  XADClientFreesTextInfoBlocks = XADCF_FREETEXTINFOTEXT,
+  /*! master frees xadFileInfo structures (V2) */
+  XADClientFreesFileInfo = XADCF_FREEFILEINFO,
+  /*! master frees xadDiskInfo structures (V2) */
+  XADClientFreesDiskInfo = XADCF_FREEDISKINFO,
+};
+  
+struct xadClient {
+  struct xadClient * xc_Next;
+  xadUINT16          xc_Version;    /*!< set to XADCLIENT_VERSION */
+  xadUINT16          xc_MasterVersion;
+  xadUINT16          xc_ClientVersion;
+  xadUINT16          xc_ClientRevision;
+  xadSize            xc_RecogSize;  /*!< needed size to recog the type */
+  XADClientFlags     xc_Flags;      /*!< see XADCF_xxx defines */
+  xadUINT32          xc_Identifier; /*!< ID of internal clients */
+  const char       * xc_ArchiverName;
+  xadBOOL         (* xc_RecogData)(xadSize size, const xadUINT8 *data,
+                  struct xadMasterBase *xadMasterBase);
+  xadERROR        (* xc_GetInfo)(struct xadArchiveInfo *ai,
+                  struct xadMasterBase *xadMasterBase);
+  xadERROR        (* xc_UnArchive)(struct xadArchiveInfo *ai,
+                  struct xadMasterBase *xadMasterBase);
+  void            (* xc_Free)(struct xadArchiveInfo *ai,
+                  struct xadMasterBase *xadMasterBase);
+};
 
-/* The types 5 to 9 always need XADCB_FILEARCHIVER set also. These only specify
-the type of the archiver somewhat better. Do not mix real archivers and these
-single file data clients. */
+/* xc_RecogData returns 1 when recognized and 0 when not, all the others
+   return 0 when ok and XADERR values on error. xc_Free has no return
+   value.
+
+   Filesystem clients need to clear xc_RecogSize and xc_RecogData. The
+   recognition is automatically done by GetInfo. XADERR_FILESYSTEM is
+   returned in case of unknown format. If it is known detection should
+   go on and any other code may be returned, if it fails.
+   The field xc_ArchiverName means xc_FileSystemName for filesystem
+   clients.
+*/
 
 /************************************************************************
 *                                                                       *
@@ -1014,7 +1282,7 @@ extern xadERROR xadGetInfoA(struct xadMasterBase *xadMasterBase, struct xadArchi
 extern xadERROR xadGetHookAccess(struct xadMasterBase *xadMasterBase, struct xadArchiveInfo *ai, xadTag tag, ...);
 extern xadERROR xadGetHookAccessA(struct xadMasterBase *xadMasterBase, struct xadArchiveInfo *ai, xadTAGPTR tags);
 extern struct xadSystemInfo * xadGetSystemInfo(struct xadMasterBase *xadMasterBase);
-extern xadERROR xadHookAccess(struct xadMasterBase *xadMasterBase, xadUINT32 command, xadSignSize data, xadPTR buffer, struct xadArchiveInfo *ai);
+extern xadERROR xadHookAccess(struct xadMasterBase *xadMasterBase, xadHookAccessCommands command, xadSignSize data, xadPTR buffer, struct xadArchiveInfo *ai);
 extern xadERROR xadHookTagAccess(struct xadMasterBase *xadMasterBase, xadUINT32 command, xadSignSize data, xadPTR buffer, struct xadArchiveInfo *ai, xadTag tag, ...);
 extern xadERROR xadHookTagAccessA(struct xadMasterBase *xadMasterBase, xadUINT32 command, xadSignSize data, xadPTR buffer, struct xadArchiveInfo *ai, xadTAGPTR tags);
 extern struct xadClient * xadRecogFile(struct xadMasterBase *xadMasterBase, xadSize size, const void *mem, xadTag tag, ...);

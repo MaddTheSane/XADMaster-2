@@ -5,14 +5,13 @@
 
 @interface XADRC4Handle:CSStreamHandle
 {
-	CSHandle *parent;
 	off_t startoffs;
 	NSData *key;
 	XADRC4Engine *rc4;
 }
 
--(id)initWithHandle:(CSHandle *)handle key:(NSData *)keydata;
--(void)dealloc;
+-(instancetype)init UNAVAILABLE_ATTRIBUTE;
+-(instancetype)initWithHandle:(CSHandle *)handle key:(NSData *)keydata NS_DESIGNATED_INITIALIZER;
 
 -(void)resetStream;
 -(int)streamAtMost:(int)num toBuffer:(void *)buffer;
@@ -27,7 +26,8 @@
 
 +(XADRC4Engine *)engineWithKey:(NSData *)key;
 
--(id)initWithKey:(NSData *)key;
+-(instancetype)init UNAVAILABLE_ATTRIBUTE;
+-(instancetype)initWithKey:(NSData *)key NS_DESIGNATED_INITIALIZER;
 
 -(NSData *)encryptedData:(NSData *)data;
 

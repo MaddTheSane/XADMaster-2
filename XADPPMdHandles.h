@@ -14,9 +14,8 @@
 	int max;
 }
 
--(id)initWithHandle:(CSHandle *)handle maxOrder:(int)maxorder subAllocSize:(int)suballocsize;
--(id)initWithHandle:(CSHandle *)handle length:(off_t)length maxOrder:(int)maxorder subAllocSize:(int)suballocsize;
--(void)dealloc;
+-(instancetype)initWithHandle:(CSHandle *)handle maxOrder:(int)maxorder subAllocSize:(int)suballocsize;
+-(instancetype)initWithHandle:(CSHandle *)handle length:(off_t)length maxOrder:(int)maxorder subAllocSize:(int)suballocsize;
 
 -(void)resetByteStream;
 -(uint8_t)produceByteAtOffset:(off_t)pos;
@@ -30,9 +29,8 @@
 	int max;
 }
 
--(id)initWithHandle:(CSHandle *)handle maxOrder:(int)maxorder subAllocSize:(int)suballocsize;
--(id)initWithHandle:(CSHandle *)handle length:(off_t)length maxOrder:(int)maxorder subAllocSize:(int)suballocsize;
--(void)dealloc;
+-(instancetype)initWithHandle:(CSHandle *)handle maxOrder:(int)maxorder subAllocSize:(int)suballocsize;
+-(instancetype)initWithHandle:(CSHandle *)handle length:(off_t)length maxOrder:(int)maxorder subAllocSize:(int)suballocsize;
 
 -(void)resetByteStream;
 -(uint8_t)produceByteAtOffset:(off_t)pos;
@@ -46,9 +44,8 @@
 	int max,method;
 }
 
--(id)initWithHandle:(CSHandle *)handle maxOrder:(int)maxorder subAllocSize:(int)suballocsize modelRestorationMethod:(int)mrmethod;
--(id)initWithHandle:(CSHandle *)handle length:(off_t)length maxOrder:(int)maxorder subAllocSize:(int)suballocsize modelRestorationMethod:(int)mrmethod;
--(void)dealloc;
+-(instancetype)initWithHandle:(CSHandle *)handle maxOrder:(int)maxorder subAllocSize:(int)suballocsize modelRestorationMethod:(int)mrmethod;
+-(instancetype)initWithHandle:(CSHandle *)handle length:(off_t)length maxOrder:(int)maxorder subAllocSize:(int)suballocsize modelRestorationMethod:(int)mrmethod;
 
 -(void)resetByteStream;
 -(uint8_t)produceByteAtOffset:(off_t)pos;
@@ -62,9 +59,8 @@
 	int max;
 }
 
--(id)initWithHandle:(CSHandle *)handle maxOrder:(int)maxorder subAllocSize:(int)suballocsize;
--(id)initWithHandle:(CSHandle *)handle length:(off_t)length maxOrder:(int)maxorder subAllocSize:(int)suballocsize;
--(void)dealloc;
+-(instancetype)initWithHandle:(CSHandle *)handle maxOrder:(int)maxorder subAllocSize:(int)suballocsize;
+-(instancetype)initWithHandle:(CSHandle *)handle length:(off_t)length maxOrder:(int)maxorder subAllocSize:(int)suballocsize;
 
 -(void)resetByteStream;
 -(uint8_t)produceByteAtOffset:(off_t)pos;
@@ -72,8 +68,6 @@
 @end
 
 @interface XAD7ZipPPMdHandle:XADPPMdVariantHHandle
-{
-}
 
 -(void)resetByteStream;
 

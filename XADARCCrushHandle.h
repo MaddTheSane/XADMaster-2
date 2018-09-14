@@ -17,9 +17,8 @@
 	uint8_t usage[8192];
 }
 
--(id)initWithHandle:(CSHandle *)handle;
--(id)initWithHandle:(CSHandle *)handle length:(off_t)length;
--(void)dealloc;
+-(instancetype)initWithHandle:(CSHandle *)handle;
+-(instancetype)initWithHandle:(CSHandle *)handle length:(off_t)length;
 
 -(void)resetByteStream;
 -(uint8_t)produceByteAtOffset:(off_t)pos;

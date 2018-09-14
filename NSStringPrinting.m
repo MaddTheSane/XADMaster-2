@@ -2,6 +2,8 @@
 
 #ifdef __MINGW32__
 #include <windows.h>
+#else
+#include <sys/ioctl.h>
 #endif
 
 @implementation NSString (Printing)
@@ -14,7 +16,7 @@
 -(NSString *)stringByEscapingControlCharacters
 {
 	NSMutableString *res=[NSMutableString string];
-	int length=[self length];
+	NSInteger length=[self length];
 	for(int i=0;i<length;i++)
 	{
 		unichar c=[self characterAtIndex:i];
@@ -26,7 +28,7 @@
 
 -(NSArray *)linesWrappedToWidth:(int)width
 {
-	int length=[self length];
+	NSInteger length=[self length];
 	NSMutableArray *wrapped=[NSMutableArray array];
 
 	int linestartpos=0,lastspacepos=-1;
@@ -77,8 +79,6 @@
 
 #else
 
-#include <sys/ioctl.h>
-
 +(int)terminalWidth
 {
 	#ifdef TIOCGSIZE
@@ -96,7 +96,7 @@
 {
 	if(!fh) return;
 
-	int length=[self lengthOfBytesUsingEncoding:NSUTF8StringEncoding];
+	NSInteger length=[self lengthOfBytesUsingEncoding:NSUTF8StringEncoding];
 	char buffer[length+1];
 	[self getCString:buffer maxLength:length+1 encoding:NSUTF8StringEncoding];
 

@@ -1,8 +1,6 @@
 #import "XADArchiveParser.h"
 
 @interface XADLZMAAloneParser:XADArchiveParser
-{
-}
 
 +(int)requiredHeaderSize;
 +(BOOL)recognizeFileWithHandle:(CSHandle *)handle firstBytes:(NSData *)data name:(NSString *)name;

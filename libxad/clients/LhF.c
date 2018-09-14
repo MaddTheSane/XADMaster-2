@@ -209,7 +209,7 @@ static xadINT32 LHFflush(struct LhFDecrunch *lhd)
   lhd->leftwinsize = LHFWINDOWSIZE-1;
   j = LHFWINDOWSIZE;
 
-  if((i = ((uintptr_t)lhd->windowpos - (uintptr_t)(lhd->outbuffer+256)) - j) < 0)
+  if((i = (xadINT32)((uintptr_t)lhd->windowpos - (uintptr_t)(lhd->outbuffer+256)) - j) < 0)
     j += i;
   lhd->windowpos -= j;
 
@@ -438,7 +438,7 @@ static xadINT32 DecrunchLhF(struct LhFDecrunch *lhd)
       } while(j--);
       while(!*(--p))
         ;
-      n = p-lhd->data2;
+      n = (xadINT32)(p-lhd->data2);
       if((k = LHFsub1(lhd, lhd->data3, lhd->data2, n, 12)))
         return k;
     }

@@ -13,9 +13,8 @@
 	int valbyte;
 }
 
--(id)initWithHandle:(CSHandle *)handle callHandle:(CSHandle *)callhandle
+-(instancetype)initWithHandle:(CSHandle *)handle callHandle:(CSHandle *)callhandle
 jumpHandle:(CSHandle *)jumphandle rangeHandle:(CSHandle *)rangehandle length:(off_t)length;
--(void)dealloc;
 -(void)resetByteStream;
 -(uint8_t)produceByteAtOffset:(off_t)pos;
 

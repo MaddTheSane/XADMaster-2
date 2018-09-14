@@ -1,0 +1,37 @@
+/* 
+  XADErrors.strings
+  XADMaster
+
+  Created by C.W. Betts on 11/26/17.
+  
+*/
+
+/* Common errors */
+"Attempted to read more data than was available" = "Arhīvs ir nepilnīgs";
+"Opening file failed" = "Datni nav iespējams atvērt";
+"Missing or wrong password" = "Norādītā parole nav derīga";
+"Wrong checksum" = "Arhīvs ir bojāts";
+"Could not create directory" = "Nevarēju izveidot mapi";
+
+/* Uncommon or unused errors */
+"Unknown error" = "Nezināma kļūda";
+"Failed to write to file" = "Neizdavās ierakstīt datni";
+"Function called with illegal parameters" = "Funkcijas izsaukums ar neatļautiem parametriem";
+"Not enough memory available" = "Nepietiek atmiņas";
+"Data is corrupted" = "Bojāti dati";
+"File is not fully supported" = "Datne netiek pilnībā atbalstīta";
+"Required resource missing" = "Trūkst nepieciešamo resursu";
+"Error on decrunching" = "Skaitļošanas kļūda";
+"Unknown file type" = "Nezināms datnes tips";
+"File, disk has been skipped" = "Datne, disks ir izlaisti";
+"User cancelled extraction" = "Lietotājs apturējis atpakošanu";
+"File already exists" = "Norādītā datne jau eksistē";
+"Verify failed (disk hook)" = "Kļūda pārbaudot (diskam)";
+"Wrong drive geometry" = "Neatbilstoša diska ģeometrija";
+"Unknown data format" = "Nezināms datu formāts";
+"Source contains no files" = "Norādītais arhīvs nesatur datnes";
+"Unknown filesystem" = "Nezināma failu sistēma";
+"Name of file exists as directory" = "Eksistē mape ar norādīto datnes vārdu";
+"Buffer was too short" = "Pārāk īss buferis";
+"Text encoding was defective" = "Defektīvs teksta kodējums";
+"Could not create symlink" = "Nevarēja izveidot simbolsaiti";

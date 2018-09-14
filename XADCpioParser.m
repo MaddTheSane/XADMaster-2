@@ -9,8 +9,8 @@
 
 +(BOOL)recognizeFileWithHandle:(CSHandle *)handle firstBytes:(NSData *)data name:(NSString *)name
 {
-	const uint8_t *bytes=[data bytes];
-	int length=[data length];
+	const uint8_t *bytes=data.bytes;
+	NSInteger length=data.length;
 
 	if(length<6) return NO;
 	if(bytes[0]=='0'&&bytes[1]=='7'&&bytes[2]=='0'&&bytes[3]=='7'&&bytes[4]=='0'&&bytes[5]=='7') return YES;
@@ -24,14 +24,14 @@
 
 -(void)parseWithSeparateMacForks
 {
-	CSHandle *fh=[self handle];
+	CSHandle *fh=self.handle;
 
-	while([self shouldKeepParsing])
+	while(self.shouldKeepParsing)
 	{
 		uint8_t magic[2];
 		[fh readBytes:2 toBuffer:magic];
 
-		int devmajor,devminor,ino,mode,uid,gid,nlink,rdevmajor,rdevminor,namesize,checksum;
+		int devmajor,devminor,ino,mode,uid,gid,nlink,rdevmajor,rdevminor,namesize,checksum = 0;
 		uint64_t mtime,filesize;
 		NSData *namedata;
 		int pad=0;
@@ -134,43 +134,43 @@
 		}
 		else { [XADException raiseIllegalDataException]; for(;;); }
 
-		if([namedata length]==10&&memcmp([namedata bytes],"TRAILER!!!",10)==0) break;
+		if(namedata.length==10&&memcmp(namedata.bytes,"TRAILER!!!",10)==0) break;
 
-		off_t pos=[fh offsetInFile];
+		off_t pos=fh.offsetInFile;
 
 		NSMutableDictionary *dict=[NSMutableDictionary dictionaryWithObjectsAndKeys:
-			[NSNumber numberWithInt:devmajor],@"CpioDevMajor",
-			[NSNumber numberWithInt:devminor],@"CpioDevMinor",
-			[NSNumber numberWithInt:ino],@"CpioIno",
-			[NSNumber numberWithInt:mode],XADPosixPermissionsKey,
-			[NSNumber numberWithInt:uid],XADPosixUserKey,
-			[NSNumber numberWithInt:gid],XADPosixGroupKey,
-			[NSNumber numberWithInt:nlink],@"CpioNlink",
+			@(devmajor),@"CpioDevMajor",
+			@(devminor),@"CpioDevMinor",
+			@(ino),@"CpioIno",
+			@(mode),XADPosixPermissionsKey,
+			@(uid),XADPosixUserKey,
+			@(gid),XADPosixGroupKey,
+			@(nlink),@"CpioNlink",
 			[self XADPathWithData:namedata separators:XADUnixPathSeparator],XADFileNameKey,
 			[NSDate dateWithTimeIntervalSince1970:mtime],XADLastModificationDateKey,
-			[NSNumber numberWithLongLong:filesize],XADFileSizeKey,
-			[NSNumber numberWithLongLong:filesize+pad],XADCompressedSizeKey,
-			[NSNumber numberWithLongLong:filesize],XADDataLengthKey,
-			[NSNumber numberWithLongLong:pos],XADDataOffsetKey,
+			@(filesize),XADFileSizeKey,
+			@(filesize+pad),XADCompressedSizeKey,
+			@(filesize),XADDataLengthKey,
+			@(pos),XADDataOffsetKey,
 		nil];
 
 		int type=mode&0xf000;
 
 		if(type==0x4000)
 		{
-			[dict setObject:[NSNumber numberWithBool:YES] forKey:XADIsDirectoryKey];
+			dict[XADIsDirectoryKey] = @YES;
 		}
 
 		if(type==0x2000||type==0x6000)
 		{
-			[dict setObject:[NSNumber numberWithInt:rdevmajor] forKey:XADDeviceMajorKey];
-			[dict setObject:[NSNumber numberWithInt:rdevminor] forKey:XADDeviceMinorKey];
+			dict[XADDeviceMajorKey] = @(rdevmajor);
+			dict[XADDeviceMinorKey] = @(rdevminor);
 		}
 
 		if(haschecksum)
 		if(type==0x8000)
 		{
-			[dict setObject:[NSNumber numberWithInt:checksum] forKey:@"CpioChecksum"];
+			dict[@"CpioChecksum"] = @(checksum);
 		}
 
 		[self addEntryWithDictionary:dict];
@@ -185,10 +185,10 @@
 
 	if(checksum)
 	{
-		NSNumber *check=[dict objectForKey:@"CpioChecksum"];
-		if(check) handle=[[[XADChecksumHandle alloc] initWithHandle:handle
-		length:[[dict objectForKey:XADDataLengthKey] longLongValue]
-		correctChecksum:[check intValue] mask:0xffffffff] autorelease];
+		NSNumber *check=dict[@"CpioChecksum"];
+		if(check != nil) handle=[[[XADChecksumHandle alloc] initWithHandle:handle
+		length:[dict[XADDataLengthKey] longLongValue]
+		correctChecksum:check.intValue mask:0xffffffff] autorelease];
 	}
 
 	return handle;

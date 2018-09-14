@@ -5,9 +5,8 @@
 
 -(id)initWithHandle:(CSHandle *)handle length:(off_t)length password:(NSData *)passdata
 {
-	if((self=[super initWithName:[handle name] length:length]))
+	if((self=[super initWithParentHandle:handle length:length]))
 	{
-		parent=[handle retain];
 		startoffs=[handle offsetInFile];
 		password=[passdata retain];
 	}
@@ -16,7 +15,6 @@
 
 -(void)dealloc
 {
-	[parent release];
 	[password release];
 	[super dealloc];
 }
@@ -70,8 +68,8 @@ static const uint8_t InitSubstTable[256]=
 	key[2]=0x7515a235;
 	key[3]=0xa4e7f123;
 
-	const uint8_t *passbytes=[password bytes];
-	int passlength=[password length];
+	const uint8_t *passbytes=password.bytes;
+	NSInteger passlength=password.length;
 	if(passlength>127) passlength=127;
 
 	memset(passbuf,0,sizeof(passbuf));
@@ -80,14 +78,14 @@ static const uint8_t InitSubstTable[256]=
 	memcpy(table,InitSubstTable,sizeof(table));
 
 	for(int j=0;j<256;j++)
-	for(int i=0;i<passlength;i+=2)
+	for(NSInteger i=0;i<passlength;i+=2)
 	{
 		int n1=XADCRCTable_edb88320[(passbuf[i]-j)&0xff]&0xff;
 		int n2=XADCRCTable_edb88320[(passbuf[i+1]+j)&0xff]&0xff;
 		for(int k=1;n1!=n2;n1=(n1+1)&0xff,k++) swap(&table[n1],&table[(n1+i+k)&0xff]);
 	}
 
-	for(int j=0;j<passlength;j+=16)
+	for(NSInteger j=0;j<passlength;j+=16)
 	{
 		uint8_t *block=&passbuf[j];
 

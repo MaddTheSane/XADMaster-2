@@ -3,21 +3,39 @@
 
 #include <sys/stat.h>
 
+#if !__has_feature(objc_arc)
+#error this file needs to be compiled with Automatic Reference Counting (ARC)
+#endif
 
-NSString *CSOutOfMemoryException=@"CSOutOfMemoryException";
-NSString *CSEndOfFileException=@"CSEndOfFileException";
-NSString *CSNotImplementedException=@"CSNotImplementedException";
-NSString *CSNotSupportedException=@"CSNotSupportedException";
+NSString *const CSOutOfMemoryException=@"CSOutOfMemoryException";
+NSString *const CSEndOfFileException=@"CSEndOfFileException";
+NSString *const CSNotImplementedException=@"CSNotImplementedException";
+NSString *const CSNotSupportedException=@"CSNotSupportedException";
 
 
 
 @implementation CSHandle
+@synthesize parentHandle = parent;
 
--(id)initWithName:(NSString *)descname
+-(id)init
 {
-	if((self=[super init]))
+	if(self=[super init])
 	{
-		name=[descname retain];
+		parent=nil;
+
+		bitoffs=-1;
+
+		writebyte=0;
+		writebitsleft=8;
+	}
+	return self;
+}
+
+-(id)initWithParentHandle:(CSHandle *)parenthandle
+{
+	if(self=[super init])
+	{
+		parent=parenthandle;
 
 		bitoffs=-1;
 
@@ -29,9 +47,9 @@ NSString *CSNotSupportedException=@"CSNotSupportedException";
 
 -(id)initAsCopyOf:(CSHandle *)other
 {
-	if((self=[super init]))
+	if(self=[super init])
 	{
-		name=[[[other name] stringByAppendingString:@" (copy)"] retain];
+		parent=other->parent;
 
 		bitoffs=other->bitoffs;
 		readbyte=other->readbyte;
@@ -42,13 +60,8 @@ NSString *CSNotSupportedException=@"CSNotSupportedException";
 	return self;
 }
 
--(void)dealloc
-{
-	[name release];
-	[super dealloc];
-}
-
 -(void)close {}
+
 
 
 
@@ -74,7 +87,7 @@ NSString *CSNotSupportedException=@"CSNotSupportedException";
 
 -(void)skipBytes:(off_t)bytes
 {
-	[self seekToFileOffset:[self offsetInFile]+bytes];
+	[self seekToFileOffset:self.offsetInFile+bytes];
 }
 
 -(int8_t)readInt8;
@@ -129,13 +142,13 @@ CSReadValueImpl(uint32_t,readID,CSUInt32BE)
 {
 	int res=0,done=0;
 
-	if([self offsetInFile]!=bitoffs) readbitsleft=0;
+	if(self.offsetInFile!=bitoffs) readbitsleft=0;
 	while(done<bits)
 	{
 		if(!readbitsleft)
 		{
 			readbyte=[self readUInt8];
-			bitoffs=[self offsetInFile];
+			bitoffs=self.offsetInFile;
 			readbitsleft=8;
 		}
 
@@ -153,13 +166,13 @@ CSReadValueImpl(uint32_t,readID,CSUInt32BE)
 {
 	int res=0,done=0;
 
-	if([self offsetInFile]!=bitoffs) readbitsleft=0;
+	if(self.offsetInFile!=bitoffs) readbitsleft=0;
 	while(done<bits)
 	{
 		if(!readbitsleft)
 		{
 			readbyte=[self readUInt8];
-			bitoffs=[self offsetInFile];
+			bitoffs=self.offsetInFile;
 			readbitsleft=8;
 		}
 
@@ -201,7 +214,7 @@ CSReadValueImpl(uint32_t,readID,CSUInt32BE)
 
 		if(actual==0)
 		{
-			if([data length]==0) [self _raiseEOF];
+			if(data.length==0) [self _raiseEOF];
 			else break;
 		}
 
@@ -210,21 +223,21 @@ CSReadValueImpl(uint32_t,readID,CSUInt32BE)
 		[data appendBytes:b length:1];
 	}
 
-	const char *bytes=[data bytes];
-	long length=[data length];
-	if(length&&bytes[length-1]=='\r') [data setLength:length-1];
+	const char *bytes=data.bytes;
+	long length=data.length;
+	if(length&&bytes[length-1]=='\r') data.length = length-1;
 
 	return [NSData dataWithData:data];
 }
 
 -(NSString *)readLineWithEncoding:(NSStringEncoding)encoding
 {
-	return [[[NSString alloc] initWithData:[self readLine] encoding:encoding] autorelease];
+	return [[NSString alloc] initWithData:[self readLine] encoding:encoding];
 }
 
 -(NSString *)readUTF8Line
 {
-	return [[[NSString alloc] initWithData:[self readLine] encoding:NSUTF8StringEncoding] autorelease];
+	return [[NSString alloc] initWithData:[self readLine] encoding:NSUTF8StringEncoding];
 }
 
 
@@ -239,7 +252,7 @@ CSReadValueImpl(uint32_t,readID,CSUInt32BE)
 {
 	uint8_t buffer[16384];
 	NSMutableData *data=[NSMutableData data];
-	int actual;
+	NSInteger actual;
 
 	do
 	{
@@ -253,19 +266,19 @@ CSReadValueImpl(uint32_t,readID,CSUInt32BE)
 
 -(NSData *)readDataOfLength:(int)length
 {
-	return [[self copyDataOfLength:length] autorelease];
+	return [self copyDataOfLength:length];
 }
 
 -(NSData *)readDataOfLengthAtMost:(int)length
 {
-	return [[self copyDataOfLengthAtMost:length] autorelease];
+	return [self copyDataOfLengthAtMost:length];
 }
 
 -(NSData *)copyDataOfLength:(int)length
 {
 	NSMutableData *data=[[NSMutableData alloc] initWithLength:length];
 	if(!data) [self _raiseMemory];
-	[self readBytes:length toBuffer:[data mutableBytes]];
+	[self readBytes:length toBuffer:data.mutableBytes];
 	return data;
 }
 
@@ -273,8 +286,8 @@ CSReadValueImpl(uint32_t,readID,CSUInt32BE)
 {
 	NSMutableData *data=[[NSMutableData alloc] initWithLength:length];
 	if(!data) [self _raiseMemory];
-	int actual=[self readAtMost:length toBuffer:[data mutableBytes]];
-	[data setLength:actual];
+	int actual=[self readAtMost:length toBuffer:data.mutableBytes];
+	data.length = actual;
 	return data;
 }
 
@@ -309,51 +322,51 @@ CSReadValueImpl(uint32_t,readID,CSUInt32BE)
 
 -(CSHandle *)subHandleOfLength:(off_t)length
 {
-	return [[[CSSubHandle alloc] initWithHandle:[[self copy] autorelease] from:[self offsetInFile] length:length] autorelease];
+	return [[CSSubHandle alloc] initWithHandle:[self copy] from:self.offsetInFile length:length];
 }
 
 -(CSHandle *)subHandleFrom:(off_t)start length:(off_t)length
 {
-	return [[[CSSubHandle alloc] initWithHandle:[[self copy] autorelease] from:start length:length] autorelease];
+	return [[CSSubHandle alloc] initWithHandle:[self copy] from:start length:length];
 }
 
 -(CSHandle *)subHandleToEndOfFileFrom:(off_t)start
 {
-	off_t size=[self fileSize];
+	off_t size=self.fileSize;
 	if(size==CSHandleMaxLength)
 	{
-		return [[[CSSubHandle alloc] initWithHandle:[[self copy] autorelease]
-		from:start length:CSHandleMaxLength] autorelease];
+		return [[CSSubHandle alloc] initWithHandle:[self copy]
+		from:start length:CSHandleMaxLength];
 	}
 	else
 	{
-		return [[[CSSubHandle alloc] initWithHandle:[[self copy] autorelease]
-		from:start length:size-start] autorelease];
+		return [[CSSubHandle alloc] initWithHandle:[self copy]
+		from:start length:size-start];
 	}
 }
 
 -(CSHandle *)nonCopiedSubHandleOfLength:(off_t)length
 {
-	return [[[CSSubHandle alloc] initWithHandle:self from:[self offsetInFile] length:length] autorelease];
+	return [[CSSubHandle alloc] initWithHandle:self from:self.offsetInFile length:length];
 }
 
 -(CSHandle *)nonCopiedSubHandleFrom:(off_t)start length:(off_t)length
 {
-	return [[[CSSubHandle alloc] initWithHandle:self from:start length:length] autorelease];
+	return [[CSSubHandle alloc] initWithHandle:self from:start length:length];
 }
 
 -(CSHandle *)nonCopiedSubHandleToEndOfFileFrom:(off_t)start
 {
-	off_t size=[self fileSize];
+	off_t size=self.fileSize;
 	if(size==CSHandleMaxLength)
 	{
-		return [[[CSSubHandle alloc] initWithHandle:self
-		from:start length:CSHandleMaxLength] autorelease];
+		return [[CSSubHandle alloc] initWithHandle:self
+		from:start length:CSHandleMaxLength];
 	}
 	else
 	{
-		return [[[CSSubHandle alloc] initWithHandle:self
-		from:start length:size-start] autorelease];
+		return [[CSSubHandle alloc] initWithHandle:self
+		from:start length:size-start];
 	}
 }
 
@@ -423,7 +436,7 @@ CSWriteValueImpl(uint32_t,writeID,CSSetUInt32BE)
 
 -(void)writeData:(NSData *)data
 {
-	[self writeBytes:(int)[data length] fromBuffer:[data bytes]];
+	[self writeBytes:(int)data.length fromBuffer:data.bytes];
 }
 
 
@@ -438,34 +451,54 @@ CSWriteValueImpl(uint32_t,writeID,CSSetUInt32BE)
 -(void)_raiseMemory
 {
 	[NSException raise:CSOutOfMemoryException
-	format:@"Out of memory while attempting to read from file \"%@\" (%@).",name,[self class]];
+	format:@"Out of memory while attempting to read from file \"%@\" (%@).",
+	[self name],[self class]];
 }
 
 -(void)_raiseEOF
 {
 	[NSException raise:CSEndOfFileException
-	format:@"Attempted to read past the end of file \"%@\" (%@).",name,[self class]];
+	format:@"Attempted to read past the end of file \"%@\" (%@).",
+	[self name],[self class]];
 }
 
 -(void)_raiseNotImplemented:(SEL)selector
 {
 	[NSException raise:CSNotImplementedException
-	format:@"Attempted to use unimplemented method +[%@ %@] when reading from file \"%@\".",[self class],NSStringFromSelector(selector),name];
+	format:@"Attempted to use unimplemented method +[%@ %@] when reading from file \"%@\".",
+	[self class],NSStringFromSelector(selector),[self name]];
 }
 
 -(void)_raiseNotSupported:(SEL)selector
 {
 	[NSException raise:CSNotSupportedException
-	format:@"Attempted to use unsupported method +[%@ %@] when reading from file \"%@\".",[self class],NSStringFromSelector(selector),name];
+	format:@"Attempted to use unsupported method +[%@ %@] when reading from file \"%@\".",
+	[self class],NSStringFromSelector(selector),[self name]];
 }
 
 
--(NSString *)name { return name; }
+-(NSString *)name
+{
+	return [parent name];
+}
 
 -(NSString *)description
 {
-	return [NSString stringWithFormat:@"%@ for \"%@\", position %qu",
-	[self class],name,[self offsetInFile]];
+	if(parent)
+	{
+		return [NSString stringWithFormat:@"%@ @ %qu for %@",
+		[self class],[self offsetInFile],[parent description]];
+	}
+	else if([self name])
+	{
+		return [NSString stringWithFormat:@"%@ @ %qu for \"%@\"",
+		[self class],[self offsetInFile],[self name]];
+	}
+	else
+	{
+		return [NSString stringWithFormat:@"%@ @ %qu",
+		[self class],[self offsetInFile]];
+	}
 }
 
 

@@ -1,0 +1,195 @@
+framework module XADMaster [extern_c] {
+	umbrella header "XADMaster-umbrella.h"
+	
+	module xadmaster {
+		header "xadmaster.h"
+		export *
+	}
+	
+	module XADArchive {
+		requires objc
+		header "XADArchive.h"
+		export *
+	}
+	
+	explicit module CRC {
+		requires objc
+		header "CRC.h"
+		export *
+	}
+	
+	explicit module LZW {
+		header "LZW.h"
+		export *
+	}
+	
+	explicit module Checksums {
+		requires objc
+		header "Checksums.h"
+		export *
+	}
+	
+	explicit module Regex {
+		requires objc
+		header "XADRegex.h"
+		export *
+	}
+	
+	module String {
+		requires objc
+		header "XADString.h"
+		export *
+	}
+	
+	explicit module ClangAnalyser {
+		requires objc
+		header "ClangAnalyser.h"
+		export *
+	}
+	
+	explicit module Handle {
+		requires objc
+		header "CSHandle.h"
+		
+		explicit module Stream {
+			header "CSStreamHandle.h"
+			export *
+			
+			explicit module Block {
+				header "CSBlockStreamHandle.h"
+				export *
+			}
+			
+			explicit module Byte {
+				header "CSByteStreamHandle.h"
+				export *
+			}
+			
+			explicit module RC4 {
+				header "XADRC4Handle.h"
+				export *
+			}
+			
+			 explicit module Bzip2 {
+				header "CSBzip2Handle.h"
+				export *
+			 }
+			 
+			 explicit module zlib {
+				header "CSZlibHandle.h"
+				export *
+			 }
+		}
+		
+		explicit module File {
+			header "CSFileHandle.h"
+			export *
+		}
+		
+		explicit module Memory {
+			header "CSMemoryHandle.h"
+			export *
+		}
+		
+		explicit module Multi {
+			header "CSMultiHandle.h"
+			export *
+		}
+		
+		explicit module Segmented {
+			header "CSSegmentedHandle.h"
+			export *
+		}
+		
+		explicit module Skip {
+			header "XADSkipHandle.h"
+			export *
+		}
+		
+		explicit module Sub {
+			header "CSSubHandle.h"
+			export *
+		}
+		export *
+	}
+	
+	module Exception {
+		requires objc
+		header "XADException.h"
+		export *
+	}
+	
+	explicit module Path {
+		requires objc
+		header "XADPath.h"
+		export *
+	}
+	
+	module Platform {
+		requires objc
+		header "XADPlatform.h"
+		export *
+	}
+	
+	explicit module PrefixCode {
+		requires objc
+		header "XADPrefixCode.h"
+		export *
+	}
+	
+	explicit module ArchiveParser {
+		requires objc
+		header "XADArchiveParser.h"
+		module Descriptions {
+			header "XADArchiveParserDescriptions.h"
+			export *
+		}
+		export *
+	}
+	
+	module Unarchiver {
+		requires objc
+		header "XADUnarchiver.h"
+		
+		module Simple {
+			header "XADSimpleUnarchiver.h"
+			export *
+		}
+		export *
+	}
+	
+	explicit module ResourceFork {
+		requires objc
+		header "XADResourceFork.h"
+		export *
+	}
+	
+	explicit module InputBuffer {
+		requires objc
+		header "CSInputBuffer.h"
+		export *
+	}
+	
+	explicit module SWF {
+		requires objc
+		module Geometry {
+			header "XADSWFGeometry.h"
+			export *
+		}
+		
+		module TagParser {
+			header "XADSWFTagParser.h"
+			export *
+		}
+		
+		module Parser {
+			header "XADSWFParser.h"
+			export *
+		}
+
+		export *
+	}
+	
+	export *
+	module * { export * }
+}

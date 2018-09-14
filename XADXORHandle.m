@@ -4,12 +4,11 @@
 
 -(id)initWithHandle:(CSHandle *)handle password:(NSData *)passdata
 {
-	if((self=[super initWithName:[handle name]]))
+	if((self=[super initWithParentHandle:handle]))
 	{
-		parent=[handle retain];
 		password=[passdata retain];
-		passwordbytes=[password bytes];
-		passwordlength=[password length];
+		passwordbytes=password.bytes;
+		passwordlength=password.length;
 	}
 	return self;
 }
@@ -22,18 +21,17 @@
 
 -(void)dealloc
 {
-	[parent release];
 	[password release];
 	[super dealloc];
 }
 
 
 
--(off_t)fileSize { return [parent fileSize]; }
+-(off_t)fileSize { return parent.fileSize; }
 
--(off_t)offsetInFile { return [parent offsetInFile]; }
+-(off_t)offsetInFile { return parent.offsetInFile; }
 
--(BOOL)atEndOfFile { return [parent atEndOfFile]; }
+-(BOOL)atEndOfFile { return parent.atEndOfFile; }
 
 -(void)seekToFileOffset:(off_t)offs { [parent seekToFileOffset:offs]; }
 
@@ -41,7 +39,7 @@
 
 -(int)readAtMost:(int)num toBuffer:(void *)buffer
 {
-	off_t pos=[parent offsetInFile];
+	off_t pos=parent.offsetInFile;
 	int actual=[parent readAtMost:num toBuffer:buffer];
 
 	if(passwordlength)

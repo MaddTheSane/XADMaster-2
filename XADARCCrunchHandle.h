@@ -19,11 +19,11 @@ typedef struct XADARCCrunchEntry
 	uint8_t stack[4096];
 }
 
--(id)initWithHandle:(CSHandle *)handle useFastHash:(BOOL)usefast;
--(id)initWithHandle:(CSHandle *)handle length:(off_t)length useFastHash:(BOOL)usefast;
+-(instancetype)initWithHandle:(CSHandle *)handle useFastHash:(BOOL)usefast;
+-(instancetype)initWithHandle:(CSHandle *)handle length:(off_t)length useFastHash:(BOOL)usefast;
 
 -(void)resetByteStream;
 -(uint8_t)produceByteAtOffset:(off_t)pos;
--(void)updateTableWithParent:(int)parent byteValue:(int)byte;
+-(void)updateTableWithParent:(int)parentcode byteValue:(int)byte;
 
 @end

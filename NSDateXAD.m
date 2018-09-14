@@ -2,6 +2,10 @@
 
 #import <math.h>
 
+#if !__has_feature(objc_arc)
+#error this file needs to be compiled with Automatic Reference Counting (ARC)
+#endif
+
 #define SecondsFrom2000To2001 31622400
 #define SecondsFrom1904To1970 2082844800
 #define SecondsFrom1601To1970 11644473600
@@ -12,21 +16,17 @@
 +(NSDate *)XADDateWithYear:(int)year month:(int)month day:(int)day
 hour:(int)hour minute:(int)minute second:(int)second timeZone:(NSTimeZone *)timezone
 {
-	#if MAC_OS_X_VERSION_MIN_REQUIRED>=1040
-	NSDateComponents *components=[[NSDateComponents new] autorelease];
-	[components setYear:year];
-	[components setMonth:month];
-	[components setDay:day];
-	[components setHour:hour];
-	[components setMinute:minute];
-	[components setSecond:second];
-	if(timezone) [components setTimeZone:timezone];
+	NSDateComponents *components=[NSDateComponents new];
+	components.year = year;
+	components.month = month;
+	components.day = day;
+	components.hour = hour;
+	components.minute = minute;
+	components.second = second;
+	if(timezone) components.timeZone = timezone;
 
-	NSCalendar *gregorian=[[[NSCalendar alloc] initWithCalendarIdentifier:NSGregorianCalendar] autorelease];
+	NSCalendar *gregorian=[[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
 	return [gregorian dateFromComponents:components];
-	#else
-	return [NSCalendarDate dateWithYear:year month:month day:day hour:hour minute:minute second:second timeZone:nil];
-	#endif
 }
 
 +(NSDate *)XADDateWithTimeIntervalSince2000:(NSTimeInterval)interval
@@ -37,7 +37,7 @@ hour:(int)hour minute:(int)minute second:(int)second timeZone:(NSTimeZone *)time
 +(NSDate *)XADDateWithTimeIntervalSince1904:(NSTimeInterval)interval
 {
 	return [NSDate dateWithTimeIntervalSince1970:interval-SecondsFrom1904To1970
-	-[[NSTimeZone defaultTimeZone] secondsFromGMT]];
+	-[NSTimeZone defaultTimeZone].secondsFromGMT];
 }
 
 +(NSDate *)XADDateWithTimeIntervalSince1601:(NSTimeInterval)interval
@@ -73,7 +73,7 @@ hour:(int)hour minute:(int)minute second:(int)second timeZone:(NSTimeZone *)time
 
 +(NSDate *)XADDateWithWindowsFileTime:(uint64_t)filetime
 {
-	return [NSDate XADDateWithTimeIntervalSince1601:(double)filetime/10000000];
+	return [NSDate XADDateWithTimeIntervalSince1601:(NSTimeInterval)filetime/10000000];
 }
 
 +(NSDate *)XADDateWithWindowsFileTimeLow:(uint32_t)low high:(uint32_t)high
@@ -87,7 +87,7 @@ hour:(int)hour minute:(int)minute second:(int)second timeZone:(NSTimeZone *)time
 	int minute=(time>>5)&63;
 	int hour=(time>>11)&31;
 
-	double seconds=second+minute*60+hour*3600+date*86400;
+	NSTimeInterval seconds=second+minute*60+hour*3600+date*86400;
 
 	return [NSDate dateWithTimeIntervalSince1970:seconds+SecondsFrom1970ToLastDayOf1978];
 }
@@ -97,14 +97,14 @@ hour:(int)hour minute:(int)minute second:(int)second timeZone:(NSTimeZone *)time
 #ifndef __MINGW32__
 -(struct timeval)timevalStruct
 {
-	NSTimeInterval seconds=[self timeIntervalSince1970];
+	NSTimeInterval seconds=self.timeIntervalSince1970;
 	struct timeval tv={ (time_t)seconds, (suseconds_t)(fmod(seconds,1.0)*1000000) };
 	return tv;
 }
 
 -(struct timespec)timespecStruct;
 {
-	NSTimeInterval seconds=[self timeIntervalSince1970];
+	NSTimeInterval seconds=self.timeIntervalSince1970;
 	struct timespec ts={ (time_t)seconds, (long)(fmod(seconds,1.0)*1000000000) };
 	return ts;
 }
@@ -116,7 +116,7 @@ hour:(int)hour minute:(int)minute second:(int)second timeZone:(NSTimeZone *)time
 #ifdef __UTCUTILS__
 -(UTCDateTime)UTCDateTime
 {
-	NSTimeInterval seconds=[self timeIntervalSince1970]+SecondsFrom1904To1970;
+	NSTimeInterval seconds=self.timeIntervalSince1970+SecondsFrom1904To1970;
 	UTCDateTime utc={
 		.highSeconds=(UInt16)(seconds/4294967296.0),
 		.lowSeconds=(UInt32)seconds,

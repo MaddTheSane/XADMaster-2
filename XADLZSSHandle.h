@@ -12,11 +12,8 @@
 	int windowmask,matchlength,matchoffset;
 }
 
--(id)initWithName:(NSString *)descname windowSize:(int)windowsize;
--(id)initWithName:(NSString *)descname length:(off_t)length windowSize:(int)windowsize;
--(id)initWithHandle:(CSHandle *)handle windowSize:(int)windowsize;
--(id)initWithHandle:(CSHandle *)handle length:(off_t)length windowSize:(int)windowsize;
--(void)dealloc;
+-(instancetype)initWithInputBufferForHandle:(CSHandle *)handle windowSize:(int)windowsize;
+-(instancetype)initWithInputBufferForHandle:(CSHandle *)handle length:(off_t)length windowSize:(int)windowsize;
 
 -(void)resetByteStream;
 -(uint8_t)produceByteAtOffset:(off_t)pos;

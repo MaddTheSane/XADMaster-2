@@ -6,8 +6,8 @@
 
 +(BOOL)recognizeFileWithHandle:(CSHandle *)handle firstBytes:(NSData *)data name:(NSString *)name
 {
-	const uint8_t *bytes=[data bytes];
-	int length=[data length];
+	const uint8_t *bytes=data.bytes;
+	NSInteger length=data.length;
 
 	if(length<8) return NO;
 
@@ -40,13 +40,13 @@ static uint64_t ParseOctal(const uint8_t *ptr,int maxlen)
 
 -(void)parse
 {
-	CSHandle *fh=[self handle];
+	CSHandle *fh=self.handle;
 
 	[fh skipBytes:8];
 
 	NSData *filenametable=nil; // TODO: Maybe this shouldn't be autoreleased.
 
-	while(![fh atEndOfFile] && [self shouldKeepParsing])
+	while(!fh.atEndOfFile && self.shouldKeepParsing)
 	{
 		uint8_t header[60];
 		[fh readBytes:sizeof(header) toBuffer:header];
@@ -90,8 +90,8 @@ static uint64_t ParseOctal(const uint8_t *ptr,int maxlen)
 			// GNU long filename.
 			int nameoffs=(int)ParseDecimal(&header[1],14);
 
-			const uint8_t *tablebytes=[filenametable bytes];
-			int tablelength=[filenametable length];
+			const uint8_t *tablebytes=filenametable.bytes;
+			NSInteger tablelength=filenametable.length;
 
 			if(nameoffs>=tablelength) [XADException raiseIllegalDataException];
 
@@ -111,18 +111,18 @@ static uint64_t ParseOctal(const uint8_t *ptr,int maxlen)
 			name=[self XADPathWithBytes:header length:namelen separators:XADNoPathSeparator];
 		}
 
-		off_t offs=[fh offsetInFile];
+		off_t offs=fh.offsetInFile;
 
 		NSMutableDictionary *dict=[NSMutableDictionary dictionaryWithObjectsAndKeys:
 			name,XADFileNameKey,
-			[NSNumber numberWithUnsignedLongLong:size],XADFileSizeKey,
-			[NSNumber numberWithUnsignedLongLong:size],XADCompressedSizeKey,
-			[NSNumber numberWithUnsignedLongLong:size],XADDataLengthKey,
-			[NSNumber numberWithUnsignedLongLong:offs],XADDataOffsetKey,
+			@(size),XADFileSizeKey,
+			@(size),XADCompressedSizeKey,
+			@(size),XADDataLengthKey,
+			@(offs),XADDataOffsetKey,
 			[NSDate dateWithTimeIntervalSince1970:timestamp],XADLastModificationDateKey,
-			[NSNumber numberWithInt:owner],XADPosixUserKey,
-			[NSNumber numberWithInt:group],XADPosixGroupKey,
-			[NSNumber numberWithInt:mode],XADPosixPermissionsKey,
+			@(owner),XADPosixUserKey,
+			@(group),XADPosixGroupKey,
+			@(mode),XADPosixPermissionsKey,
 			[self XADStringWithString:@"None"],XADCompressionNameKey,
 		nil];
 

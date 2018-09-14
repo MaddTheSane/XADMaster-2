@@ -5,7 +5,7 @@
 #import "CSJSONPrinter.h"
 #import "CommandLineCommon.h"
 
-#define VERSION_STRING @"v1.9.1"
+#define VERSION_STRING @"v1.10.1"
 
 #define EntryDoesNotNeedTestingResult 0
 #define EntryIsNotSupportedResult 1
@@ -283,7 +283,7 @@ int main(int argc,const char **argv)
 			[[[unarchiver outerArchiveParser] formatName] print];
 		}
 
-		NSArray *volumes=[[unarchiver outerArchiveParser] volumes];
+		NSArray *volumes=[[unarchiver outerArchiveParser] volumeSizes];
 		if([volumes count]>1) [[NSString stringWithFormat:@" (%d volumes)",(int)[volumes count]] print];
 
 		[@"\n" print];

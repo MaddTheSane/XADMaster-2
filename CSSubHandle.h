@@ -1,26 +1,24 @@
+#import <Foundation/Foundation.h>
 #import "CSHandle.h"
 
 #define CSSubHandle XADSubHandle
 
 @interface CSSubHandle:CSHandle
 {
-	CSHandle *parent;
 	off_t start,end;
 }
 
 // Initializers
--(id)initWithHandle:(CSHandle *)handle from:(off_t)from length:(off_t)length;
--(id)initAsCopyOf:(CSSubHandle *)other;
--(void)dealloc;
+-(instancetype)initWithHandle:(CSHandle *)handle from:(off_t)from length:(off_t)length;
+-(instancetype)initAsCopyOf:(CSSubHandle *)other;
 
 // Public methods
--(CSHandle *)parentHandle;
--(off_t)startOffsetInParent;
+@property (readonly) off_t startOffsetInParent;
 
 // Implemented by this class
--(off_t)fileSize;
--(off_t)offsetInFile;
--(BOOL)atEndOfFile;
+@property (NS_NONATOMIC_IOSONLY, readonly) off_t fileSize;
+@property (NS_NONATOMIC_IOSONLY, readonly) off_t offsetInFile;
+@property (NS_NONATOMIC_IOSONLY, readonly) BOOL atEndOfFile;
 
 -(void)seekToFileOffset:(off_t)offs;
 -(void)seekToEndOfFile;

@@ -10,8 +10,7 @@
 	int mainlengths[768];
 }
 
--(id)initWithHandle:(CSHandle *)handle length:(off_t)length;
--(void)dealloc;
+-(instancetype)initWithHandle:(CSHandle *)handle length:(off_t)length;
 
 -(void)resetLZSSHandle;
 -(int)nextLiteralOrOffset:(int *)offset andLength:(int *)length atPosition:(off_t)pos;
@@ -26,6 +25,8 @@
 {
 	uint8_t otherbyte;
 }
+
+-(instancetype)initWithHandle:(CSHandle *)handle;
 
 -(uint8_t)produceByteAtOffset:(off_t)pos;
 

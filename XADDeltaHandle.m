@@ -19,7 +19,7 @@
 
 -(id)initWithHandle:(CSHandle *)handle length:(off_t)length deltaDistance:(int)deltadistance
 {
-	if((self=[super initWithHandle:handle length:length]))
+	if((self=[super initWithInputBufferForHandle:handle length:length]))
 	{
 		distance=deltadistance;
 	}
@@ -35,8 +35,8 @@
 {
 	int deltadistance=1;
 
-	if(propertydata&&[propertydata length]>=1)
-	deltadistance=((uint8_t *)[propertydata bytes])[0]+1;
+	if(propertydata&&propertydata.length>=1)
+	deltadistance=((uint8_t *)propertydata.bytes)[0]+1;
 
 	return [self initWithHandle:handle length:length deltaDistance:deltadistance];
 }

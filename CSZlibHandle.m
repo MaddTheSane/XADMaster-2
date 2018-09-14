@@ -1,42 +1,58 @@
 #import "CSZlibHandle.h"
 
+#ifndef __MACTYPES__
+#define Byte zlibByte
+#include <zlib.h>
+#undef Byte
+#else
+#include <zlib.h>
+#endif
 
 
-NSString *CSZlibException=@"CSZlibException";
+#if !__has_feature(objc_arc)
+#error this file needs to be compiled with Automatic Reference Counting (ARC)
+#endif
+
+NSString *const CSZlibException=@"CSZlibException";
 
 
 
 @implementation CSZlibHandle
+{
+	off_t startoffs;
+	z_stream zs;
+	BOOL inited,seekback,endstreamateof;
 
+	uint8_t inbuffer[0x4000];
+}
 
 +(CSZlibHandle *)zlibHandleWithHandle:(CSHandle *)handle
 {
-	return [[[CSZlibHandle alloc] initWithHandle:handle length:CSHandleMaxLength header:YES name:[handle name]] autorelease];
+	return [[CSZlibHandle alloc] initWithHandle:handle length:CSHandleMaxLength header:YES];
 }
 
 +(CSZlibHandle *)zlibHandleWithHandle:(CSHandle *)handle length:(off_t)length
 {
-	return [[[CSZlibHandle alloc] initWithHandle:handle length:length header:YES name:[handle name]] autorelease];
+	return [[CSZlibHandle alloc] initWithHandle:handle length:length header:YES];
 }
 
 +(CSZlibHandle *)deflateHandleWithHandle:(CSHandle *)handle
 {
-	return [[[CSZlibHandle alloc] initWithHandle:handle length:CSHandleMaxLength header:NO name:[handle name]] autorelease];
+	return [[CSZlibHandle alloc] initWithHandle:handle length:CSHandleMaxLength header:NO];
 }
 
 +(CSZlibHandle *)deflateHandleWithHandle:(CSHandle *)handle length:(off_t)length
 {
-	return [[[CSZlibHandle alloc] initWithHandle:handle length:length header:NO name:[handle name]] autorelease];
+	return [[CSZlibHandle alloc] initWithHandle:handle length:length header:NO];
 }
 
 
 
 
--(id)initWithHandle:(CSHandle *)handle length:(off_t)length header:(BOOL)header name:(NSString *)descname
+-(id)initWithHandle:(CSHandle *)handle length:(off_t)length header:(BOOL)header
 {
-	if((self=[super initWithName:descname length:length]))
+	if(self=[super initWithParentHandle:handle length:length])
 	{
-		parent=[handle retain];
 		startoffs=[parent offsetInFile];
 		inited=YES;
 		seekback=NO;
@@ -51,9 +67,8 @@ NSString *CSZlibException=@"CSZlibException";
 
 -(id)initAsCopyOf:(CSZlibHandle *)other
 {
-	if((self=[super initAsCopyOf:other]))
+	if(self=[super initAsCopyOf:other])
 	{
-		parent=[other->parent copy];
 		startoffs=other->startoffs;
 		inited=NO;
 		seekback=other->seekback;
@@ -68,8 +83,6 @@ NSString *CSZlibException=@"CSZlibException";
 			inited=YES;
 			return self;
 		}
-
-		[self release];
 	}
 	return nil;
 }
@@ -77,9 +90,6 @@ NSString *CSZlibException=@"CSZlibException";
 -(void)dealloc
 {
 	if(inited) inflateEnd(&zs);
-	[parent release];
-
-	[super dealloc];
 }
 
 -(void)setSeekBackAtEOF:(BOOL)seekateof { seekback=seekateof; }
@@ -132,7 +142,7 @@ NSString *CSZlibException=@"CSZlibException";
 -(void)_raiseZlib
 {
 	[NSException raise:CSZlibException
-	format:@"Zlib error while attepting to read from \"%@\": %s.",name,zs.msg];
+	format:@"Zlib error while attepting to read from \"%@\": %s.",[self name],zs.msg];
 }
 
 @end

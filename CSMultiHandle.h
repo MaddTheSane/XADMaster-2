@@ -1,37 +1,25 @@
-#import "CSHandle.h"
+#import "CSSegmentedHandle.h"
 
 #define CSMultiHandle XADMultiHandle
 
-extern NSString *CSSizeOfSegmentUnknownException;
-
-@interface CSMultiHandle:CSHandle
+@interface CSMultiHandle:CSSegmentedHandle
 {
-	NSArray *handles;
-	long currhandle;
+    NSArray<CSHandle*> *handles;
 }
 
-+(CSMultiHandle *)multiHandleWithHandleArray:(NSArray *)handlearray;
-+(CSMultiHandle *)multiHandleWithHandles:(CSHandle *)firsthandle,...;
++(CSHandle *)handleWithHandleArray:(NSArray<CSHandle*> *)handlearray;
++(CSHandle *)handleWithHandles:(CSHandle *)firsthandle,... NS_REQUIRES_NIL_TERMINATION;
 
 // Initializers
--(id)initWithHandles:(NSArray *)handlearray;
--(id)initAsCopyOf:(CSMultiHandle *)other;
--(void)dealloc;
+-(instancetype)initWithHandles:(NSArray<CSHandle*> *)handlearray;
+-(instancetype)initAsCopyOf:(CSMultiHandle *)other;
 
 // Public methods
--(NSArray *)handles;
--(CSHandle *)currentHandle;
+@property (NS_NONATOMIC_IOSONLY, readonly, copy) NSArray<CSHandle*> *handles;
 
 // Implemented by this class
--(off_t)fileSize;
--(off_t)offsetInFile;
--(BOOL)atEndOfFile;
-
--(void)seekToFileOffset:(off_t)offs;
--(void)seekToEndOfFile;
--(int)readAtMost:(int)num toBuffer:(void *)buffer;
-
-// Internal methods
--(void)_raiseSizeUnknownForSegment:(long)i;
+-(NSInteger)numberOfSegments;
+-(off_t)segmentSizeAtIndex:(NSInteger)index;
+-(CSHandle *)handleAtIndex:(NSInteger)index;
 
 @end

@@ -1,9 +1,10 @@
 #import "XADArchiveParser.h"
+#import "XADTestUtilities.h"
 
 NSString *EscapeString(NSString *str)
 {
 	NSMutableString *res=[NSMutableString string];
-	int length=[str length];
+	NSInteger length=[str length];
 	for(int i=0;i<length;i++)
 	{
 		unichar c=[str characterAtIndex:i];
@@ -13,7 +14,7 @@ NSString *EscapeString(NSString *str)
 	return res;
 }
 
-@interface ArchiveTester:NSObject
+@interface ArchiveTester:NSObject <XADArchiveParserDelegate>
 {
 	int indent;
 }
@@ -126,29 +127,16 @@ NSString *EscapeString(NSString *str)
 
 @end
 
-NSString *FigureOutPassword(NSString *filename)
-{
-	const char *envpass=getenv("XADTestPassword");
-	if(envpass) return [NSString stringWithUTF8String:envpass];
-
-	NSArray *matches=[filename substringsCapturedByPattern:@"_pass_(.+)\\.[pP][aA][rR][tT][0-9]+\\.[rR][aA][rR]$"];
-	if(matches) return [matches objectAtIndex:1];
-
-	matches=[filename substringsCapturedByPattern:@"_pass_(.+)\\.[^.]+$"];
-	if(matches) return [matches objectAtIndex:1];
-
-	return nil;
-}
-
 int main(int argc,char **argv)
 {
-	for(int i=1;i<argc;i++)
+	NSString *filename;
+	NSEnumerator *enumerator=[FilesForArgs(argc,argv) objectEnumerator];
+	while(filename=[enumerator nextObject])
 	{
 		NSAutoreleasePool *pool=[[NSAutoreleasePool alloc] init];
 
-		printf("Testing %s...\n",argv[i]);
+		printf("Testing %s...\n",[filename UTF8String]);
 
-		NSString *filename=[NSString stringWithUTF8String:argv[i]];
 		XADArchiveParser *parser=[XADArchiveParser archiveParserForPath:filename];
 
 		[parser setDelegate:[[[ArchiveTester alloc] initWithIndentLevel:2] autorelease]];

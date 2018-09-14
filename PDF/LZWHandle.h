@@ -1,7 +1,7 @@
 #import "../CSByteStreamHandle.h"
 #import "../LZW.h"
 
-extern NSString *LZWInvalidCodeException;
+extern NSString *const LZWInvalidCodeException;
 
 @interface LZWHandle:CSByteStreamHandle
 {
@@ -14,7 +14,7 @@ extern NSString *LZWInvalidCodeException;
 	uint8_t buffer[4096];
 }
 
--(id)initWithHandle:(CSHandle *)handle earlyChange:(BOOL)earlychange;
+-(instancetype)initWithHandle:(CSHandle *)handle earlyChange:(BOOL)earlychange;
 
 -(void)clearTable;
 

@@ -10,8 +10,8 @@
 
 +(BOOL)recognizeFileWithHandle:(CSHandle *)handle firstBytes:(NSData *)data name:(NSString *)name;
 {
-	const uint8_t *bytes=[data bytes];
-	int length=[data length];
+	const uint8_t *bytes=data.bytes;
+	NSInteger length=data.length;
 
 	if(length<16) return NO;
 
@@ -22,7 +22,7 @@
 
 -(void)parse
 {
-	CSHandle *fh=[self handle];
+	CSHandle *fh=self.handle;
 
 	uint32_t signature=[fh readID];
 
@@ -68,29 +68,29 @@
 		// TODO: Should this really be XADEitherPathSeparator?
 		[self XADPathWithData:filename separators:XADEitherPathSeparator],XADFileNameKey,
 		[self XADStringWithString:[NSString stringWithFormat:@"PPMd Variant %c",variant]],XADCompressionNameKey,
-		[NSNumber numberWithUnsignedLongLong:[fh offsetInFile]],XADDataOffsetKey,
-		[NSNumber numberWithInt:maxorder],@"PPMdMaxOrder",
-		[NSNumber numberWithInt:variant],@"PPMdVariant",
-		[NSNumber numberWithInt:suballocsize],@"PPMdSubAllocSize",
+		@(fh.offsetInFile),XADDataOffsetKey,
+		@(maxorder),@"PPMdMaxOrder",
+		@(variant),@"PPMdVariant",
+		@(suballocsize),@"PPMdSubAllocSize",
 	nil];
 
 	if(modelrestoration>=0)
-	[dict setObject:[NSNumber numberWithInt:modelrestoration] forKey:@"PPMdModelRestoration"];
+	dict[@"PPMdModelRestoration"] = @(modelrestoration);
 
 	if(date&0xc000) // assume that the next highest bit is always set in unix dates and never in DOS (true until 2011)
 	{
-		[dict setObject:[NSDate dateWithTimeIntervalSince1970:(date<<16)|time] forKey:XADLastModificationDateKey];
-		[dict setObject:[NSNumber numberWithInt:attrib] forKey:XADPosixPermissionsKey];
+		dict[XADLastModificationDateKey] = [NSDate dateWithTimeIntervalSince1970:(date<<16)|time];
+		dict[XADPosixPermissionsKey] = @(attrib);
 	}
 	else
 	{
-		[dict setObject:[NSDate XADDateWithMSDOSDateTime:(date<<16)|time] forKey:XADLastModificationDateKey];
-		[dict setObject:[NSNumber numberWithInt:attrib] forKey:XADWindowsFileAttributesKey];
+		dict[XADLastModificationDateKey] = [NSDate XADDateWithMSDOSDateTime:(date<<16)|time];
+		dict[XADWindowsFileAttributesKey] = @(attrib);
 	}
 
-	off_t filesize=[fh fileSize];
+	off_t filesize=fh.fileSize;
 	if(filesize!=CSHandleMaxLength)
-	[dict setObject:[NSNumber numberWithUnsignedLongLong:filesize-16-namelen] forKey:XADCompressedSizeKey];
+	dict[XADCompressedSizeKey] = @(filesize-16-namelen);
 
 	[self addEntryWithDictionary:dict];
 }
@@ -99,9 +99,9 @@
 {
 	CSHandle *handle=[self handleAtDataOffsetForDictionary:dict];
 
-	int variant=[[dict objectForKey:@"PPMdVariant"] intValue];
-	int maxorder=[[dict objectForKey:@"PPMdMaxOrder"] intValue];
-	int suballocsize=[[dict objectForKey:@"PPMdSubAllocSize"] intValue];
+	int variant=[dict[@"PPMdVariant"] intValue];
+	int maxorder=[dict[@"PPMdMaxOrder"] intValue];
+	int suballocsize=[dict[@"PPMdSubAllocSize"] intValue];
 
 	switch(variant)
 	{
@@ -119,7 +119,7 @@
 		case 'I':
 			return [XADCRCHandle IEEECRC32HandleWithHandle:
 			[[[XADPPMdVariantIHandle alloc] initWithHandle:handle maxOrder:maxorder subAllocSize:suballocsize<<20
-			modelRestorationMethod:[[dict objectForKey:@"PPMdModelRestoration"] intValue]] autorelease]
+			modelRestorationMethod:[dict[@"PPMdModelRestoration"] intValue]] autorelease]
 //			length:8559 correctCRC:0xb193cc7d conditioned:YES];
 			length:13745624 correctCRC:0xc1c1c00a conditioned:YES];
 

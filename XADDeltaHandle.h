@@ -6,12 +6,12 @@
 	int distance;
 }
 
--(id)initWithHandle:(CSHandle *)handle;
--(id)initWithHandle:(CSHandle *)handle length:(off_t)length;
--(id)initWithHandle:(CSHandle *)handle deltaDistance:(int)deltadistance;
--(id)initWithHandle:(CSHandle *)handle length:(off_t)length deltaDistance:(int)deltadistance;
--(id)initWithHandle:(CSHandle *)handle propertyData:(NSData *)propertydata;
--(id)initWithHandle:(CSHandle *)handle length:(off_t)length propertyData:(NSData *)propertydata;
+-(instancetype)initWithHandle:(CSHandle *)handle;
+-(instancetype)initWithHandle:(CSHandle *)handle length:(off_t)length;
+-(instancetype)initWithHandle:(CSHandle *)handle deltaDistance:(int)deltadistance;
+-(instancetype)initWithHandle:(CSHandle *)handle length:(off_t)length deltaDistance:(int)deltadistance;
+-(instancetype)initWithHandle:(CSHandle *)handle propertyData:(NSData *)propertydata;
+-(instancetype)initWithHandle:(CSHandle *)handle length:(off_t)length propertyData:(NSData *)propertydata;
 
 -(void)resetByteStream;
 -(uint8_t)produceByteAtOffset:(off_t)pos;

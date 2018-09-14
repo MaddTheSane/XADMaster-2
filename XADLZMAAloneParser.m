@@ -9,8 +9,8 @@
 {
 	// Geez, put some magic bytes in your file formats, people!
 
-	const uint8_t *bytes=[data bytes];
-	int length=[data length];
+	const uint8_t *bytes=data.bytes;
+	NSInteger length=data.length;
 
 	if(length<13) return NO;
 
@@ -37,13 +37,13 @@
 
 -(void)parse
 {
-	CSHandle *handle=[self handle];
+	CSHandle *handle=self.handle;
 
-	NSString *name=[self name];
-	NSString *extension=[[name pathExtension] lowercaseString];
+	NSString *name=self.name;
+	NSString *extension=name.pathExtension.lowercaseString;
 	NSString *contentname;
-	if([extension isEqual:@"tlz"]) contentname=[[name stringByDeletingPathExtension] stringByAppendingPathExtension:@"tar"];
-	else contentname=[name stringByDeletingPathExtension];
+	if([extension isEqual:@"tlz"]) contentname=[name.stringByDeletingPathExtension stringByAppendingPathExtension:@"tar"];
+	else contentname=name.stringByDeletingPathExtension;
 
 	NSData *props=[handle readDataOfLength:5];
 
@@ -55,29 +55,29 @@
 	nil];
 
 	if([contentname matchedByPattern:@"\\.(tar|cpio|pax)$" options:REG_ICASE])
-	[dict setObject:[NSNumber numberWithBool:YES] forKey:XADIsArchiveKey];
+	dict[XADIsArchiveKey] = @YES;
 
 	uint64_t size=[handle readUInt64LE];
 	if(size!=0xffffffffffffffff)
-	[dict setObject:[NSNumber numberWithUnsignedLongLong:size] forKey:XADFileSizeKey];
+	dict[XADFileSizeKey] = @(size);
 
-	off_t filesize=[[self handle] fileSize];
+	off_t filesize=self.handle.fileSize;
 	if(filesize!=CSHandleMaxLength)
-	[dict setObject:[NSNumber numberWithUnsignedLongLong:filesize-13] forKey:XADCompressedSizeKey];
+	dict[XADCompressedSizeKey] = @(filesize-13);
 
 	[self addEntryWithDictionary:dict];
 }
 
 -(CSHandle *)handleForEntryWithDictionary:(NSDictionary *)dictionary wantChecksum:(BOOL)checksum
 {
-	CSHandle *handle=[self handle];
-	NSNumber *size=[dictionary objectForKey:XADFileSizeKey];
+	CSHandle *handle=self.handle;
+	NSNumber *size=dictionary[XADFileSizeKey];
 	[handle seekToFileOffset:13];
 
-	if(size) return [[[XADLZMAHandle alloc] initWithHandle:handle length:[size unsignedLongLongValue]
-	propertyData:[dictionary objectForKey:@"LZMAProperties"]] autorelease];
+	if(size != nil) return [[[XADLZMAHandle alloc] initWithHandle:handle length:size.unsignedLongLongValue
+	propertyData:dictionary[@"LZMAProperties"]] autorelease];
 	else return [[[XADLZMAHandle alloc] initWithHandle:handle
-	propertyData:[dictionary objectForKey:@"LZMAProperties"]] autorelease];
+	propertyData:dictionary[@"LZMAProperties"]] autorelease];
 
 }
 

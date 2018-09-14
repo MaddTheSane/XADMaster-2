@@ -20,13 +20,13 @@
 	uint8_t byte;
 	while((byte=[fh readUInt8])) [data appendBytes:&byte length:1];
 
-	off_t dataoffset=[fh offsetInFile];
+	off_t dataoffset=fh.offsetInFile;
 
 	NSMutableDictionary *dict=[NSMutableDictionary dictionaryWithObjectsAndKeys:
 		[parser XADPathWithData:data separators:XADNoPathSeparator],XADFileNameKey,
 		[parser XADStringWithString:@"Squeeze"],XADCompressionNameKey,
-		[NSNumber numberWithUnsignedLongLong:dataoffset],XADDataOffsetKey,
-		[NSNumber numberWithInt:sum],@"SqueezeChecksum",
+		@(dataoffset),XADDataOffsetKey,
+		@(sum),@"SqueezeChecksum",
 	nil];
 
 	[fh seekToFileOffset:end-8];
@@ -37,17 +37,17 @@
 		// TODO: Test this.
 		int date=[fh readUInt16LE];
 		int time=[fh readUInt16LE];
-		[dict setObject:[NSDate XADDateWithMSDOSDate:date time:time] forKey:XADLastModificationDateKey];
+		dict[XADLastModificationDateKey] = [NSDate XADDateWithMSDOSDate:date time:time];
 
-		NSNumber *compsize=[NSNumber numberWithLongLong:end-dataoffset-8];
-		[dict setObject:compsize forKey:XADCompressedSizeKey];
-		[dict setObject:compsize forKey:XADDataLengthKey];
+		NSNumber *compsize=@(end-dataoffset-8);
+		dict[XADCompressedSizeKey] = compsize;
+		dict[XADDataLengthKey] = compsize;
 	}
 	else
 	{
-		NSNumber *compsize=[NSNumber numberWithLongLong:end-dataoffset];
-		[dict setObject:compsize forKey:XADCompressedSizeKey];
-		[dict setObject:compsize forKey:XADDataLengthKey];
+		NSNumber *compsize=@(end-dataoffset);
+		dict[XADCompressedSizeKey] = compsize;
+		dict[XADDataLengthKey] = compsize;
 	}
 
 	return dict;
@@ -55,7 +55,7 @@
 
 +(CSHandle *)handleForEntryWithDictionary:(NSDictionary *)dict wantChecksum:(BOOL)checksum handle:(CSHandle *)handle
 {
-	int sum=[[dict objectForKey:@"SqueezeChecksum"] intValue];
+	int sum=[dict[@"SqueezeChecksum"] intValue];
 
 	handle=[[[XADSqueezeHandle alloc] initWithHandle:handle] autorelease];
 	handle=[[[XADRLE90Handle alloc] initWithHandle:handle] autorelease];
@@ -73,15 +73,15 @@
 
 +(BOOL)recognizeFileWithHandle:(CSHandle *)handle firstBytes:(NSData *)data name:(NSString *)name
 {
-	const uint8_t *bytes=[data bytes];
-	int length=[data length];
+	const uint8_t *bytes=data.bytes;
+	NSInteger length=data.length;
 
 	if(length<5) return NO;
 
 	if(bytes[0]!=0x76||bytes[1]!=0xff) return NO;
 
 	if(bytes[4]==0) return NO;
-	for(int i=4;i<length;i++)
+	for(NSInteger i=4;i<length;i++)
 	{
 		if(bytes[i]==0)
 		{
@@ -95,15 +95,15 @@
 
 -(void)parse
 {
-	CSHandle *fh=[self handle];
+	CSHandle *fh=self.handle;
 
 	NSMutableDictionary *dict=[XADSqueezeParser parseWithHandle:fh
-	endOffset:[fh fileSize] parser:self];
+	endOffset:fh.fileSize parser:self];
 
-	XADPath *filename=[dict objectForKey:XADFileNameKey];
-	NSData *namedata=[filename data];
-	const char *bytes=[namedata bytes];
-	int length=[namedata length];
+	XADPath *filename=dict[XADFileNameKey];
+	NSData *namedata=filename.data;
+	const char *bytes=namedata.bytes;
+	NSInteger length=namedata.length;
 
 	if(length>4)
 	if(bytes[length-4]=='.')
@@ -111,7 +111,7 @@
 	if(tolower(bytes[length-2])=='b')
 	if(tolower(bytes[length-1])=='r')
 	{
-		[dict setObject:[NSNumber numberWithBool:YES] forKey:XADIsArchiveKey];
+		dict[XADIsArchiveKey] = @YES;
 	}
 
 	[self addEntryWithDictionary:dict];

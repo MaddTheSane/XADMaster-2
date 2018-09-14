@@ -1,7 +1,7 @@
 #import "../CSByteStreamHandle.h"
 #import "../XADPrefixCode.h"
 
-extern NSString *CCITTCodeException;
+extern NSString *const CCITTCodeException;
 
 @interface CCITTFaxHandle:CSByteStreamHandle
 {
@@ -9,7 +9,7 @@ extern NSString *CCITTCodeException;
 	int column,colour,bitsleft;
 }
 
--(id)initWithHandle:(CSHandle *)handle columns:(int)cols white:(int)whitevalue;
+-(instancetype)initWithInputBufferForHandle:(CSHandle *)handle columns:(int)cols white:(int)whitevalue;
 
 -(void)resetByteStream;
 -(uint8_t)produceByteAtOffset:(off_t)pos;
@@ -24,8 +24,7 @@ extern NSString *CCITTCodeException;
 	XADPrefixCode *whitecode,*blackcode;
 }
 
--(id)initWithHandle:(CSHandle *)handle columns:(int)cols white:(int)whitevalue;
--(void)dealloc;
+-(instancetype)initWithHandle:(CSHandle *)handle columns:(int)cols white:(int)whitevalue;
 
 -(void)startNewLine;
 -(void)findNextSpanLength;
@@ -40,8 +39,7 @@ extern NSString *CCITTCodeException;
 	XADPrefixCode *maincode,*whitecode,*blackcode;
 }
 
--(id)initWithHandle:(CSHandle *)handle columns:(int)columns white:(int)whitevalue;
--(void)dealloc;
+-(instancetype)initWithHandle:(CSHandle *)handle columns:(int)columns white:(int)whitevalue;
 
 -(void)resetByteStream;
 -(void)startNewLine;

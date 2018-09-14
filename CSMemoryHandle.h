@@ -1,3 +1,4 @@
+#import <Foundation/Foundation.h>
 #import "CSHandle.h"
 
 #define CSMemoryHandle XADMemoryHandle
@@ -14,18 +15,17 @@
 +(CSMemoryHandle *)memoryHandleForWriting;
 
 // Initializers
--(id)initWithData:(NSData *)dataobj;
--(id)initAsCopyOf:(CSMemoryHandle *)other;
--(void)dealloc;
+-(instancetype)initWithData:(NSData *)dataobj;
+-(instancetype)initAsCopyOf:(CSMemoryHandle *)other;
 
 // Public methods
--(NSData *)data;
+@property (NS_NONATOMIC_IOSONLY, readonly, strong) NSData *data;
 -(NSMutableData *)mutableData;
 
 // Implemented by this class
--(off_t)fileSize;
--(off_t)offsetInFile;
--(BOOL)atEndOfFile;
+@property (NS_NONATOMIC_IOSONLY, readonly) off_t fileSize;
+@property (NS_NONATOMIC_IOSONLY, readonly) off_t offsetInFile;
+@property (NS_NONATOMIC_IOSONLY, readonly) BOOL atEndOfFile;
 
 -(void)seekToFileOffset:(off_t)offs;
 -(void)seekToEndOfFile;
@@ -39,5 +39,7 @@
 -(NSData *)readDataOfLengthAtMost:(int)length;
 -(NSData *)copyDataOfLength:(int)length;
 -(NSData *)copyDataOfLengthAtMost:(int)length;
+
+-(NSString *)name;
 
 @end

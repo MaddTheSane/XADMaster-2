@@ -14,15 +14,14 @@
 	off_t complen,uncomplen;
 }
 
--(id)initWithHandle:(CSHandle *)handle reservedBytes:(int)reserved;
--(void)dealloc;
+-(instancetype)initWithHandle:(CSHandle *)handle reservedBytes:(int)reserved;
 
 -(void)addFolderAtOffset:(off_t)startoffs numberOfBlocks:(int)numblocks;
 -(void)scanLengths;
 
--(CSHandle *)handle;
--(off_t)compressedLength;
--(off_t)uncompressedLength;
+@property (NS_NONATOMIC_IOSONLY, readonly, retain) CSHandle *handle;
+@property (NS_NONATOMIC_IOSONLY, readonly) off_t compressedLength;
+@property (NS_NONATOMIC_IOSONLY, readonly) off_t uncompressedLength;
 
 -(void)restart;
 -(BOOL)readNextBlockToBuffer:(uint8_t *)buffer compressedLength:(int *)compptr

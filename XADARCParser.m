@@ -80,19 +80,19 @@ static BOOL IsARCHeader(const uint8_t *bytes,int length,BOOL acceptloader)
 +(BOOL)recognizeFileWithHandle:(CSHandle *)handle firstBytes:(NSData *)data
 name:(NSString *)name
 {
-	const uint8_t *bytes=[data bytes];
-	int length=[data length];
+	const uint8_t *bytes=data.bytes;
+	NSInteger length=data.length;
 
-	return IsARCHeader(bytes,length,NO);
+	return IsARCHeader(bytes,(int)MIN(length, INT32_MAX),NO);
 }
 
 -(void)parse
 {
-	CSHandle *fh=[self handle];
+	CSHandle *fh=self.handle;
 
-	XADPath *parent=[self XADPath];
+	XADPath *parent=self.XADPath;
 
-	while([self shouldKeepParsing] && ![fh atEndOfFile])
+	while(self.shouldKeepParsing && !fh.atEndOfFile)
 	{
 		// Scan for next header.
 		int n=0;
@@ -108,8 +108,8 @@ name:(NSString *)name
 
 		if(method==0x1f || method==0x80)
 		{
-			if([parent isEmpty]) break;
-			parent=[parent pathByDeletingLastPathComponent];
+			if(parent.empty) break;
+			parent=parent.pathByDeletingLastPathComponent;
 			continue;
 		}
 
@@ -123,15 +123,15 @@ name:(NSString *)name
 		NSData *namedata=[NSData dataWithBytes:namebuf length:namelength];
 
 		uint32_t compsize=[fh readUInt32LE];
-		int date=[fh readUInt16LE];
-		int time=[fh readUInt16LE];
-		int crc16=[fh readUInt16LE];
+		uint16_t date=[fh readUInt16LE];
+		uint16_t time=[fh readUInt16LE];
+		uint16_t crc16=[fh readUInt16LE];
 
 		uint32_t uncompsize;
 		if(method==1) uncompsize=compsize;
 		else uncompsize=[fh readUInt32LE];
 
-		uint32_t loadaddress,execaddress,fileattrs;
+		uint32_t loadaddress=0,execaddress=0,fileattrs=0;
 		if(method&0x80)
 		{
 			loadaddress=[fh readUInt32LE];
@@ -139,18 +139,18 @@ name:(NSString *)name
 			fileattrs=[fh readUInt32LE];
 		}
 
-		off_t dataoffset=[fh offsetInFile];
+		off_t dataoffset=fh.offsetInFile;
 
 		XADString *name=[self XADStringWithData:namedata];
 		XADPath *path=[parent pathByAppendingXADStringComponent:name];
 
-		if(method==0x1e || (method==0x82&&((loadaddress&0xffffff00)==0xfffddc00)))
+		if(method==0x1e || (method==0x82 && ((loadaddress&0xffffff00)==0xfffddc00)))
 		{
 			NSMutableDictionary *dict=[NSMutableDictionary dictionaryWithObjectsAndKeys:
 				path,XADFileNameKey,
-				[NSNumber numberWithBool:YES],XADIsDirectoryKey,
+				@YES,XADIsDirectoryKey,
 				[NSDate XADDateWithMSDOSDate:date time:time],XADLastModificationDateKey,
-				[NSNumber numberWithInt:method],@"ARCMethod",
+				@(method),@"ARCMethod",
 			nil];
 
 			[self addEntryWithDictionary:dict];
@@ -161,13 +161,13 @@ name:(NSString *)name
 		{
 			NSMutableDictionary *dict=[NSMutableDictionary dictionaryWithObjectsAndKeys:
 				path,XADFileNameKey,
-				[NSNumber numberWithUnsignedLong:uncompsize],XADFileSizeKey,
-				[NSNumber numberWithUnsignedLong:compsize],XADCompressedSizeKey,
-				[NSNumber numberWithUnsignedLongLong:dataoffset],XADDataOffsetKey,
-				[NSNumber numberWithUnsignedLong:compsize],XADDataLengthKey,
+				@(uncompsize),XADFileSizeKey,
+				@(compsize),XADCompressedSizeKey,
+				@(dataoffset),XADDataOffsetKey,
+				@(compsize),XADDataLengthKey,
 				[NSDate XADDateWithMSDOSDate:date time:time],XADLastModificationDateKey,
-				[NSNumber numberWithInt:method],@"ARCMethod",
-				[NSNumber numberWithInt:crc16],@"ARCCRC16",
+				@(method),@"ARCMethod",
+				@(crc16),@"ARCCRC16",
 			nil];
 
 			NSString *methodname=nil;
@@ -186,13 +186,13 @@ name:(NSString *)name
 				case 0x0b: methodname=@"Distilled"; break;
 				case 0x7f: methodname=@"Compressed"; break;
 			}
-			if(methodname) [dict setObject:[self XADStringWithString:methodname] forKey:XADCompressionNameKey];
+			if(methodname) dict[XADCompressionNameKey] = [self XADStringWithString:methodname];
 
 			if(method&0x80)
 			{
-				[dict setObject:[NSNumber numberWithUnsignedInt:loadaddress] forKey:@"ARCArchimedesLoadAddress"];
-				[dict setObject:[NSNumber numberWithUnsignedInt:execaddress] forKey:@"ARCArchimedesExecAddress"];
-				[dict setObject:[NSNumber numberWithUnsignedInt:fileattrs] forKey:@"ARCArchimedesFileAttributes"];
+				dict[@"ARCArchimedesLoadAddress"] = @(loadaddress);
+				dict[@"ARCArchimedesExecAddress"] = @(execaddress);
+				dict[@"ARCArchimedesFileAttributes"] = @(fileattrs);
 			}
 
 			[self addEntryWithDictionary:dict];
@@ -204,19 +204,19 @@ name:(NSString *)name
 
 -(CSHandle *)handleForEntryWithDictionary:(NSDictionary *)dict wantChecksum:(BOOL)checksum
 {
-	if([dict objectForKey:XADIsDirectoryKey]) return nil;
+	if(dict[XADIsDirectoryKey]) return nil;
 
 	CSHandle *handle=[self handleAtDataOffsetForDictionary:dict];
-	int method=[[dict objectForKey:@"ARCMethod"] intValue];
-	int crc=[[dict objectForKey:@"ARCCRC16"] intValue];
-	uint32_t length=[[dict objectForKey:XADFileSizeKey] unsignedIntValue];
+	int method=[dict[@"ARCMethod"] intValue];
+	int crc=[dict[@"ARCCRC16"] intValue];
+	uint32_t length=[dict[XADFileSizeKey] unsignedIntValue];
 
 	// TODO: We should somehow figure out if an ARC file is actually encrypted.
 	// However, there seems to be no way to do this, so the client has to
 	// explicitly set a password without being asked for one.
-	if([self hasPassword])
+	if(self.hasPassword)
 	{
-		NSData *passdata=[self encodedPassword];
+		NSData *passdata=self.encodedPassword;
 		handle=[[[XADXORHandle alloc] initWithHandle:handle password:passdata] autorelease];
 	}
 
@@ -325,25 +325,25 @@ name:(NSString *)name
 +(BOOL)recognizeFileWithHandle:(CSHandle *)handle firstBytes:(NSData *)data
 name:(NSString *)name propertiesToAdd:(NSMutableDictionary *)props
 {
-	const uint8_t *bytes=[data bytes];
-	int length=[data length];
+	const uint8_t *bytes=data.bytes;
+	NSInteger length=data.length;
 
 	// .COM executable, type ARC520.COM. Mangled first entry contains a jump
 	// to unpack code in first entry, which we skip.
-	if(IsARCHeader(&bytes[0],length,YES))
+	if(IsARCHeader(&bytes[0],(int)MIN(length, INT32_MAX),YES))
 	{
 		uint32_t datasize=CSUInt32LE(&bytes[0x0f]);
 		uint32_t nextoffs;
 		if(bytes[1]==1) nextoffs=datasize+0x19;
 		else nextoffs=datasize+0x1d;
 
-		[props setObject:[NSNumber numberWithInt:nextoffs] forKey:@"ARCSFXOffset"];
+		props[@"ARCSFXOffset"] = @(nextoffs);
 		return YES;
 	}
 
 	// .COM executable, type ARC512.COM. Archive is preceeded by a three-byte
 	// jump to code in a (mangled?) first entry, which we skip.
-	if(IsARCHeader(&bytes[3],length-3,YES))
+	if(IsARCHeader(&bytes[3],(int)MIN(length-3, INT32_MAX-3),YES))
 	{
 		uint32_t datasize=CSUInt32LE(&bytes[0x0f+3]);
 
@@ -351,7 +351,7 @@ name:(NSString *)name propertiesToAdd:(NSMutableDictionary *)props
 		if(bytes[1+3]==1) nextoffs=datasize+0x19+3;
 		else nextoffs=datasize+0x1d+3;
 
-		[props setObject:[NSNumber numberWithInt:nextoffs] forKey:@"ARCSFXOffset"];
+		props[@"ARCSFXOffset"] = @(nextoffs);
 		return YES;
 	}
 
@@ -359,11 +359,11 @@ name:(NSString *)name propertiesToAdd:(NSMutableDictionary *)props
 	if(length>2)
 	if(bytes[0]=='M'&&bytes[1]=='Z')
 	{
-		for(int i=2;i<=length-0x1d /*&& i<0x10000-0x1d*/;i++)
+		for(NSInteger i=2;i<=length-0x1d /*&& i<0x10000-0x1d*/;i++)
 		{
-			if(IsARCHeader(&bytes[i],length-i,NO))
+			if(IsARCHeader(&bytes[i],(int)(length-i),NO))
 			{
-				[props setObject:[NSNumber numberWithInt:i] forKey:@"ARCSFXOffset"];
+				props[@"ARCSFXOffset"] = @(i);
 				return YES;
 			}
 		}
@@ -374,9 +374,9 @@ name:(NSString *)name propertiesToAdd:(NSMutableDictionary *)props
 
 -(void)parse
 {
-	CSHandle *fh=[self handle];
+	CSHandle *fh=self.handle;
 
-	off_t offs=[[[self properties] objectForKey:@"ARCSFXOffset"] longLongValue];
+	off_t offs=[self.properties[@"ARCSFXOffset"] longLongValue];
 
 	[fh seekToFileOffset:offs];
 

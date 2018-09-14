@@ -1,0 +1,37 @@
+/* 
+  XADErrors.strings
+  XADMaster
+
+  Created by C.W. Betts on 11/26/17.
+  
+*/
+
+/* Common errors */
+"Attempted to read more data than was available" = "El archivo está incompleto";
+"Opening file failed" = "No se ha podido abrir el fichero";
+"Missing or wrong password" = "La contraseña es incorrecta";
+"Wrong checksum" = "El archivo está corrupto";
+"Could not create directory" = "No se ha podido crear la carpeta";
+
+/* Uncommon or unused errors */ /* some hadn't been translated because there isn't right Mtranslations*/
+"Unknown error" = "Error desconocido";
+"Failed to write to file" = "Error al escibir el fichero";
+"Function called with illegal parameters" = "Función llamada con parámetros no válidos";
+"Not enough memory available" = "No hay suficiente memoria disponible";
+"Data is corrupted" = "Los datos están corruptos";
+"File is not fully supported" = "El fichero no tiene soporte completo";
+"Required resource missing" = "No se encuentra un recurso necesario";
+"Error on decrunching" = "Error on decrunching";
+"Unknown file type" = "Tipo de archivo desconocido";
+"File, disk has been skipped" = "Fichero, el disco se ha saltado"; //That isn't the best translation
+"User cancelled extraction" = "Extracción cancelada por el usuario";
+"File already exists" = "El fichero ya existe";
+"Verify failed (disk hook)" = "Error en la comprobación (disk hook)";
+"Wrong drive geometry" = "Wrong drive geometry";
+"Unknown data format" = "Fomato de datos desconocido";
+"Source contains no files" = "El archivo no contiene ficheros";
+"Unknown filesystem" = "Sistema de ficheros desconocido";
+"Name of file exists as directory" = "El nombre del fichero existe como directorio";
+"Buffer was too short" = "El buffer era demasiado corto";
+"Text encoding was defective" = "La codificación del texto era defectuosa";
+"Could not create symlink" = "No se ha podido crear el symlink";

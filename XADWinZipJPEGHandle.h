@@ -8,8 +8,7 @@
 	uint8_t buffer[65536];
 }
 
--(id)initWithHandle:(CSHandle *)handle length:(off_t)length;
--(void)dealloc;
+-(instancetype)initWithHandle:(CSHandle *)handle length:(off_t)length;
 
 -(void)resetBlockStream;
 -(int)produceBlockAtOffset:(off_t)pos;

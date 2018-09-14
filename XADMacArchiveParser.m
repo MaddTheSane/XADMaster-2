@@ -5,16 +5,21 @@
 #import "NSDateXAD.h"
 #import "CRC.h"
 
-NSString *XADIsMacBinaryKey=@"XADIsMacBinary";
-NSString *XADMightBeMacBinaryKey=@"XADMightBeMacBinary";
-NSString *XADDisableMacForkExpansionKey=@"XADDisableMacForkExpansionKey";
+#if !__has_feature(objc_arc)
+#error this file needs to be compiled with Automatic Reference Counting (ARC)
+#endif
+
+NSString *const XADIsMacBinaryKey=@"XADIsMacBinary";
+NSString *const XADMightBeMacBinaryKey=@"XADMightBeMacBinary";
+NSString *const XADDisableMacForkExpansionKey=@"XADDisableMacForkExpansionKey";
 
 @implementation XADMacArchiveParser
+@synthesize previousFilename = previousname;
 
 +(int)macBinaryVersionForHeader:(NSData *)header
 {
-	if([header length]<128) return NO;
-	const uint8_t *bytes=[header bytes];
+	if(header.length<128) return NO;
+	const uint8_t *bytes=header.bytes;
 
 	// Check zero fill bytes.
 	if(bytes[0]!=0) return 0;
@@ -62,15 +67,6 @@ NSString *XADDisableMacForkExpansionKey=@"XADDisableMacForkExpansionKey";
 	return self;
 }
 
--(void)dealloc
-{
-	[previousname release];
-	[dittodirectorystack release];
-	[queueddittoentry release];
-	[queueddittodata release];
-	[super dealloc];
-}
-
 -(void)parse
 {
 	[self parseWithSeparateMacForks];
@@ -86,26 +82,26 @@ NSString *XADDisableMacForkExpansionKey=@"XADDisableMacForkExpansionKey";
 	if(retainpos) [XADException raiseNotSupportedException];
 
 	// Check if expansion of forks is disabled
-	NSNumber *disable=[properties objectForKey:XADDisableMacForkExpansionKey];
-	if(disable&&[disable boolValue])
+	NSNumber *disable=properties[XADDisableMacForkExpansionKey];
+	if(disable&&disable.boolValue)
 	{
-		NSNumber *isbin=[dict objectForKey:XADIsMacBinaryKey];
-		if(isbin&&[isbin boolValue]) [dict setObject:[NSNumber numberWithBool:YES] forKey:XADIsArchiveKey];
+		NSNumber *isbin=dict[XADIsMacBinaryKey];
+		if(isbin&&isbin.boolValue) dict[XADIsArchiveKey] = @YES;
 
 		[super addEntryWithDictionary:dict retainPosition:retainpos];
 		return;
 	}
 
-	XADPath *name=[dict objectForKey:XADFileNameKey];
+	XADPath *name=dict[XADFileNameKey];
 
-	NSNumber *dirnum=[dict objectForKey:XADIsDirectoryKey];
-	BOOL isdir=dirnum && [dirnum boolValue];
+	NSNumber *dirnum=dict[XADIsDirectoryKey];
+	BOOL isdir=dirnum && dirnum.boolValue;
 
 	// If we have a queued ditto fork, check if it has the same name as this entry,
-	// and get rid of it. 
+	// and get rid of it.
 	if(queueddittoentry)
 	{
-		XADPath *queuedname=[queueddittoentry objectForKey:XADFileNameKey];
+		XADPath *queuedname=queueddittoentry[XADFileNameKey];
 		if([queuedname isCanonicallyEqual:name])
 		{
 			[self addQueuedDittoDictionaryWithName:name isDirectory:isdir retainPosition:retainpos];
@@ -138,7 +134,7 @@ NSString *XADDisableMacForkExpansionKey=@"XADDisableMacForkExpansionKey";
 	}
 
 	// Nothing else worked, it's a normal file. Remember its filename, and output it.
-	[self setPreviousFilename:[dict objectForKey:XADFileNameKey]];
+	self.previousFilename = dict[XADFileNameKey];
 	[super addEntryWithDictionary:dict retainPosition:retainpos];
 }
 
@@ -152,10 +148,10 @@ name:(XADPath *)name retainPosition:(BOOL)retainpos
 
 	// Resource forks are at most 16 megabytes. Ignore larger files, as we will
 	// be reading the whole file into memory.
-	NSNumber *filesizenum=[dict objectForKey:XADFileSizeKey];
-	if(!filesizenum) return NO;
+	NSNumber *filesizenum=dict[XADFileSizeKey];
+	if(filesizenum == nil) return NO;
 
-	off_t filesize=[filesizenum longLongValue];
+	off_t filesize=filesizenum.longLongValue;
 	if(filesize>16*1024*1024+65536) return NO;
 
 	// Check the file name.
@@ -224,24 +220,22 @@ name:(XADPath *)name retainPosition:(BOOL)retainpos
 	// Build a new entry dictionary for the fork.
 	NSMutableDictionary *newdict=[NSMutableDictionary dictionaryWithDictionary:dict];
 
-	[newdict setObject:dict forKey:@"MacOriginalDictionary"];
-	[newdict setObject:[NSNumber numberWithLongLong:rsrcoffs] forKey:@"MacDataOffset"];
-	[newdict setObject:[NSNumber numberWithLongLong:rsrclen] forKey:@"MacDataLength"];
-	[newdict setObject:[NSNumber numberWithLongLong:rsrclen] forKey:XADFileSizeKey];
-	[newdict setObject:[NSNumber numberWithBool:YES] forKey:XADIsResourceForkKey];
+	newdict[@"MacOriginalDictionary"] = dict;
+	newdict[@"MacDataOffset"] = @(rsrcoffs);
+	newdict[@"MacDataLength"] = @(rsrclen);
+	newdict[XADFileSizeKey] = @(rsrclen);
+	newdict[XADIsResourceForkKey] = @YES;
 
 	// Replace name, remove unused entries.
-	[newdict setObject:origname forKey:XADFileNameKey];
-	[newdict removeObjectsForKeys:[NSArray arrayWithObjects:
-		XADDataLengthKey,XADDataOffsetKey,XADPosixPermissionsKey,
-		XADPosixUserKey,XADPosixUserNameKey,XADPosixGroupKey,XADPosixGroupNameKey,
-	nil]];
+	newdict[XADFileNameKey] = origname;
+	[newdict removeObjectsForKeys:@[XADDataLengthKey,XADDataOffsetKey,XADPosixPermissionsKey,
+		XADPosixUserKey,XADPosixUserNameKey,XADPosixGroupKey,XADPosixGroupNameKey]];
 
 	// TODO: This replaces any existing attributes. None should
 	// exist, but maybe just in case they should be merged if they do.
-	if(extattrs) [newdict setObject:extattrs forKey:XADExtendedAttributesKey];
+	if(extattrs) newdict[XADExtendedAttributesKey] = extattrs;
 
-	if(isdir) [newdict setObject:[NSNumber numberWithBool:YES] forKey:XADIsDirectoryKey];
+	if(isdir) newdict[XADIsDirectoryKey] = @YES;
 
 	if(matchfound)
 	{
@@ -262,17 +256,10 @@ name:(XADPath *)name retainPosition:(BOOL)retainpos
 }
 
 
-
--(void)setPreviousFilename:(XADPath *)prevname
-{
-	[previousname autorelease];
-	previousname=[prevname retain];
-}
-
 -(XADPath *)topOfDittoDirectoryStack
 {
-	if(![dittodirectorystack count]) return nil;
-	return [dittodirectorystack lastObject];
+	if(!dittodirectorystack.count) return nil;
+	return dittodirectorystack.lastObject;
 }
 
 -(void)pushDittoDirectory:(XADPath *)directory
@@ -282,9 +269,9 @@ name:(XADPath *)name retainPosition:(BOOL)retainpos
 
 -(void)popDittoDirectoryStackUntilCanonicalPrefixFor:(XADPath *)path
 {
-	while([dittodirectorystack count])
+	while(dittodirectorystack.count)
 	{
-		XADPath *dir=[dittodirectorystack lastObject];
+		XADPath *dir=dittodirectorystack.lastObject;
 		if([path hasPrefix:dir]) return;
 		[dittodirectorystack removeLastObject];
 	}
@@ -295,10 +282,8 @@ name:(XADPath *)name retainPosition:(BOOL)retainpos
 
 -(void)queueDittoDictionary:(NSMutableDictionary *)dict data:(NSData *)data
 {
-	[queueddittoentry autorelease];
-	[queueddittodata autorelease];
-	queueddittoentry=[dict retain];
-	queueddittodata=[data retain];
+	queueddittoentry=dict;
+	queueddittodata=data;
 }
 
 -(void)addQueuedDittoDictionaryAndRetainPosition:(BOOL)retainpos
@@ -309,15 +294,13 @@ name:(XADPath *)name retainPosition:(BOOL)retainpos
 -(void)addQueuedDittoDictionaryWithName:(XADPath *)newname
 isDirectory:(BOOL)isdir retainPosition:(BOOL)retainpos
 {
-	if(newname) [queueddittoentry setObject:newname forKey:XADFileNameKey];
-	if(isdir) [queueddittoentry setObject:[NSNumber numberWithBool:YES] forKey:XADIsDirectoryKey];
+	if(newname) queueddittoentry[XADFileNameKey] = newname;
+	if(isdir) queueddittoentry[XADIsDirectoryKey] = @YES;
 
 	[self inspectEntryDictionary:queueddittoentry];
 	[self addEntryWithDictionary:queueddittoentry retainPosition:retainpos data:queueddittodata];
 
-	[queueddittoentry release];
 	queueddittoentry=nil;
-	[queueddittodata release];
 	queueddittodata=nil;
 }
 
@@ -327,22 +310,22 @@ isDirectory:(BOOL)isdir retainPosition:(BOOL)retainpos
 -(BOOL)parseMacBinaryWithDictionary:(NSMutableDictionary *)dict
 name:(XADPath *)name retainPosition:(BOOL)retainpos
 {
-	NSNumber *isbinobj=[dict objectForKey:XADIsMacBinaryKey];
-	BOOL isbin=isbinobj?[isbinobj boolValue]:NO;
+	NSNumber *isbinobj=dict[XADIsMacBinaryKey];
+	BOOL isbin = isbinobj != nil ? isbinobj.boolValue : NO;
 
-	NSNumber *checkobj=[dict objectForKey:XADMightBeMacBinaryKey];
-	BOOL check=checkobj?[checkobj boolValue]:NO;
+	NSNumber *checkobj=dict[XADMightBeMacBinaryKey];
+	BOOL check = checkobj != nil ? checkobj.boolValue : NO;
 
 	// Return if this file is not known or suspected to be MacBinary.
 	if(!isbin&&!check) return NO;
 
 	// Don't bother checking files inside unseekable streams unless known to be MacBinary.
-	if(!isbin&&[[self handle] isKindOfClass:[CSStreamHandle class]]) return NO;
+	if(!isbin&&[self.handle isKindOfClass:[CSStreamHandle class]]) return NO;
 
 	CSHandle *fh=[self rawHandleForEntryWithDictionary:dict wantChecksum:YES];
 
 	NSData *header=[fh readDataOfLengthAtMost:128];
-	if([header length]!=128) return NO;
+	if(header.length!=128) return NO;
 
 	// Check the file if it is not known to be MacBinary.
 	if(!isbin&&[XADMacArchiveParser macBinaryVersionForHeader:header]==0) return NO;
@@ -350,7 +333,7 @@ name:(XADPath *)name retainPosition:(BOOL)retainpos
 	// TODO: should this be turned on or not? probably not.
 	//[self setIsMacArchive:YES];
 
-	const uint8_t *bytes=[header bytes];
+	const uint8_t *bytes=header.bytes;
 
 	uint32_t datasize=CSUInt32BE(bytes+83);
 	uint32_t rsrcsize=CSUInt32BE(bytes+87);
@@ -359,7 +342,7 @@ name:(XADPath *)name retainPosition:(BOOL)retainpos
 	XADPath *newpath;
 	if(name)
 	{
-		XADPath *parent=[name pathByDeletingLastPathComponent];
+		XADPath *parent=name.pathByDeletingLastPathComponent;
 		XADString *namepart=[self XADStringWithBytes:bytes+2 length:bytes[1]];
 		newpath=[parent pathByAppendingXADStringComponent:namepart];
 	}
@@ -369,13 +352,13 @@ name:(XADPath *)name retainPosition:(BOOL)retainpos
 	}
 
 	NSMutableDictionary *template=[NSMutableDictionary dictionaryWithDictionary:dict];
-	[template setObject:dict forKey:@"MacOriginalDictionary"];
-	[template setObject:newpath forKey:XADFileNameKey];
-	[template setObject:[NSNumber numberWithUnsignedInt:CSUInt32BE(bytes+65)] forKey:XADFileTypeKey];
-	[template setObject:[NSNumber numberWithUnsignedInt:CSUInt32BE(bytes+69)] forKey:XADFileCreatorKey];
-	[template setObject:[NSNumber numberWithInt:bytes[101]+(bytes[73]<<8)] forKey:XADFinderFlagsKey];
-	[template setObject:[NSDate XADDateWithTimeIntervalSince1904:CSUInt32BE(bytes+91)] forKey:XADCreationDateKey];
-	[template setObject:[NSDate XADDateWithTimeIntervalSince1904:CSUInt32BE(bytes+95)] forKey:XADLastModificationDateKey];
+	template[@"MacOriginalDictionary"] = dict;
+	template[XADFileNameKey] = newpath;
+	template[XADFileTypeKey] = @(CSUInt32BE(bytes+65));
+	template[XADFileCreatorKey] = @(CSUInt32BE(bytes+69));
+	template[XADFinderFlagsKey] = @(bytes[101]+(bytes[73]<<8));
+	template[XADCreationDateKey] = [NSDate XADDateWithTimeIntervalSince1904:CSUInt32BE(bytes+91)];
+	template[XADLastModificationDateKey] = [NSDate XADDateWithTimeIntervalSince1904:CSUInt32BE(bytes+95)];
 	[template removeObjectForKey:XADDataLengthKey];
 	[template removeObjectForKey:XADDataOffsetKey];
 	[template removeObjectForKey:XADIsMacBinaryKey];
@@ -385,10 +368,10 @@ name:(XADPath *)name retainPosition:(BOOL)retainpos
 	if(datasize||!rsrcsize)
 	{
 		NSMutableDictionary *newdict=[NSMutableDictionary dictionaryWithDictionary:template];
-		[newdict setObject:[NSNumber numberWithUnsignedInt:128+BlockSize(extsize)] forKey:@"MacDataOffset"];
-		[newdict setObject:[NSNumber numberWithUnsignedInt:datasize] forKey:@"MacDataLength"];
-		[newdict setObject:[NSNumber numberWithUnsignedInt:datasize] forKey:XADFileSizeKey];
-		[newdict setObject:[NSNumber numberWithUnsignedInt:BlockSize(datasize)] forKey:XADCompressedSizeKey];
+		newdict[@"MacDataOffset"] = @(128+BlockSize(extsize));
+		newdict[@"MacDataLength"] = @(datasize);
+		newdict[XADFileSizeKey] = @(datasize);
+		newdict[XADCompressedSizeKey] = @BlockSize(datasize);
 
 		[self inspectEntryDictionary:newdict];
 		[self addEntryWithDictionary:newdict retainPosition:retainpos handle:fh];
@@ -397,11 +380,11 @@ name:(XADPath *)name retainPosition:(BOOL)retainpos
 	if(rsrcsize)
 	{
 		NSMutableDictionary *newdict=[NSMutableDictionary dictionaryWithDictionary:template];
-		[newdict setObject:[NSNumber numberWithUnsignedInt:128+BlockSize(extsize)+BlockSize(datasize)] forKey:@"MacDataOffset"];
-		[newdict setObject:[NSNumber numberWithUnsignedInt:rsrcsize] forKey:@"MacDataLength"];
-		[newdict setObject:[NSNumber numberWithUnsignedInt:rsrcsize] forKey:XADFileSizeKey];
-		[newdict setObject:[NSNumber numberWithUnsignedInt:BlockSize(rsrcsize)] forKey:XADCompressedSizeKey];
-		[newdict setObject:[NSNumber numberWithBool:YES] forKey:XADIsResourceForkKey];
+		newdict[@"MacDataOffset"] = @(128+BlockSize(extsize)+BlockSize(datasize));
+		newdict[@"MacDataLength"] = @(rsrcsize);
+		newdict[XADFileSizeKey] = @(rsrcsize);
+		newdict[XADCompressedSizeKey] = @BlockSize(rsrcsize);
+		newdict[XADIsResourceForkKey] = @YES;
 
 		[self inspectEntryDictionary:newdict];
 		[self addEntryWithDictionary:newdict retainPosition:retainpos handle:fh];
@@ -440,11 +423,11 @@ retainPosition:(BOOL)retainpos handle:(CSHandle *)handle
 
 -(CSHandle *)handleForEntryWithDictionary:(NSDictionary *)dict wantChecksum:(BOOL)checksum
 {
-	NSDictionary *origdict=[dict objectForKey:@"MacOriginalDictionary"];
+	NSDictionary *origdict=dict[@"MacOriginalDictionary"];
 	if(origdict)
 	{
-		off_t offset=[[dict objectForKey:@"MacDataOffset"] longLongValue];
-		off_t length=[[dict objectForKey:@"MacDataLength"] longLongValue];
+		off_t offset=[dict[@"MacDataOffset"] longLongValue];
+		off_t length=[dict[@"MacDataLength"] longLongValue];
 
 		if(!length) return [self zeroLengthHandleWithChecksum:checksum];
 
@@ -470,7 +453,7 @@ retainPosition:(BOOL)retainpos handle:(CSHandle *)handle
 
 -(NSString *)descriptionOfValueInDictionary:(NSDictionary *)dict key:(NSString *)key
 {
-	id object=[dict objectForKey:key];
+	id object=dict[key];
 	if(!object) return nil;
 
 	if([key isEqual:@"MacOriginalDictionary"])
@@ -492,16 +475,14 @@ retainPosition:(BOOL)retainpos handle:(CSHandle *)handle
 -(NSString *)descriptionOfKey:(NSString *)key
 {
 	static NSDictionary *descriptions=nil;
-	if(!descriptions) descriptions=[[NSDictionary alloc] initWithObjectsAndKeys:
-		NSLocalizedString(@"Is an embedded MacBinary file",@""),XADIsMacBinaryKey,
-		NSLocalizedString(@"Check for MacBinary",@""),XADMightBeMacBinaryKey,
-		NSLocalizedString(@"Mac OS fork handling is disabled",@""),XADDisableMacForkExpansionKey,
-		NSLocalizedString(@"Original archive entry",@""),@"MacOriginalDictionary",
-		NSLocalizedString(@"Start of embedded data",@""),@"MacDataOffset",
-		NSLocalizedString(@"Length of embedded data",@""),@"MacDataLength",
-		nil];
+	if(!descriptions) descriptions=@{XADIsMacBinaryKey: NSLocalizedString(@"Is an embedded MacBinary file",@""),
+		 XADMightBeMacBinaryKey: NSLocalizedString(@"Check for MacBinary",@""),
+		 XADDisableMacForkExpansionKey: NSLocalizedString(@"Mac OS fork handling is disabled",@""),
+		 @"MacOriginalDictionary": NSLocalizedString(@"Original archive entry",@""),
+		 @"MacDataOffset": NSLocalizedString(@"Start of embedded data",@""),
+		 @"MacDataLength": NSLocalizedString(@"Length of embedded data",@"")};
 
-	NSString *description=[descriptions objectForKey:key];
+	NSString *description=descriptions[key];
 	if(description) return description;
 
 	return [super descriptionOfKey:key];

@@ -12,8 +12,8 @@
 
 +(BOOL)recognizeFileWithHandle:(CSHandle *)handle firstBytes:(NSData *)data name:(NSString *)name
 {
-	const uint8_t *bytes=[data bytes];
-	int length=[data length];
+	const uint8_t *bytes=data.bytes;
+	NSInteger length=data.length;
 
 	if(length<128) return NO;
 
@@ -47,7 +47,7 @@
 
 -(void)parse
 {
-	CSHandle *fh=[self handle];
+	CSHandle *fh=self.handle;
 
 	[fh skipBytes:14];
 	int numsectors=[fh readUInt16LE];
@@ -92,7 +92,7 @@
 
 		int filestart=index*128;
 		int filesize=length*128-padding;
-	
+
 		if(!modificationdate)
 		{
 			modificationdate=creationdate;
@@ -100,7 +100,7 @@
 		}
 
 		[fh skipBytes:5];
-		off_t currpos=[fh offsetInFile];
+		off_t currpos=fh.offsetInFile;
 
 		NSMutableDictionary *dict=nil;
 
@@ -111,8 +111,8 @@
 			dict=[XADSqueezeParser parseWithHandle:fh endOffset:filestart+filesize parser:self];
 			if(dict)
 			{
-				[dict setObject:[NSNumber numberWithBool:YES] forKey:@"LBRIsSqueeze"];
-				[dict setObject:[NSNumber numberWithLongLong:length*128] forKey:XADCompressedSizeKey];
+				dict[@"LBRIsSqueeze"] = @YES;
+				dict[XADCompressedSizeKey] = @(length*128);
 			}
 		}
 		else if(lookslikecrunch)
@@ -122,8 +122,8 @@
 			dict=[XADCrunchParser parseWithHandle:fh endOffset:filestart+filesize parser:self];
 			if(dict)
 			{
-				[dict setObject:[NSNumber numberWithBool:YES] forKey:@"LBRIsCrunch"];
-				[dict setObject:[NSNumber numberWithLongLong:length*128] forKey:XADCompressedSizeKey];
+				dict[@"LBRIsCrunch"] = @YES;
+				dict[XADCompressedSizeKey] = @(length*128);
 			}
 		}
 
@@ -131,21 +131,21 @@
 		{
 			dict=[NSMutableDictionary dictionaryWithObjectsAndKeys:
 				[self XADPathWithData:data separators:XADNoPathSeparator],XADFileNameKey,
-				[NSNumber numberWithLongLong:filesize],XADFileSizeKey,
-				[NSNumber numberWithLongLong:length*128],XADCompressedSizeKey,
-				[NSNumber numberWithLongLong:filesize],XADDataLengthKey,
-				[NSNumber numberWithLongLong:filestart],XADDataOffsetKey,
-				[NSNumber numberWithInt:crc],@"LBRCRC16",
+				@(filesize),XADFileSizeKey,
+				@(length*128),XADCompressedSizeKey,
+				@(filesize),XADDataLengthKey,
+				@(filestart),XADDataOffsetKey,
+				@(crc),@"LBRCRC16",
 			nil];
 		}
 
 		if(creationdate)
-		[dict setObject:[NSDate XADDateWithCPMDate:creationdate
-		time:creationtime] forKey:XADCreationDateKey];
+		dict[XADCreationDateKey] = [NSDate XADDateWithCPMDate:creationdate
+		time:creationtime];
 
 		if(modificationdate)
-		[dict setObject:[NSDate XADDateWithCPMDate:modificationdate
-		time:modificationtime] forKey:XADLastModificationDateKey];
+		dict[XADLastModificationDateKey] = [NSDate XADDateWithCPMDate:modificationdate
+		time:modificationtime];
 
 		[self addEntryWithDictionary:dict];
 		[fh seekToFileOffset:currpos];
@@ -155,26 +155,26 @@
 -(CSHandle *)handleForEntryWithDictionary:(NSDictionary *)dict wantChecksum:(BOOL)checksum
 {
 	CSHandle *handle=[self handleAtDataOffsetForDictionary:dict];
-	NSNumber *squeezenum=[dict objectForKey:@"LBRIsSqueeze"];
-	NSNumber *crunchnum=[dict objectForKey:@"LBRIsCrunch"];
+	NSNumber *squeezenum=dict[@"LBRIsSqueeze"];
+	NSNumber *crunchnum=dict[@"LBRIsCrunch"];
 
-	if(squeezenum && [squeezenum boolValue])
+	if(squeezenum && squeezenum.boolValue)
 	{
 		handle=[XADSqueezeParser handleForEntryWithDictionary:dict
 		wantChecksum:checksum handle:handle];
 	}
-	else if(crunchnum && [crunchnum boolValue])
+	else if(crunchnum && crunchnum.boolValue)
 	{
 		handle=[XADCrunchParser handleForEntryWithDictionary:dict
 		wantChecksum:checksum handle:handle];
 	}
 	else
 	{
-		off_t length=[[dict objectForKey:XADDataLengthKey] intValue];
-		NSNumber *crc=[dict objectForKey:@"LBRCRC16"];
+		off_t length=[dict[XADDataLengthKey] intValue];
+		NSNumber *crc=dict[@"LBRCRC16"];
 
 		if(checksum&&crc) handle=[XADCRCHandle CCITTCRC16HandleWithHandle:handle
-		length:length correctCRC:[crc intValue] conditioned:NO];
+		length:length correctCRC:crc.intValue conditioned:NO];
 	}
 
 	return handle;

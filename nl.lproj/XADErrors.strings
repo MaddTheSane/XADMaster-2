@@ -1,0 +1,37 @@
+/* 
+  XADErrors.strings
+  XADMaster
+
+  Created by C.W. Betts on 11/26/17.
+  
+*/
+
+/* Common errors */
+"Attempted to read more data than was available" = "Archief is onvolledig";
+"Opening file failed" = "Archief kon niet worden geopend";
+"Missing or wrong password" = "Wachtwoord is onjuist of ontbreekt";
+"Wrong checksum" = "Controlecijfer is onjuist";
+"Could not create directory" = "Map kon niet worden aangemaakt";
+
+/* Uncommon or unused errors */
+"Unknown error" = "Onbekende fout";
+"Failed to write to file" = "Schrijven van het archief is mislukt";
+"Function called with illegal parameters" = "Functie met verkeerde parameters opgeroepen";
+"Not enough memory available" = "Niet genoeg geheugen beschikbaar";
+"Data is corrupted" = "Archief is beschadigd";
+"File is not fully supported" = "Archief wordt niet volledig ondersteund";
+"Required resource missing" = "Vereiste hulpbron ontbreekt";
+"Error on decrunching" = "Fout bij het decrunchen";
+"Unknown file type" = "Onbekende bestandssoort";
+"File, disk has been skipped" = "Archief, harde schijf overgeslagen";
+"User cancelled extraction" = "Gebruiker heeft het uitpakken geannuleerd";
+"File already exists" = "Bestand bestaat al";
+"Verify failed (disk hook)" = "Controle mislukt (disk-hook)";
+"Wrong drive geometry" = "Harde schijf heeft verkeerde geometrie";
+"Unknown data format" = "Onbekend dataformaat";
+"Source contains no files" = "Bron bevat geen bestanden";
+"Unknown filesystem" = "Onbekend bestandssysteem";
+"Name of file exists as directory" = "Bestandsnaam bestaat al als map";
+"Buffer was too short" = "Buffer te kort";
+"Text encoding was defective" = "Tekstcodering was defect";
+"Could not create symlink" = "Symlink kon niet worden aangemaakt";

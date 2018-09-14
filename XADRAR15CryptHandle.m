@@ -7,7 +7,7 @@ static inline uint16_t ror16(uint16_t val,int n) { return (val>>n)|(val<<(16-n))
 
 -(id)initWithHandle:(CSHandle *)handle length:(off_t)length password:(NSData *)passdata
 {
-	if((self=[super initWithHandle:handle length:length]))
+	if((self=[super initWithInputBufferForHandle:handle length:length]))
 	{
 		password=[passdata retain];
 	}
@@ -24,8 +24,8 @@ static inline uint16_t ror16(uint16_t val,int n) { return (val>>n)|(val<<(16-n))
 
 -(void)resetByteStream
 {
-	int passlength=[password length];
-	const uint8_t *passbytes=[password bytes];
+	NSInteger passlength=password.length;
+	const uint8_t *passbytes=password.bytes;
 
 	uint32_t crc=XADCalculateCRC(0xffffffff,passbytes,passlength,XADCRCTable_edb88320);
 
@@ -33,7 +33,7 @@ static inline uint16_t ror16(uint16_t val,int n) { return (val>>n)|(val<<(16-n))
 	key1=crc>>16;
 	key2=key3=0;
 
-	for(int i=0;i<passlength;i++)
+	for(NSInteger i=0;i<passlength;i++)
 	{
 		uint8_t c=passbytes[i];
 		key2^=c^XADCRCTable_edb88320[c];

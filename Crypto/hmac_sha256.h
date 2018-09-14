@@ -31,7 +31,19 @@
 #ifndef HEADER_HMAC_SHA256_H
 #define HEADER_HMAC_SHA256_H
 
+#if defined(USE_COMMON_CRYPTO) && USE_COMMON_CRYPTO
+#include <CommonCrypto/CommonDigest.h>
+typedef CC_SHA256_CTX XADSHA256;
+#define XADSHA256_Init CC_SHA256_Init
+#define XADSHA256_Final CC_SHA256_Final
+#define XADSHA256_Update CC_SHA256_Update
+#else
 #include "sha.h"
+typedef SHA_CTX XADSHA256;
+#define XADSHA256_Init SHA256_Init
+#define XADSHA256_Final SHA256_Final
+#define XADSHA256_Update SHA256_Update
+#endif
 
 #ifdef  __cplusplus
 extern "C" {
@@ -40,11 +52,11 @@ extern "C" {
 #define HMAC_SHA256_DIGEST_LENGTH	32
 #define HMAC_SHA256_BLOCK_LENGTH	64
 
-/* The HMAC_SHA256 structure: */
+/** The HMAC_SHA256 structure: */
 typedef struct _HMAC_SHA256_CTX {
 	unsigned char	ipad[HMAC_SHA256_BLOCK_LENGTH];
 	unsigned char	opad[HMAC_SHA256_BLOCK_LENGTH];
-	SHA_CTX		shactx;
+	XADSHA256		shactx;
 	unsigned char	key[HMAC_SHA256_BLOCK_LENGTH];
 	unsigned int	keylen;
 	unsigned int	hashkey;

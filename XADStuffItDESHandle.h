@@ -8,8 +8,8 @@
 
 +(NSData *)keyForPasswordData:(NSData *)passworddata entryKey:(NSData *)entrykey MKey:(NSData *)mkey;
 
--(id)initWithHandle:(CSHandle *)handle key:(NSData *)keydata;
--(id)initWithHandle:(CSHandle *)handle length:(off_t)length key:(NSData *)keydata;
+-(instancetype)initWithHandle:(CSHandle *)handle key:(NSData *)keydata;
+-(instancetype)initWithHandle:(CSHandle *)handle length:(off_t)length key:(NSData *)keydata;
 
 -(int)produceBlockAtOffset:(off_t)pos;
 

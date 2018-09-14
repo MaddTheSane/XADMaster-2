@@ -181,7 +181,7 @@ static xadINT32 FATparsedir(struct FATDiskParseData *pd, xadINT32 pos, xadINT32 
   if(pd->CurDir)
   {
     curdirname = pd->CurDir->xfi_FileName;
-    curnamesize = strlen((const char *)curdirname);
+    curnamesize = (xadUINT32)strlen((const char *)curdirname);
   }
 
   while(!stop && !err)
@@ -254,10 +254,10 @@ static xadINT32 FATparsedir(struct FATDiskParseData *pd, xadINT32 pos, xadINT32 
                   for(namesize = 0; namesize < 3 && mem[i+8+namesize] != 0x20; ++namesize)
                     *(str++) = mem[i+8+namesize];
                 }
-                namesize = str-name;
+                namesize = (xadUINT32)(str-name);
               }
               else
-                namesize = strlen((const char *)name);
+                namesize = (xadUINT32)strlen((const char *)name);
 
               if((fi = (struct xadFileInfo *) xadAllocObject(XADM XADOBJ_FILEINFO, XAD_OBJNAMESIZE,
               namesize + curnamesize+1+1, TAG_DONE)))

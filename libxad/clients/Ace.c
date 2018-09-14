@@ -430,7 +430,7 @@ static xadINT32 ACEdecompress(struct AceData *ad, xadUINT32 save)
       {
         if((c -= 260) > 1)
         {
-          dist = (ad->code_rd >> (33 - c)) + (1L << (c - 1));
+          dist = (xadUINT32)((ad->code_rd >> (33 - c)) + (1L << (c - 1)));
           ACEaddbits(ad, c - 1);
         }
         else

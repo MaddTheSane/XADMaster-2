@@ -4,7 +4,7 @@
 
 @interface XADRAR15Handle:XADFastLZSSHandle
 {
-	XADRARParser *parser;
+	__unsafe_unretained XADRARParser *parser;
 
 	NSArray *files;
 	int file;
@@ -33,8 +33,7 @@
 	int shortoffsettable[256];
 }
 
--(id)initWithRARParser:(XADRARParser *)parent files:(NSArray *)filearray;
--(void)dealloc;
+-(id)initWithRARParser:(XADRARParser *)parentparser files:(NSArray *)filearray;
 
 -(void)resetLZSSHandle;
 -(void)startNextFile;

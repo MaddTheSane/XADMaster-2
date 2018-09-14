@@ -7,9 +7,8 @@
 	int extralength,extraoffset;
 }
 
--(id)initWithHandle:(CSHandle *)handle;
--(id)initWithHandle:(CSHandle *)handle length:(off_t)length;
--(void)dealloc;
+-(instancetype)initWithHandle:(CSHandle *)handle;
+-(instancetype)initWithHandle:(CSHandle *)handle length:(off_t)length;
 
 -(void)resetLZSSHandle;
 -(void)expandFromPosition:(off_t)pos;

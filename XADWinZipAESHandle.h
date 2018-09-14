@@ -2,9 +2,12 @@
 #import "Crypto/aes.h"
 #import "Crypto/hmac_sha1.h"
 
+#if defined(USE_COMMON_CRYPTO) && USE_COMMON_CRYPTO
+#include <Security/Security.h>
+#endif
+
 @interface XADWinZipAESHandle:CSStreamHandle
 {
-	CSHandle *parent;
 	NSData *password;
 	int keybytes;
 	off_t startoffs;
@@ -15,8 +18,7 @@
 	BOOL hmac_done,hmac_correct;
 }
 
--(id)initWithHandle:(CSHandle *)handle length:(off_t)length password:(NSData *)passdata keyLength:(int)keylength;
--(void)dealloc;
+-(instancetype)initWithHandle:(CSHandle *)handle length:(off_t)length password:(NSData *)passdata keyLength:(int)keylength;
 
 -(void)resetStream;
 -(int)streamAtMost:(int)num toBuffer:(void *)buffer;

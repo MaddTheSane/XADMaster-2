@@ -8,9 +8,9 @@
 	return [self initWithHandle:handle length:length variant:XADNormalDeflateVariant];
 }
 
--(id)initWithHandle:(CSHandle *)handle length:(off_t)length variant:(int)deflatevariant
+-(id)initWithHandle:(CSHandle *)handle length:(off_t)length variant:(XADDeflateVariant)deflatevariant
 {
-	if((self=[super initWithHandle:handle length:length
+	if((self=[super initWithInputBufferForHandle:handle length:length
 	windowSize:deflatevariant==XADDeflate64DeflateVariant?65536:32768]))
 	{
 		variant=deflatevariant;

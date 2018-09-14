@@ -1,6 +1,9 @@
 #import "CSInputBuffer.h"
 
 
+#if __has_feature(objc_arc)
+#error this file needs to be compiled WITHOUT Automatic Reference Counting (ARC)
+#endif
 
 // Allocation and management
 
@@ -10,7 +13,7 @@ CSInputBuffer *CSInputBufferAlloc(CSHandle *parent,int size)
 	if(!self) return NULL;
 
 	self->parent=[parent retain];
-	self->startoffs=[parent offsetInFile];
+	self->startoffs=parent.offsetInFile;
 	self->eof=NO;
 
 	self->buffer=(uint8_t *)&self[1];
@@ -181,6 +184,8 @@ void _CSInputFillBits(CSInputBuffer *self)
 //		shift-=8;
 //	}
 
+	if(startoffset+numbytes>_CSInputBytesLeftInBuffer(self)) _CSInputBufferRaiseEOF(self);
+
 	switch(numbytes)
 	{
 		case 4:
@@ -301,7 +306,7 @@ void CSInputSkipBitsLE(CSInputBuffer *self,int numbits)
 		CSInputSkipToByteBoundary(self);
 		CSInputSkipBytes(self,skipbits>>3);
 		if(skipbits&7) CSInputNextBitStringLE(self,skipbits&7);
-	}	
+	}
 }
 
 

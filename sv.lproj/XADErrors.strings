@@ -1,0 +1,37 @@
+/* 
+  XADErrors.strings
+  XADMaster
+
+  Created by C.W. Betts on 11/26/17.
+  
+*/
+
+/* Common errors */
+"Attempted to read more data than was available" = "Akrivfilen är inte komplett";
+"Opening file failed" = "Filen kunde inte öppnas";
+"Missing or wrong password" = "Lösenordet accepterades inte";
+"Wrong checksum" = "Filen är skadad";
+"Could not create directory" = "Kunde inte skapa mappen";
+
+/* Uncommon or unused errors */
+"Unknown error" = "Okänt fel";
+"Failed to write to file" = "Kunde inte skriva till filen";
+"Function called with illegal parameters" = "Funktionen kallade otillåtna parametrar";
+"Not enough memory available" = "Not enough memory available";
+"Data is corrupted" = "Datan är skadad";
+"File is not fully supported" = "Filformatet stöds inte till fullo";
+"Required resource missing" = "Krävd resurs saknas";
+"Error on decrunching" = "Fel vid uppackning";
+"Unknown file type" = "Okänd filtyp";
+"File, disk has been skipped" = "Fil, disk hoppades över";
+"User cancelled extraction" = "Användaren avbröt uppackningen";
+"File already exists" = "Filen existerar redan";
+"Verify failed (disk hook)" = "Verifiering misslyckades (disk hook)";
+"Wrong drive geometry" = "Felaktig skivgeometri";
+"Unknown data format" = "Okänt dataformat";
+"Source contains no files" = "Källan innehåller inga filer";
+"Unknown filesystem" = "Okänt filsystem";
+"Name of file exists as directory" = "Namn på filen existerar redan som en mapp";
+"Buffer was too short" = "Bufferten var för kort";
+"Text encoding was defective" = "Textkodning var defekt";
+"Could not create symlink" = "Kunde inte skapa symbolisk länk";

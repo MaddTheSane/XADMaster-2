@@ -11,8 +11,8 @@
 
 +(BOOL)recognizeFileWithHandle:(CSHandle *)handle firstBytes:(NSData *)data name:(NSString *)name
 {
-	const uint8_t *bytes=[data bytes];
-	int length=[data length];
+	const uint8_t *bytes=data.bytes;
+	NSInteger length=data.length;
 
 	if(length<8) return NO;
 	if(CSUInt32BE(&bytes[0])!=0x00051600 && CSUInt32BE(&bytes[0])!=0x00051607 &&
@@ -25,7 +25,7 @@
 {
 	[self setIsMacArchive:YES];
 
-	CSHandle *fh=[self handle];
+	CSHandle *fh=self.handle;
 
 	uint32_t magic=[fh readUInt32BE];
 
@@ -42,7 +42,7 @@
 	uint32_t rsrcoffs=0,rsrclen=0;
 
 	NSMutableDictionary *shared=[NSMutableDictionary dictionaryWithObjectsAndKeys:
-		[self XADPathWithString:[self name]],XADFileNameKey,
+		[self XADPathWithString:self.name],XADFileNameKey,
 	nil];
 
 	for(int i=0;i<num;i++)
@@ -51,7 +51,7 @@
 		uint32_t entryoffs=[fh readUInt32InBigEndianOrder:bigendian];
 		uint32_t entrylen=[fh readUInt32InBigEndianOrder:bigendian];
 
-		off_t offs=[fh offsetInFile];
+		off_t offs=fh.offsetInFile;
 
 		switch(entryid)
 		{
@@ -71,7 +71,7 @@
 
 				NSData *data=[fh readDataOfLength:entrylen];
 				XADPath *path=[self XADPathWithData:data separators:XADNoPathSeparator];
-				[shared setObject:path forKey:XADFileNameKey];
+				shared[XADFileNameKey] = path;
 			}
 			break;
 
@@ -81,7 +81,7 @@
 
 				NSData *data=[fh readDataOfLength:entrylen];
 				XADString *comment=[self XADStringWithData:data];
-				[shared setObject:comment forKey:XADCommentKey];
+				shared[XADCommentKey] = comment;
 			}
 			break;
 
@@ -93,26 +93,26 @@
 
 				if(entrylen>=4)
 				{
-					uint32_t creation=[fh readUInt32BE]; 
-					[shared setObject:[NSDate XADDateWithTimeIntervalSince2000:creation] forKey:XADCreationDateKey];
+					uint32_t creation=[fh readUInt32BE];
+					shared[XADCreationDateKey] = [NSDate XADDateWithTimeIntervalSince2000:creation];
 				}
 
 				if(entrylen>=8)
 				{
 					uint32_t modification=[fh readUInt32BE];
-					[shared setObject:[NSDate XADDateWithTimeIntervalSince2000:modification] forKey:XADLastModificationDateKey];
+					shared[XADLastModificationDateKey] = [NSDate XADDateWithTimeIntervalSince2000:modification];
 				}
 
 				if(entrylen>=12)
 				{
 					uint32_t backup=[fh readUInt32BE];
-					[shared setObject:[NSDate XADDateWithTimeIntervalSince2000:backup] forKey:XADLastBackupDateKey];
+					shared[XADLastBackupDateKey] = [NSDate XADDateWithTimeIntervalSince2000:backup];
 				}
 
 				if(entrylen>=16)
 				{
 					uint32_t access=[fh readUInt32BE];
-					[shared setObject:[NSDate XADDateWithTimeIntervalSince2000:access] forKey:XADLastAccessDateKey];
+					shared[XADLastAccessDateKey] = [NSDate XADDateWithTimeIntervalSince2000:access];
 				}
 			}
 			break;
@@ -129,7 +129,7 @@
 
 				// Add FinderInfo to extended attributes only if it is not empty.
 				static const uint8_t zerobytes[32]={0x00};
-				if(memcmp([finderinfo bytes],zerobytes,[finderinfo length])!=0)
+				if(memcmp(finderinfo.bytes,zerobytes,finderinfo.length)!=0)
 				{
 					extattrs=[NSMutableDictionary dictionaryWithObject:finderinfo
 					forKey:@"com.apple.FinderInfo"];
@@ -142,7 +142,7 @@
 					[XADAppleDouble parseAppleDoubleExtendedAttributesWithHandle:fh intoDictionary:extattrs];
 				}
 
-				if(extattrs) [shared setObject:extattrs forKey:XADExtendedAttributesKey];
+				if(extattrs) shared[XADExtendedAttributesKey] = extattrs;
 			}
 			break;
 		}
@@ -153,10 +153,10 @@
 	if(dataoffs)
 	{
 		NSMutableDictionary *dict=[NSMutableDictionary dictionaryWithObjectsAndKeys:
-			[NSNumber numberWithLongLong:datalen],XADFileSizeKey,
-			[NSNumber numberWithLongLong:datalen],XADCompressedSizeKey,
-			[NSNumber numberWithLongLong:dataoffs],XADDataOffsetKey,
-			[NSNumber numberWithLongLong:datalen],XADDataLengthKey,
+			@(datalen),XADFileSizeKey,
+			@(datalen),XADCompressedSizeKey,
+			@(dataoffs),XADDataOffsetKey,
+			@(datalen),XADDataLengthKey,
 		nil];
 
 		[dict addEntriesFromDictionary:shared];
@@ -167,11 +167,11 @@
 	if(rsrcoffs)
 	{
 		NSMutableDictionary *dict=[NSMutableDictionary dictionaryWithObjectsAndKeys:
-			[NSNumber numberWithLongLong:rsrclen],XADFileSizeKey,
-			[NSNumber numberWithLongLong:rsrclen],XADCompressedSizeKey,
-			[NSNumber numberWithLongLong:rsrcoffs],XADDataOffsetKey,
-			[NSNumber numberWithLongLong:rsrclen],XADDataLengthKey,
-			[NSNumber numberWithBool:YES],XADIsResourceForkKey,
+			@(rsrclen),XADFileSizeKey,
+			@(rsrclen),XADCompressedSizeKey,
+			@(rsrcoffs),XADDataOffsetKey,
+			@(rsrclen),XADDataLengthKey,
+			@YES,XADIsResourceForkKey,
 		nil];
 
 		[dict addEntriesFromDictionary:shared];

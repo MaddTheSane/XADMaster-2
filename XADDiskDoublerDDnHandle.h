@@ -19,8 +19,7 @@
 	BOOL checksumcorrect,uncompressed;
 }
 
--(id)initWithHandle:(CSHandle *)handle length:(off_t)length;
--(void)dealloc;
+-(instancetype)initWithHandle:(CSHandle *)handle length:(off_t)length;
 
 -(void)resetLZSSHandle;
 -(int)nextLiteralOrOffset:(int *)offsetptr andLength:(int *)lengthptr atPosition:(off_t)pos;

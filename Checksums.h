@@ -4,22 +4,22 @@
 
 @interface CSHandle (Checksums)
 
--(BOOL)hasChecksum;
--(BOOL)isChecksumCorrect;
+@property (NS_NONATOMIC_IOSONLY, readonly) BOOL hasChecksum;
+@property (NS_NONATOMIC_IOSONLY, readonly, getter=isChecksumCorrect) BOOL checksumCorrect;
 
 @end
 
 @interface CSSubHandle (Checksums)
 
--(BOOL)hasChecksum;
--(BOOL)isChecksumCorrect;
+@property (NS_NONATOMIC_IOSONLY, readonly) BOOL hasChecksum;
+@property (NS_NONATOMIC_IOSONLY, readonly, getter=isChecksumCorrect) BOOL checksumCorrect;
 
 @end
 
 @interface CSStreamHandle (Checksums)
 
--(BOOL)hasChecksum;
--(BOOL)isChecksumCorrect;
+@property (NS_NONATOMIC_IOSONLY, readonly) BOOL hasChecksum;
+@property (NS_NONATOMIC_IOSONLY, readonly, getter=isChecksumCorrect) BOOL checksumCorrect;
 
 @end
 
@@ -27,22 +27,21 @@
 
 @interface CSChecksumWrapperHandle:CSHandle
 {
-	CSHandle *parent,*checksum;
+	CSHandle *checksum;
 }
 
--(id)initWithHandle:(CSHandle *)handle checksumHandle:(CSHandle *)checksumhandle;
--(void)dealloc;
+-(instancetype)initWithHandle:(CSHandle *)handle checksumHandle:(CSHandle *)checksumhandle;
 
--(off_t)fileSize;
--(off_t)offsetInFile;
--(BOOL)atEndOfFile;
+@property (NS_NONATOMIC_IOSONLY, readonly) off_t fileSize;
+@property (NS_NONATOMIC_IOSONLY, readonly) off_t offsetInFile;
+@property (NS_NONATOMIC_IOSONLY, readonly) BOOL atEndOfFile;
 -(void)seekToFileOffset:(off_t)offs;
 -(void)seekToEndOfFile;
 -(void)pushBackByte:(int)byte;
 -(int)readAtMost:(int)num toBuffer:(void *)buffer;
 -(void)writeBytes:(int)num fromBuffer:(const void *)buffer;
 
--(BOOL)hasChecksum;
--(BOOL)isChecksumCorrect;
+@property (NS_NONATOMIC_IOSONLY, readonly) BOOL hasChecksum;
+@property (NS_NONATOMIC_IOSONLY, readonly, getter=isChecksumCorrect) BOOL checksumCorrect;
 
 @end

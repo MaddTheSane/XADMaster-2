@@ -328,7 +328,7 @@ FUNCxadConvertDates /* xadTAGPTR tags */
   {
     time_t t = time(NULL);
     struct tm *tm = localtime(&t);
-    gmtoffs = tm->tm_gmtoff/60;
+    gmtoffs = (xadINT32)(tm->tm_gmtoff/60);
   }
 #else
   gmttst=0;

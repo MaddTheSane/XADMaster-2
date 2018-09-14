@@ -42,7 +42,6 @@ typedef struct {
 
 @interface XADNSISBzip2Handle:CSBlockStreamHandle
 {
-	CSHandle *parent;
 	off_t startoffs;
 	BOOL hasrand;
 
@@ -51,8 +50,7 @@ typedef struct {
 	uint8_t outblock[65536];
 }
 
--(id)initWithHandle:(CSHandle *)handle length:(off_t)length hasRandomizationBit:(BOOL)hasrandbit;
--(void)dealloc;
+-(instancetype)initWithHandle:(CSHandle *)handle length:(off_t)length hasRandomizationBit:(BOOL)hasrandbit;
 
 -(void)resetBlockStream;
 -(int)produceBlockAtOffset:(off_t)pos;

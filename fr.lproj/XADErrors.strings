@@ -1,0 +1,37 @@
+/* 
+  XADErrors.strings
+  XADMaster
+
+  Created by C.W. Betts on 11/26/17.
+  
+*/
+
+/* Common errors */
+"Attempted to read more data than was available" = "L'archive est incomplète";
+"Opening file failed" = "Le fichier n'a pas pu être ouvert";
+"Missing or wrong password" = "Le mot de passe fourni est incorrect";
+"Wrong checksum" = "L'archive est corrompue";
+"Could not create directory" = "Impossible de créer le dossier";
+
+/* Uncommon or unused errors */
+"Unknown error" = "Erreur inconnue";
+"Failed to write to file" = "Impossible d'écrire vers le fichier";
+"Function called with illegal parameters" = "Fonction appelée avec des paramètres incorrects";
+"Not enough memory available" = "Pas assez de mémoire disponible";
+"Data is corrupted" = "Les données sont corompues";
+"File is not fully supported" = "Le fichier n'est pas entièrement supporté";
+"Required resource missing" = "Une ressource requise est manquante";
+"Error on decrunching" = "Erreur lors du decrunching";
+"Unknown file type" = "Type de fichier inconnu";
+"File, disk has been skipped" = "Le fichier ou le disque a été sauté";
+"User cancelled extraction" = "L'utilisateur a annulé l'extraction";
+"File already exists" = "Le fichier existe déjà";
+"Verify failed (disk hook)" = "La vérification a échoué (disk hook)";
+"Wrong drive geometry" = "Mauvaise géométrie du disque";
+"Unknown data format" = "Format de données inconnu";
+"Source contains no files" = "La source ne contient pas de fichiers";
+"Unknown filesystem" = "Système de fichiers inconnu";
+"Name of file exists as directory" = "Le nom du fichier existe en tant que dossier";
+"Buffer was too short" = "Le tampon est trop petit";
+"Text encoding was defective" = "L'encodage du texte est mauvais";
+"Could not create symlink" = "Impossible de créer le lien symbolique";

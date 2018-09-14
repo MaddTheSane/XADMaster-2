@@ -46,6 +46,7 @@ void SetRAROpcodeOperand2(RAROpcode *opcode,unsigned int addressingmode,uint32_t
 
 bool IsProgramTerminated(RAROpcode *opcodes,int numopcodes)
 {
+	if(numopcodes==0) return false;
 	return RARInstructionIsUnconditionalJump(opcodes[numopcodes-1].instruction);
 }
 
@@ -343,7 +344,7 @@ RAROpcode *opcodes,int numopcodes,void ***instructionlabels)
 
 	CallLabel:
 		self->registers[7]-=4;
-		RARVirtualMachineWrite32(self,self->registers[7],opcode-opcodes+1);
+		RARVirtualMachineWrite32(self,self->registers[7],(uint32_t)(opcode-opcodes+1));
 		Jump(GetOperand1());
 
 	RetLabel:

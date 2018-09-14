@@ -30,15 +30,15 @@ static const NSString *DateFormat=@"Date";
 
 +(BOOL)recognizeFileWithHandle:(CSHandle *)handle firstBytes:(NSData *)data name:(NSString *)name
 {
-	const uint8_t *bytes=[data bytes];
-	int length=[data length];
+	const uint8_t *bytes=data.bytes;
+	NSInteger length=data.length;
 
 	return length>=4&&bytes[0]=='x'&&bytes[1]=='a'&&bytes[2]=='r'&&bytes[3]=='!';
 }
 
 -(void)parse
 {
-	CSHandle *fh=[self handle];
+	CSHandle *fh=self.handle;
 
 	[fh skipBytes:4];
 	int headsize=[fh readUInt16BE];
@@ -48,38 +48,32 @@ static const NSString *DateFormat=@"Date";
 
 	heapoffset=headsize+tablecompsize;
 
-	filedefinitions=[NSDictionary dictionaryWithObjectsAndKeys:
-		[NSArray arrayWithObjects:@"Name",StringFormat,nil],@"name",
-		[NSArray arrayWithObjects:@"Type",StringFormat,nil],@"type",
-		[NSArray arrayWithObjects:@"Link",StringFormat,nil],@"link",
-		[NSArray arrayWithObjects:XADLastModificationDateKey,DateFormat,nil],@"mtime",
-		[NSArray arrayWithObjects:XADLastAccessDateKey,DateFormat,nil],@"atime",
-		[NSArray arrayWithObjects:XADCreationDateKey,DateFormat,nil],@"ctime",
-		[NSArray arrayWithObjects:XADPosixPermissionsKey,OctalFormat,nil],@"mode",
-		[NSArray arrayWithObjects:XADPosixUserKey,DecimalFormat,nil],@"uid",
-		[NSArray arrayWithObjects:XADPosixGroupKey,DecimalFormat,nil],@"gid",
-		[NSArray arrayWithObjects:XADPosixUserNameKey,XADStringFormat,nil],@"user",
-		[NSArray arrayWithObjects:XADPosixGroupNameKey,XADStringFormat,nil],@"group",
-	nil];
+	filedefinitions=@{@"name": @[@"Name",StringFormat],
+		@"type": @[@"Type",StringFormat],
+		@"link": @[@"Link",StringFormat],
+		@"mtime": @[XADLastModificationDateKey,DateFormat],
+		@"atime": @[XADLastAccessDateKey,DateFormat],
+		@"ctime": @[XADCreationDateKey,DateFormat],
+		@"mode": @[XADPosixPermissionsKey,OctalFormat],
+		@"uid": @[XADPosixUserKey,DecimalFormat],
+		@"gid": @[XADPosixGroupKey,DecimalFormat],
+		@"user": @[XADPosixUserNameKey,XADStringFormat],
+		@"group": @[XADPosixGroupNameKey,XADStringFormat]};
 
-	datadefinitions=[NSDictionary dictionaryWithObjectsAndKeys:
-		[NSArray arrayWithObjects:XADFileSizeKey,DecimalFormat,nil],@"size",
-		[NSArray arrayWithObjects:XADDataOffsetKey,DecimalFormat,nil],@"offset",
-		[NSArray arrayWithObjects:XADDataLengthKey,DecimalFormat,nil],@"length",
-		[NSArray arrayWithObjects:@"XARChecksum",HexFormat,nil],@"extracted-checksum",
-		[NSArray arrayWithObjects:@"XARChecksumStyle",StringFormat,nil],@"extracted-checksum style",
-		[NSArray arrayWithObjects:@"XAREncodingStyle",StringFormat,nil],@"encoding style",
-	nil];
+	datadefinitions=@{@"size": @[XADFileSizeKey,DecimalFormat],
+		@"offset": @[XADDataOffsetKey,DecimalFormat],
+		@"length": @[XADDataLengthKey,DecimalFormat],
+		@"extracted-checksum": @[@"XARChecksum",HexFormat],
+		@"extracted-checksum style": @[@"XARChecksumStyle",StringFormat],
+		@"encoding style": @[@"XAREncodingStyle",StringFormat]};
 
-	eadefinitions=[NSDictionary dictionaryWithObjectsAndKeys:
-		[NSArray arrayWithObjects:@"Name",StringFormat,nil],@"name",
-		[NSArray arrayWithObjects:@"Size",DecimalFormat,nil],@"size",
-		[NSArray arrayWithObjects:@"Offset",DecimalFormat,nil],@"offset",
-		[NSArray arrayWithObjects:@"Length",DecimalFormat,nil],@"length",
-		[NSArray arrayWithObjects:@"Checksum",HexFormat,nil],@"extracted-checksum",
-		[NSArray arrayWithObjects:@"ChecksumStyle",StringFormat,nil],@"extracted-checksum style",
-		[NSArray arrayWithObjects:@"EncodingStyle",StringFormat,nil],@"encoding style",
-	nil];
+	eadefinitions=@{@"name": @[@"Name",StringFormat],
+		@"size": @[@"Size",DecimalFormat],
+		@"offset": @[@"Offset",DecimalFormat],
+		@"length": @[@"Length",DecimalFormat],
+		@"extracted-checksum": @[@"Checksum",HexFormat],
+		@"extracted-checksum style": @[@"ChecksumStyle",StringFormat],
+		@"encoding style": @[@"EncodingStyle",StringFormat]};
 
 	files=[NSMutableArray array];
 	filestack=[NSMutableArray array];
@@ -92,30 +86,30 @@ static const NSString *DateFormat=@"Date";
 	//NSLog(@"%@",[[[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding] autorelease]);
 
 	NSXMLParser *xml=[[[NSXMLParser alloc] initWithData:data] autorelease];
-	[xml setDelegate:self];
+	xml.delegate = self;
 	[xml parse];
 
 	// Check for XIP files, the worst file format ever. This is a cpio file
 	// inside a gz file inside a xar, plus a metadata file. The metadata file
 	// is currently ignored.
 	// The XARDisableXIP boolean property can be used to disable this check.
-	NSNumber *disablexip=[[self properties] objectForKey:@"XARDisableXIP"];
-	if(!disablexip || ![disablexip boolValue])
-	if([files count]==2)
+	NSNumber *disablexip=self.properties[@"XARDisableXIP"];
+	if(disablexip == nil || !disablexip.boolValue)
+	if(files.count==2)
 	{
-		NSMutableDictionary *first=[files objectAtIndex:0];
-		NSMutableDictionary *second=[files objectAtIndex:1];
-		NSString *firstname=[first objectForKey:@"Name"];
-		NSString *secondname=[second objectForKey:@"Name"];
-		NSString *secondstyle=[second objectForKey:@"XAREncodingStyle"];
+		NSMutableDictionary *first=files[0];
+		NSMutableDictionary *second=files[1];
+		NSString *firstname=first[@"Name"];
+		NSString *secondname=second[@"Name"];
+		NSString *secondstyle=second[@"XAREncodingStyle"];
 
 		if([firstname isEqual:@"Metadata"] &&
 		[secondname isEqual:@"Content"] &&
 		[secondstyle isEqual:@"application/octet-stream"])
 		{
-			[second setObject:[NSNumber numberWithBool:YES] forKey:XADIsArchiveKey];
-			[second setObject:[NSNumber numberWithBool:YES] forKey:@"XARIsXIP"];
-			[self finishFile:second parentPath:[self XADPath]];
+			second[XADIsArchiveKey] = @YES;
+			second[@"XARIsXIP"] = @YES;
+			[self finishFile:second parentPath:self.XADPath];
 			return;
 		}
 	}
@@ -124,18 +118,18 @@ static const NSString *DateFormat=@"Date";
 	NSMutableDictionary *file;
 	while((file=[enumerator nextObject]))
 	{
-		if(![self shouldKeepParsing]) break;
-		[self finishFile:file parentPath:[self XADPath]];
+		if(!self.shouldKeepParsing) break;
+		[self finishFile:file parentPath:self.XADPath];
 	}
 }
 
 -(void)finishFile:(NSMutableDictionary *)file parentPath:(XADPath *)parentpath
 {
-	NSString *name=[file objectForKey:@"Name"];
-	NSString *type=[file objectForKey:@"Type"];
-	NSString *link=[file objectForKey:@"Link"];
-	NSArray *filearray=[file objectForKey:@"Files"];
-	NSDictionary *eas=[file objectForKey:@"ExtendedAttributes"];
+	NSString *name=file[@"Name"];
+	NSString *type=file[@"Type"];
+	NSString *link=file[@"Link"];
+	NSArray *filearray=file[@"Files"];
+	NSDictionary *eas=file[@"ExtendedAttributes"];
 
 	[file removeObjectForKey:@"Name"];
 	[file removeObjectForKey:@"Type"];
@@ -144,16 +138,16 @@ static const NSString *DateFormat=@"Date";
 	[file removeObjectForKey:@"ExtendedAttributes"];
 
 	XADPath *path=[parentpath pathByAppendingXADStringComponent:[self XADStringWithString:name]];
-	[file setObject:path forKey:XADFileNameKey];
+	file[XADFileNameKey] = path;
 
 	if([type isEqual:@"directory"]||filearray)
 	{
-		[file setObject:[NSNumber numberWithBool:YES] forKey:XADIsDirectoryKey];
+		file[XADIsDirectoryKey] = @YES;
 	}
 	else if([type isEqual:@"symlink"])
 	{
 		if(!link) return;
-		[file setObject:[self XADStringWithString:link] forKey:XADLinkDestinationKey];
+		file[XADLinkDestinationKey] = [self XADStringWithString:link];
 	}
 
 	NSMutableDictionary *eadict=[NSMutableDictionary dictionary];
@@ -165,7 +159,7 @@ static const NSString *DateFormat=@"Date";
 		NSMutableDictionary *ea;
 		while((ea=[enumerator nextObject]))
 		{
-			NSString *name=[ea objectForKey:@"Name"];
+			NSString *name=ea[@"Name"];
 			if(!name) continue;
 
 			if([name isEqual:@"com.apple.ResourceFork"])
@@ -174,12 +168,12 @@ static const NSString *DateFormat=@"Date";
 			}
 			else
 			{
-				NSString *encodingstyle=[ea objectForKey:@"EncodingStyle"];
-				NSNumber *offset=[ea objectForKey:@"Offset"];
-				NSNumber *length=[ea objectForKey:@"Length"];
-				NSNumber *size=[ea objectForKey:@"Size"];
-				NSData *checksum=[ea objectForKey:@"Checksum"];
-				NSString *checksumstyle=[ea objectForKey:@"ChecksumStyle"];
+				NSString *encodingstyle=ea[@"EncodingStyle"];
+				NSNumber *offset=ea[@"Offset"];
+				NSNumber *length=ea[@"Length"];
+				NSNumber *size=ea[@"Size"];
+				NSData *checksum=ea[@"Checksum"];
+				NSString *checksumstyle=ea[@"ChecksumStyle"];
 
 				CSHandle *handle=[self handleForEncodingStyle:encodingstyle
 				offset:offset length:length size:size checksum:checksum
@@ -191,9 +185,9 @@ static const NSString *DateFormat=@"Date";
 
 				if(data)
 				{
-					if(![handle hasChecksum] || [handle isChecksumCorrect])
+					if(!handle.hasChecksum || handle.checksumCorrect)
 					{
-						[eadict setObject:data forKey:name];
+						eadict[name] = data;
 						numeas++;
 					}
 				}
@@ -206,20 +200,20 @@ static const NSString *DateFormat=@"Date";
 
 		if(numeas)
 		{
-			[file setObject:eadict forKey:XADExtendedAttributesKey];
+			file[XADExtendedAttributesKey] = eadict;
 		}
 	}
 
-	NSNumber *datalen=[file objectForKey:XADDataLengthKey];
-	if(datalen) [file setObject:datalen forKey:XADCompressedSizeKey];
-	else [file setObject:[NSNumber numberWithInt:0] forKey:XADCompressedSizeKey];
+	NSNumber *datalen=file[XADDataLengthKey];
+	if(datalen != nil) file[XADCompressedSizeKey] = datalen;
+	else file[XADCompressedSizeKey] = @0;
 
-	if(![file objectForKey:XADFileSizeKey]) [file setObject:[NSNumber numberWithInt:0] forKey:XADFileSizeKey];
+	if(!file[XADFileSizeKey]) file[XADFileSizeKey] = @0;
 
-	NSString *encodingstyle=[file objectForKey:@"XAREncodingStyle"];
-	NSNumber *isxip=[file objectForKey:@"XARIsXIP"];
-	XADString *compressionname=[self compressionNameForEncodingStyle:encodingstyle isXIP:isxip && [isxip boolValue]];
-	if(compressionname) [file setObject:compressionname forKey:XADCompressionNameKey];
+	NSString *encodingstyle=file[@"XAREncodingStyle"];
+	NSNumber *isxip=file[@"XARIsXIP"];
+	XADString *compressionname=[self compressionNameForEncodingStyle:encodingstyle isXIP:isxip && isxip.boolValue];
+	if(compressionname) file[XADCompressionNameKey] = compressionname;
 
 	[self addEntryWithDictionary:file];
 
@@ -227,25 +221,25 @@ static const NSString *DateFormat=@"Date";
 	{
 		NSMutableDictionary *resfile=[NSMutableDictionary dictionaryWithDictionary:file];
 
-		NSNumber *size=[resfork objectForKey:@"Size"];
-		NSNumber *offset=[resfork objectForKey:@"Offset"];
-		NSNumber *length=[resfork objectForKey:@"Length"];
-		NSData *checksum=[resfork objectForKey:@"Checksum"];
-		NSString *checksumstyle=[resfork objectForKey:@"ChecksumStyle"];
-		NSString *encodingstyle=[resfork objectForKey:@"EncodingStyle"];
+		NSNumber *size=resfork[@"Size"];
+		NSNumber *offset=resfork[@"Offset"];
+		NSNumber *length=resfork[@"Length"];
+		NSData *checksum=resfork[@"Checksum"];
+		NSString *checksumstyle=resfork[@"ChecksumStyle"];
+		NSString *encodingstyle=resfork[@"EncodingStyle"];
 
-		if(size) [resfile setObject:size forKey:XADFileSizeKey];
-		if(offset) [resfile setObject:offset forKey:XADDataOffsetKey];
-		if(length) [resfile setObject:length forKey:XADDataLengthKey];
-		if(length) [resfile setObject:length forKey:XADCompressedSizeKey];
-		if(checksum) [resfile setObject:checksum forKey:@"XARChecksum"];
-		if(checksumstyle) [resfile setObject:checksumstyle forKey:@"XARChecksumStyle"];
-		if(encodingstyle) [resfile setObject:encodingstyle forKey:@"XAREncodingStyle"];
+		if(size != nil) resfile[XADFileSizeKey] = size;
+		if(offset != nil) resfile[XADDataOffsetKey] = offset;
+		if(length != nil) resfile[XADDataLengthKey] = length;
+		if(length != nil) resfile[XADCompressedSizeKey] = length;
+		if(checksum) resfile[@"XARChecksum"] = checksum;
+		if(checksumstyle) resfile[@"XARChecksumStyle"] = checksumstyle;
+		if(encodingstyle) resfile[@"XAREncodingStyle"] = encodingstyle;
 
 		XADString *compressionname=[self compressionNameForEncodingStyle:encodingstyle isXIP:NO];
-		if(compressionname) [resfile setObject:compressionname forKey:XADCompressionNameKey];
+		if(compressionname) resfile[XADCompressionNameKey] = compressionname;
 
-		[resfile setObject:[NSNumber numberWithBool:YES] forKey:XADIsResourceForkKey];
+		resfile[XADIsResourceForkKey] = @YES;
 
 		[self addEntryWithDictionary:resfile];
 	}
@@ -263,7 +257,7 @@ static const NSString *DateFormat=@"Date";
 	NSString *compressionname=nil;
 
 	if(isxip) compressionname=@"Deflate";
-	else if(!encodingstyle || [encodingstyle length]==0) compressionname=@"None";
+	else if(!encodingstyle || encodingstyle.length==0) compressionname=@"None";
 	else if([encodingstyle isEqual:@"application/octet-stream"]) compressionname=@"None";
 	else if([encodingstyle isEqual:@"application/x-gzip"]) compressionname=@"Deflate";
 	else if([encodingstyle isEqual:@"application/x-bzip2"]) compressionname=@"Bzip2";
@@ -351,18 +345,18 @@ namespaceURI:(NSString *)namespace qualifiedName:(NSString *)qname
 			{
 				if(curreas)
 				{
-					[currfile setObject:curreas forKey:@"ExtendedAttributes"];
+					currfile[@"ExtendedAttributes"] = curreas;
 					curreas=nil;
 				}
 
-				if([filestack count])
+				if(filestack.count)
 				{
-					NSMutableDictionary *parent=[filestack lastObject];
+					NSMutableDictionary *parent=filestack.lastObject;
 					[filestack removeLastObject];
 
-					NSMutableArray *filearray=[parent objectForKey:@"Files"];
+					NSMutableArray *filearray=parent[@"Files"];
 					if(filearray) [filearray addObject:currfile];
-					else [parent setObject:[NSMutableArray arrayWithObject:currfile] forKey:@"Files"];
+					else parent[@"Files"] = [NSMutableArray arrayWithObject:currfile];
 
 					currfile=parent;
 				}
@@ -399,7 +393,7 @@ namespaceURI:(NSString *)namespace qualifiedName:(NSString *)qname
 		break;
 
 		case OldExtendedAttributeState:
-			if([name isEqual:[currea objectForKey:@"Name"]])
+			if([name isEqual:currea[@"Name"]])
 			{
 				if(!curreas) curreas=[NSMutableArray array];
 				[curreas addObject:currea];
@@ -424,11 +418,11 @@ definitions:(NSDictionary *)definitions destinationDictionary:(NSMutableDictiona
 	NSString *key;
 	while((key=[enumerator nextObject]))
 	{
-		NSArray *definition=[definitions objectForKey:[NSString stringWithFormat:@"%@ %@",name,key]];
-		if(definition) [self parseDefinition:definition string:[attributes objectForKey:key] destinationDictionary:dest];
+		NSArray *definition=definitions[[NSString stringWithFormat:@"%@ %@",name,key]];
+		if(definition) [self parseDefinition:definition string:attributes[key] destinationDictionary:dest];
 	}
 
-	NSArray *definition=[definitions objectForKey:name];
+	NSArray *definition=definitions[name];
 	if(definition) currstring=[NSMutableString string];
 }
 
@@ -437,7 +431,7 @@ destinationDictionary:(NSMutableDictionary *)dest
 {
 	if(!currstring) return;
 
-	NSArray *definition=[definitions objectForKey:name];
+	NSArray *definition=definitions[name];
 	[self parseDefinition:definition string:currstring destinationDictionary:dest];
 
 	currstring=nil;
@@ -446,28 +440,28 @@ destinationDictionary:(NSMutableDictionary *)dest
 -(void)parseDefinition:(NSArray *)definition string:(NSString *)string
 destinationDictionary:(NSMutableDictionary *)dest
 {
-	NSString *key=[definition objectAtIndex:0];
-	NSString *format=[definition objectAtIndex:1];
+	NSString *key=definition[0];
+	NSString *format=definition[1];
 
 	id obj=nil;
 	if(format==StringFormat) obj=string;
 	else if(format==XADStringFormat) obj=[self XADStringWithString:string];
-	else if(format==DecimalFormat) obj=[NSNumber numberWithLongLong:strtoll([string UTF8String],NULL,10)];
-	else if(format==OctalFormat) obj=[NSNumber numberWithLongLong:strtoll([string UTF8String],NULL,8)];
+	else if(format==DecimalFormat) obj=@(strtoll(string.UTF8String,NULL,10));
+	else if(format==OctalFormat) obj=@(strtoll(string.UTF8String,NULL,8));
 	else if(format==HexFormat)
 	{
 		NSMutableData *data=[NSMutableData data];
-		uint8_t byte;
-		int n=0,length=[string length];
+		uint8_t byte = '\0';
+		NSInteger n=0,length=string.length;
 		for(int i=0;i<length;i++)
 		{
-			int c=[string characterAtIndex:i];
+			unichar c=[string characterAtIndex:i];
 			if(isxdigit(c))
 			{
-				int val;
+				int val=0;
 				if(c>='0'&&c<='9') val=c-'0';
-				if(c>='A'&&c<='F') val=c-'A'+10;
-				if(c>='a'&&c<='f') val=c-'a'+10;
+				else if(c>='A'&&c<='F') val=c-'A'+10;
+				else if(c>='a'&&c<='f') val=c-'a'+10;
 
 				if(n&1) { byte|=val; [data appendBytes:&byte length:1]; }
 				else byte=val<<4;
@@ -482,18 +476,18 @@ destinationDictionary:(NSMutableDictionary *)dest
 		NSArray *matches=[string substringsCapturedByPattern:@"^([0-9]{4})-([0-9]{2})-([0-9]{2})T([0-9]{2}):([0-9]{2})(:([0-9]{2})(.([0-9]+))?)?(([+-])([0-9]{2}):([0-9]{2})|Z)$"];
 		if(matches)
 		{
-			int year=[[matches objectAtIndex:1] intValue];
-			int month=[[matches objectAtIndex:2] length]?[[matches objectAtIndex:2] intValue]:1;
-			int day=[[matches objectAtIndex:3] length]?[[matches objectAtIndex:3] intValue]:1;
-			int hour=[[matches objectAtIndex:4] length]?[[matches objectAtIndex:4] intValue]:0;
-			int minute=[[matches objectAtIndex:5] length]?[[matches objectAtIndex:5] intValue]:0;
-			int second=[[matches objectAtIndex:7] length]?[[matches objectAtIndex:7] intValue]:0;
+			int year=[matches[1] intValue];
+			int month=[matches[2] length]?[matches[2] intValue]:1;
+			int day=[matches[3] length]?[matches[3] intValue]:1;
+			int hour=[matches[4] length]?[matches[4] intValue]:0;
+			int minute=[matches[5] length]?[matches[5] intValue]:0;
+			int second=[matches[7] length]?[matches[7] intValue]:0;
 
 			int timeoffs=0;
-			if([[matches objectAtIndex:11] length])
+			if([matches[11] length])
 			{
-				timeoffs=[[matches objectAtIndex:12] intValue]*60+[[matches objectAtIndex:13] intValue];
-				if([[matches objectAtIndex:11] isEqual:@"-"]) timeoffs=-timeoffs;
+				timeoffs=[matches[12] intValue]*60+[matches[13] intValue];
+				if([matches[11] isEqual:@"-"]) timeoffs=-timeoffs;
 			}
 			NSTimeZone *tz=[NSTimeZone timeZoneForSecondsFromGMT:timeoffs*60];
 
@@ -501,7 +495,7 @@ destinationDictionary:(NSMutableDictionary *)dest
 		}
 	}
 
-	if(obj) [dest setObject:obj forKey:key];
+	if(obj) dest[key] = obj;
 }
 
 -(CSHandle *)handleForEntryWithDictionary:(NSDictionary *)dict wantChecksum:(BOOL)checksum
@@ -510,25 +504,25 @@ destinationDictionary:(NSMutableDictionary *)dest
 	NSString *checksumstyle=nil;
 	if(checksum)
 	{
-		checksumdata=[dict objectForKey:@"XARChecksum"];
-		checksumstyle=[dict objectForKey:@"XARChecksumStyle"];
+		checksumdata=dict[@"XARChecksum"];
+		checksumstyle=dict[@"XARChecksumStyle"];
 	}
 
-	NSNumber *offset=[dict objectForKey:XADDataOffsetKey];
-	NSNumber *length=[dict objectForKey:XADDataLengthKey];
-	NSNumber *size=[dict objectForKey:XADFileSizeKey];
+	NSNumber *offset=dict[XADDataOffsetKey];
+	NSNumber *length=dict[XADDataLengthKey];
+	NSNumber *size=dict[XADFileSizeKey];
 
-	NSNumber *isxip=[dict objectForKey:@"XARIsXIP"];
-	if(isxip && [isxip boolValue])
+	NSNumber *isxip=dict[@"XARIsXIP"];
+	if(isxip && isxip.boolValue)
 	{
-		CSHandle *handle=[[self handle] nonCopiedSubHandleFrom:[offset longLongValue]+heapoffset
-		length:[length longLongValue]];
+		CSHandle *handle=[self.handle nonCopiedSubHandleFrom:offset.longLongValue+heapoffset
+		length:length.longLongValue];
 
 		return [[[XADGzipHandle alloc] initWithHandle:handle] autorelease];
 	}
 	else
 	{
-		return [self handleForEncodingStyle:[dict objectForKey:@"XAREncodingStyle"]
+		return [self handleForEncodingStyle:dict[@"XAREncodingStyle"]
 		offset:offset length:length size:size checksum:checksumdata checksumStyle:checksumstyle];
 	}
 }
@@ -536,15 +530,15 @@ destinationDictionary:(NSMutableDictionary *)dest
 -(CSHandle *)handleForEncodingStyle:(NSString *)encodingstyle offset:(NSNumber *)offset
 length:(NSNumber *)length size:(NSNumber *)size checksum:(NSData *)checksum checksumStyle:(NSString *)checksumstyle
 {
-	off_t sizeval=[size longLongValue];
+	off_t sizeval=size.longLongValue;
 
 	CSHandle *handle;
-	if(offset)
+	if(offset != nil)
 	{
-		handle=[[self handle] nonCopiedSubHandleFrom:[offset longLongValue]+heapoffset
-		length:[length longLongValue]];
+		handle=[self.handle nonCopiedSubHandleFrom:offset.longLongValue+heapoffset
+		length:length.longLongValue];
 
-		if(!encodingstyle||[encodingstyle length]==0); // no encoding style, copy
+		if(!encodingstyle||encodingstyle.length==0); // no encoding style, copy
 		else if([encodingstyle isEqual:@"application/octet-stream"]);  // octe-stream, also copy
 		else if([encodingstyle isEqual:@"application/x-gzip"]) handle=[CSZlibHandle zlibHandleWithHandle:handle length:sizeval];
 		else if([encodingstyle isEqual:@"application/x-bzip2"]) handle=[CSBzip2Handle bzip2HandleWithHandle:handle length:sizeval];

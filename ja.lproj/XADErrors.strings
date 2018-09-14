@@ -1,0 +1,37 @@
+/* 
+  XADErrors.strings
+  XADMaster
+
+  Created by C.W. Betts on 11/26/17.
+  
+*/
+
+/* Common errors */
+"Input data buffers border exceeded" = "アーカイブファイルが不完全です";
+"Opening file failed" = "ファイルを開けませんでした";
+"Missing or wrong password" = "入力されたパスワードが正しくありません";
+"Wrong checksum" = "アーカイブファイルが壊れています";
+"Could not create directory" = "フォルダを作成できませんでした";
+
+/* Uncommon or unused errors */
+"Unknown error" = "不明のエラー";
+"Failed to write to file" = "ファイルの書き込みに失敗しました";
+"Function called with illegal parameters" = "不正な引数による関数呼び出しです";
+"Not enough memory available" = "メモリが不十分です";
+"Data is corrupted" = "データが壊れています";
+"Command is not supported" = "サポート外のコマンドです";
+"Required resource missing" = "必要なリソースが見つかりません";
+"Error on decrunching" = "展開時にエラーが発生しました";
+"Unknown file type" = "ファイル形式が不明です";
+"File, disk has been skipped" = "ファイル、ディスクがスキップされました";
+"User break in progress hook" = "ユーザにより中止されました";
+"File already exists" = "ファイルがすでに存在します";
+"Verify failed (disk hook)" = "検証に失敗しました";
+"Wrong drive geometry" = "ドライブジオメトリが誤っています";
+"Unknown data format" = "データ形式が不明です";
+"Source contains no files" = "ファイルが含まれていません";
+"Unknown filesystem" = "ファイルシステムが不明です";
+"Name of file exists as directory" = "同じ名前のフォルダがすでに存在します";
+"Buffer was too short" = "バッファが少なすぎます";
+"Text encoding was defective" = "テキストエンコーディングに問題があります";
+"Could not create symlink" = "シンボリックリンクを作成できません";

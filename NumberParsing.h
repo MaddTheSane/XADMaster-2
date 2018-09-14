@@ -1,3 +1,4 @@
+#import <Foundation/Foundation.h>
 #import "CSHandle.h"
 
 int64_t ParseNumberWithBase(const char *num,int length,int base);

@@ -107,7 +107,7 @@ static int NextArithmeticBitString(ArithmeticDecoder *decoder,ArithmeticModel *m
 
 -(id)initWithHandle:(CSHandle *)handle length:(off_t)length
 {
-	if((self=[super initWithHandle:handle length:length]))
+	if((self=[super initWithInputBufferForHandle:handle length:length]))
 	{
 		block=NULL;
 		transform=NULL;
@@ -268,7 +268,7 @@ static int NextArithmeticBitString(ArithmeticDecoder *decoder,ArithmeticModel *m
 
 -(BOOL)isChecksumCorrect
 {
-	return [self atEndOfFile]&&compcrc==~crc;
+	return self.atEndOfFile&&compcrc==~crc;
 }
 
 @end

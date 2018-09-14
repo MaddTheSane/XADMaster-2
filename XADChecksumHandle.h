@@ -4,17 +4,15 @@
 
 @interface XADChecksumHandle:CSStreamHandle
 {
-	CSHandle *parent;
 	uint32_t correctchecksum,summask,checksum;
 }
 
--(id)initWithHandle:(CSHandle *)handle length:(off_t)length correctChecksum:(int)correct mask:(int)mask;
--(void)dealloc;
+-(instancetype)initWithHandle:(CSHandle *)handle length:(off_t)length correctChecksum:(int)correct mask:(int)mask;
 
 -(void)resetStream;
 -(int)streamAtMost:(int)num toBuffer:(void *)buffer;
 
--(BOOL)hasChecksum;
--(BOOL)isChecksumCorrect;
+@property (NS_NONATOMIC_IOSONLY, readonly) BOOL hasChecksum;
+@property (NS_NONATOMIC_IOSONLY, readonly, getter=isChecksumCorrect) BOOL checksumCorrect;
 
 @end

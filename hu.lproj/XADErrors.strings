@@ -1,0 +1,37 @@
+/* 
+  XADErrors.strings
+  XADMaster
+
+  Created by C.W. Betts on 11/26/17.
+  
+*/
+
+/* Common errors */
+"Attempted to read more data than was available" = "Az archívum hiányos";
+"Opening file failed" = "A fájl nem nyitható meg";
+"Missing or wrong password" = "Helytelen jelszó";
+"Wrong checksum" = "Az archívum sérült";
+"Could not create directory" = "Mappa létrehozása sikertelen";
+
+/* Uncommon or unused errors */
+"Unknown error" = "Ismeretlen hiba";
+"Failed to write to file" = "A fájl írása sikertelen";
+"Function called with illegal parameters" = "Érvénytelen függvényparaméterek";
+"Not enough memory available" = "Nincs elég memória";
+"Data is corrupted" = "Az adatok sérültek";
+"File is not fully supported" = "A fájl nem teljesen támogatott";
+"Required resource missing" = "Egy szükséges erőforrás hiányzik";
+"Error on decrunching" = "Error on decrunching";
+"Unknown file type" = "Ismeretlen fájltípus";
+"File, disk has been skipped" = "Fájl, lemez kihagyva";
+"User cancelled extraction" = "A felhazsnáló megszakította a kibontást";
+"File already exists" = "A fájl már létezik";
+"Verify failed (disk hook)" = "A megerősítés nem sikerült (lemezhez )";
+"Wrong drive geometry" = "Rossz a meghajtó geometriája";
+"Unknown data format" = "Ismeretlen adatformátum";
+"Source contains no files" = "A forrás nem tartalmaz fájlokat";
+"Unknown filesystem" = "Ismeretlen fájlrendszer";
+"Name of file exists as directory" = "Ezen a fájlnéven már létezik egy könyvtár";
+"Buffer was too short" = "A puffer túl rövid volt";
+"Text encoding was defective" = "A szöveg kódolása hiányos volt";
+"Could not create symlink" = "Szimbolikus csatolás késztése sikertelen";

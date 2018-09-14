@@ -2,7 +2,7 @@
 #import "PDFEncryptionUtils.h"
 #import "../CSHandle.h"
 
-extern NSString *PDFUnsupportedEncryptionException;
+extern NSString *const PDFUnsupportedEncryptionException;
 
 @class PDFEncryptionAlgorithm;
 @class PDFObjectReference,PDFString;
@@ -22,10 +22,9 @@ extern NSString *PDFUnsupportedEncryptionException;
 
 +(BOOL)isEncryptedForTrailerDictionary:(NSDictionary *)trailer;
 
--(id)initWithEncryptDictionary:(NSDictionary *)encryptdict permanentID:(NSData *)permanentiddata;
--(void)dealloc;
+-(instancetype)initWithEncryptDictionary:(NSDictionary *)encryptdict permanentID:(NSData *)permanentiddata;
 
--(BOOL)needsPassword;
+@property (NS_NONATOMIC_IOSONLY, readonly) BOOL needsPassword;
 -(BOOL)setPassword:(NSString *)newpassword;
 
 -(NSData *)documentKeyOfLength:(int)length;
@@ -43,8 +42,6 @@ extern NSString *PDFUnsupportedEncryptionException;
 
 
 @interface PDFEncryptionAlgorithm:NSObject
-{
-}
 
 -(NSData *)decryptedData:(NSData *)data reference:(PDFObjectReference *)ref;
 -(CSHandle *)decryptedHandle:(CSHandle *)handle reference:(PDFObjectReference *)ref;
@@ -55,8 +52,6 @@ extern NSString *PDFUnsupportedEncryptionException;
 
 
 @interface PDFNoAlgorithm:PDFEncryptionAlgorithm
-{
-}
 
 -(NSData *)decryptedData:(NSData *)data reference:(PDFObjectReference *)ref;
 -(CSHandle *)decryptedHandle:(CSHandle *)handle reference:(PDFObjectReference *)ref;
@@ -71,7 +66,7 @@ extern NSString *PDFUnsupportedEncryptionException;
 	PDFEncryptionHandler *parent;
 }
 
--(id)initWithLength:(int)length handler:(PDFEncryptionHandler *)handler;
+-(instancetype)initWithLength:(int)length handler:(PDFEncryptionHandler *)handler;
 -(NSData *)keyForReference:(PDFObjectReference *)ref AES:(BOOL)aes;
 
 @end
@@ -79,8 +74,6 @@ extern NSString *PDFUnsupportedEncryptionException;
 
 
 @interface PDFRC4Algorithm:PDFStandardAlgorithm
-{
-}
 
 -(NSData *)decryptedData:(NSData *)data reference:(PDFObjectReference *)ref;
 -(CSHandle *)decryptedHandle:(CSHandle *)handle reference:(PDFObjectReference *)ref;
@@ -89,8 +82,6 @@ extern NSString *PDFUnsupportedEncryptionException;
 
 
 @interface PDFAESAlgorithm:PDFStandardAlgorithm
-{
-}
 
 -(NSData *)decryptedData:(NSData *)data reference:(PDFObjectReference *)ref;
 -(CSHandle *)decryptedHandle:(CSHandle *)handle reference:(PDFObjectReference *)ref;

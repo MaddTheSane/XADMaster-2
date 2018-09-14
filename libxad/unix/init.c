@@ -45,8 +45,8 @@ static struct xadMasterBaseP *xadMasterBase = NULL;
  *
  ******************************************************************************
  */
-typedef const xadSTRING * (*XC_VERSION)();
-typedef const struct xadClient * (*XC_CLIENT)();
+typedef const xadSTRING * (*XC_VERSION)(void);
+typedef const struct xadClient * (*XC_CLIENT)(void);
 
 #if 0
 static xadBOOL LoadExtClients(struct xadMasterBaseP *xmb, xadSTRPTR directory)

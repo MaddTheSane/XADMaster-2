@@ -8,9 +8,14 @@
 #define UncompressedSize 881863
 #define CompressedSize 325602
 
-extern uint8_t StuffItXEnglishDictionary[];
+extern const uint8_t StuffItXEnglishDictionary[];
 
 @implementation XADStuffItXEnglishHandle
+
+-(id)initWithHandle:(CSHandle *)handle length:(off_t)length
+{
+	return [super initWithInputBufferForHandle:handle length:length];
+}
 
 +(const uint8_t **)dictionaryPointers
 {
@@ -23,7 +28,7 @@ extern uint8_t StuffItXEnglishDictionary[];
 
 		NSData *dictionarywords=[ppmd copyDataOfLength:UncompressedSize];
 
-		const uint8_t *dictbytes=[dictionarywords bytes];
+		const uint8_t *dictbytes=dictionarywords.bytes;
 
 		if((XADCalculateCRC(0xffffffff,dictbytes,UncompressedSize,
 		XADCRCTable_edb88320)^0xffffffff)!=0xfb1dcfd5) [XADException raiseUnknownException];
@@ -86,7 +91,7 @@ extern uint8_t StuffItXEnglishDictionary[];
 
 		const uint8_t **pointers=[XADStuffItXEnglishHandle dictionaryPointers];
 
-		wordlen=pointers[index+1]-pointers[index]-1;
+		wordlen=(int)(pointers[index+1]-pointers[index]-1);
 		memcpy(wordbuf,pointers[index],wordlen);
 		wordoffs=0;
 

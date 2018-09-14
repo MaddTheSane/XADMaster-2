@@ -10,7 +10,7 @@
 -(void)parseWithSeparateMacForks;
 -(void)parseExtendedForDictionary:(NSMutableDictionary *)dict size:(int)size;
 
--(CSHandle *)rawHandleForEntryWithDictionary:(NSDictionary *)dict wantChecksum:(BOOL)checksum;
+-(CSHandle *)rawHandleForEntryWithDictionary:(NSDictionary<XADArchiveKeys,id> *)dict wantChecksum:(BOOL)checksum;
 -(NSString *)formatName;
 
 @end

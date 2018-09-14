@@ -5,14 +5,16 @@
 #import "../CSHandle.h"
 #import "../CSByteStreamHandle.h"
 
-#define PDFUnsupportedImageType 0
-#define PDFIndexedImageType 1
-#define PDFGrayImageType 2
-#define PDFRGBImageType 3
-#define PDFCMYKImageType 4
-#define PDFLabImageType 5
-#define PDFSeparationImageType 6
-#define PDFMaskImageType 7
+typedef NS_ENUM(int, PDFImageType) {
+	PDFUnsupportedImageType = 0,
+	PDFIndexedImageType  = 1,
+	PDFGrayImageType = 2,
+	PDFRGBImageType = 3,
+	PDFCMYKImageType = 4,
+	PDFLabImageType = 5,
+	PDFSeparationImageType = 6,
+	PDFMaskImageType = 7
+};
 
 @class PDFParser,PDFObjectReference;
 
@@ -25,54 +27,53 @@
 	PDFParser *parser;
 }
 
--(id)initWithDictionary:(NSDictionary *)dictionary fileHandle:(CSHandle *)filehandle
+NS_ASSUME_NONNULL_BEGIN
+
+-(instancetype)initWithDictionary:(NSDictionary *)dictionary fileHandle:(CSHandle *)filehandle
 offset:(off_t)offset reference:(PDFObjectReference *)reference parser:(PDFParser *)owner;
--(void)dealloc;
 
--(NSDictionary *)dictionary;
--(PDFObjectReference *)reference;
+@property (NS_NONATOMIC_IOSONLY, readonly, retain) NSDictionary *dictionary;
+@property (NS_NONATOMIC_IOSONLY, readonly, retain) PDFObjectReference *reference;
 
--(BOOL)isImage;
--(BOOL)isJPEGImage;
--(BOOL)isJPEG2000Image;
+@property (NS_NONATOMIC_IOSONLY, readonly, getter=isImage) BOOL image;
+@property (NS_NONATOMIC_IOSONLY, readonly, getter=isJPEGImage) BOOL JPEGImage;
+@property (NS_NONATOMIC_IOSONLY, readonly, getter=isJPEG2000Image) BOOL JPEG2000Image;
 
--(int)imageWidth;
--(int)imageHeight;
--(int)imageBitsPerComponent;
+@property (NS_NONATOMIC_IOSONLY, readonly) int imageWidth;
+@property (NS_NONATOMIC_IOSONLY, readonly) int imageHeight;
+@property (NS_NONATOMIC_IOSONLY, readonly) int imageBitsPerComponent;
 
--(int)imageType;
--(int)numberOfImageComponents;
--(NSString *)imageColourSpaceName;
+@property (NS_NONATOMIC_IOSONLY, readonly) PDFImageType imageType;
+@property (NS_NONATOMIC_IOSONLY, readonly) NSInteger numberOfImageComponents;
+@property (NS_NONATOMIC_IOSONLY, readonly) NSString *imageColourSpaceName;
 
--(int)imagePaletteType;
--(int)numberOfImagePaletteComponents;
--(NSString *)imagePaletteColourSpaceName;
--(int)numberOfImagePaletteColours;
--(NSData *)imagePaletteData;
--(id)_paletteColourSpaceObject;
+@property (NS_NONATOMIC_IOSONLY, readonly) PDFImageType imagePaletteType;
+@property (NS_NONATOMIC_IOSONLY, readonly) NSInteger numberOfImagePaletteComponents;
+@property (NS_NONATOMIC_IOSONLY, readonly, retain, nullable) NSString *imagePaletteColourSpaceName;
+@property (NS_NONATOMIC_IOSONLY, readonly) NSInteger numberOfImagePaletteColours;
+-(nullable NSData *)imagePaletteData;
+-(nullable id)_paletteColourSpaceObject;
 
--(int)_typeForColourSpaceObject:(id)colourspace;
--(int)_numberOfComponentsForColourSpaceObject:(id)colourspace;
--(NSString *)_nameForColourSpaceObject:(id)colourspace;
+-(PDFImageType)_typeForColourSpaceObject:(id)colourspace;
+-(NSInteger)_numberOfComponentsForColourSpaceObject:(id)colourspace;
+-(nullable NSString *)_nameForColourSpaceObject:(id)colourspace;
 
--(NSData *)imageICCColourProfile;
--(NSData *)_ICCColourProfileForColourSpaceObject:(id)colourspace;
+-(nullable NSData *)imageICCColourProfile;
+-(nullable NSData *)_ICCColourProfileForColourSpaceObject:(id)colourspace;
 
--(NSString *)imageSeparationName;
--(NSArray *)imageDecodeArray;
+-(nullable NSString *)imageSeparationName;
+-(nullable NSArray *)imageDecodeArray;
 
--(BOOL)hasMultipleFilters;
--(NSString *)finalFilter;
+@property (NS_NONATOMIC_IOSONLY, readonly) BOOL hasMultipleFilters;
+-(nullable NSString *)finalFilter;
 
 -(CSHandle *)rawHandle;
 -(CSHandle *)handle;
 -(CSHandle *)JPEGHandle;
 -(CSHandle *)handleExcludingLast:(BOOL)excludelast;
--(CSHandle *)handleExcludingLast:(BOOL)excludelast decrypted:(BOOL)decrypted;
--(CSHandle *)handleForFilterName:(NSString *)filtername decodeParms:(NSDictionary *)decodeparms parentHandle:(CSHandle *)parent;
--(CSHandle *)predictorHandleForDecodeParms:(NSDictionary *)decodeparms parentHandle:(CSHandle *)parent;
-
--(NSString *)description;
+-(nullable CSHandle *)handleExcludingLast:(BOOL)excludelast decrypted:(BOOL)decrypted;
+-(nullable CSHandle *)handleForFilterName:(NSString *)filtername decodeParms:(NSDictionary *)decodeparms parentHandle:(CSHandle *)parent;
+-(nullable CSHandle *)predictorHandleForDecodeParms:(NSDictionary *)decodeparms parentHandle:(CSHandle *)parent;
 
 @end
 
@@ -82,14 +83,14 @@ offset:(off_t)offset reference:(PDFObjectReference *)reference parser:(PDFParser
 	BOOL finalbytes;
 }
 
+-(id)initWithHandle:(CSHandle *)handle;
+
 -(void)resetByteStream;
 -(uint8_t)produceByteAtOffset:(off_t)pos;
 
 @end
 
 @interface PDFHexHandle:CSByteStreamHandle
-{
-}
 
 -(uint8_t)produceByteAtOffset:(off_t)pos;
 
@@ -104,7 +105,7 @@ offset:(off_t)offset reference:(PDFObjectReference *)reference parser:(PDFParser
 	int prev[4];
 }
 
--(id)initWithHandle:(CSHandle *)handle columns:(int)columns
+-(instancetype)initWithHandle:(CSHandle *)handle columns:(int)columns
 components:(int)components bitsPerComponent:(int)bitspercomp;
 -(uint8_t)produceByteAtOffset:(off_t)pos;
 
@@ -117,10 +118,11 @@ components:(int)components bitsPerComponent:(int)bitspercomp;
 	int type;
 }
 
--(id)initWithHandle:(CSHandle *)handle columns:(int)columns
+-(instancetype)initWithHandle:(CSHandle *)handle columns:(int)columns
 components:(int)components bitsPerComponent:(int)bitspercomp;
 -(void)resetByteStream;
 -(uint8_t)produceByteAtOffset:(off_t)pos;
 
 @end
 
+NS_ASSUME_NONNULL_END

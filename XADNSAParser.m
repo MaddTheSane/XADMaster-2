@@ -14,7 +14,7 @@ static NSMutableData *MakeBMPContainer(int width,int height,uint32_t length,int 
 +(BOOL)recognizeFileWithHandle:(CSHandle *)handle firstBytes:(NSData *)data name:(NSString *)name
 {
 	if(!name) return NO;
-	if(![[name lastPathComponent] matchedByPattern:@"^arc[0-9]*\\.nsa$" options:REG_ICASE]) return NO;
+	if(![name.lastPathComponent matchedByPattern:@"^arc[0-9]*\\.nsa$" options:REG_ICASE]) return NO;
 
 	//const uint8_t *bytes=[data bytes];
 	//int length=[data length];
@@ -24,14 +24,14 @@ static NSMutableData *MakeBMPContainer(int width,int height,uint32_t length,int 
 
 -(void)parse
 {
-	CSHandle *fh=[self handle];
+	CSHandle *fh=self.handle;
 
 	int numfiles=[fh readUInt16BE];
 	if(numfiles==0) numfiles=[fh readUInt16BE];
 
 	uint32_t offset=[fh readUInt32BE];
 
-	for(int i=0;i<numfiles && [self shouldKeepParsing];i++)
+	for(int i=0;i<numfiles && self.shouldKeepParsing;i++)
 	{
 		NSMutableData *namedata=[NSMutableData data];
 		uint8_t c;
@@ -44,11 +44,11 @@ static NSMutableData *MakeBMPContainer(int width,int height,uint32_t length,int 
 
 		NSMutableDictionary *dict=[NSMutableDictionary dictionaryWithObjectsAndKeys:
 			[self XADPathWithData:namedata separators:XADWindowsPathSeparator],XADFileNameKey,
-			[NSNumber numberWithUnsignedLong:filesize],XADFileSizeKey,
-			[NSNumber numberWithUnsignedLong:datalen],XADCompressedSizeKey,
-			[NSNumber numberWithUnsignedLong:datalen],XADDataLengthKey,
-			[NSNumber numberWithUnsignedLong:dataoffs+offset],XADDataOffsetKey,
-			[NSNumber numberWithInt:method],@"NSAMethod",
+			@(filesize),XADFileSizeKey,
+			@(datalen),XADCompressedSizeKey,
+			@(datalen),XADDataLengthKey,
+			@(dataoffs+offset),XADDataOffsetKey,
+			@(method),@"NSAMethod",
 		nil];
 
 		NSString *methodname=nil;
@@ -59,7 +59,7 @@ static NSMutableData *MakeBMPContainer(int width,int height,uint32_t length,int 
 			case 2: methodname=@"LZSS"; break;
 			case 4: methodname=@"Bzip2"; break;
 		}
-		if(methodname) [dict setObject:[self XADStringWithString:methodname] forKey:XADCompressionNameKey];
+		if(methodname) dict[XADCompressionNameKey] = [self XADStringWithString:methodname];
 
 		[self addEntryWithDictionary:dict retainPosition:YES];
 	}
@@ -68,8 +68,8 @@ static NSMutableData *MakeBMPContainer(int width,int height,uint32_t length,int 
 -(CSHandle *)handleForEntryWithDictionary:(NSDictionary *)dict wantChecksum:(BOOL)checksum
 {
 	CSHandle *handle=[self handleAtDataOffsetForDictionary:dict];
-	int method=[[dict objectForKey:@"NSAMethod"] intValue];
-	uint32_t length=[[dict objectForKey:XADFileSizeKey] unsignedIntValue];
+	int method=[dict[@"NSAMethod"] intValue];
+	uint32_t length=[dict[XADFileSizeKey] unsignedIntValue];
 
 	switch(method)
 	{
@@ -102,7 +102,7 @@ static NSMutableData *MakeBMPContainer(int width,int height,uint32_t length,int 
 
 -(id)initWithHandle:(CSHandle *)handle length:(off_t)length
 {
-	return [super initWithHandle:handle length:length windowSize:256];
+	return [super initWithInputBufferForHandle:handle length:length windowSize:256];
 }
 
 -(void)resetLZSSHandle
@@ -137,10 +137,10 @@ static NSMutableData *DecodeSPB(CSHandle *fh,uint32_t length)
 	int bytesperrow;
 	NSMutableData *data=MakeBMPContainer(width,height,length,&bytesperrow);
 
-	uint8_t *bytes=[data mutableBytes];
+	uint8_t *bytes=data.mutableBytes;
 	uint8_t *pixels=&bytes[54];
 
-	CSInputBuffer *input=CSInputBufferAlloc(fh,(int)[fh fileSize]);
+	CSInputBuffer *input=CSInputBufferAlloc(fh,(int)fh.fileSize);
 
 	@try
 	{
@@ -208,7 +208,7 @@ static NSMutableData *MakeBMPContainer(int width,int height,uint32_t length,int 
 	int bmpsize=54+bytesperrow*height;
 	if(length>bmpsize) bmpsize=length;
 	NSMutableData *data=[NSMutableData dataWithLength:bmpsize];
-	uint8_t *bytes=[data mutableBytes];
+	uint8_t *bytes=data.mutableBytes;
 
 	bytes[0]='B';
 	bytes[1]='M';

@@ -89,11 +89,10 @@ static off_t ActualOffsetToSkip(XADSkipHandle *self,off_t pos)
 
 
 
--(id)initWithHandle:(CSHandle *)handle
+-(instancetype)initWithHandle:(CSHandle *)handle
 {
-	if((self=[super initWithName:[handle name]]))
+	if((self=[super initWithParentHandle:handle]))
 	{
-		parent=[handle retain];
 		regions=malloc(sizeof(XADSkipRegion));
 		regions[0].actual=regions[0].skip=0;
 		numregions=1;
@@ -101,11 +100,10 @@ static off_t ActualOffsetToSkip(XADSkipHandle *self,off_t pos)
 	return self;
 }
 
--(id)initAsCopyOf:(XADSkipHandle *)other
+-(instancetype)initAsCopyOf:(XADSkipHandle *)other
 {
 	if((self=[super initAsCopyOf:other]))
 	{
-		parent=[other->parent copy];
 		numregions=other->numregions;
 		regions=malloc(sizeof(XADSkipRegion)*numregions);
 		memcpy(regions,other->regions,sizeof(XADSkipRegion)*numregions);
@@ -116,7 +114,6 @@ static off_t ActualOffsetToSkip(XADSkipHandle *self,off_t pos)
 -(void)dealloc
 {
 	free(regions);
-	[parent release];
 	[super dealloc];
 }
 
@@ -156,20 +153,20 @@ static off_t ActualOffsetToSkip(XADSkipHandle *self,off_t pos)
 
 -(off_t)fileSize
 {
-	off_t size=[parent fileSize];
+	off_t size=parent.fileSize;
 	if(size==CSHandleMaxLength) return CSHandleMaxLength;
 	return ActualOffsetToSkip(self,size-1)+1;
 }
 
 -(off_t)offsetInFile
 {
-	off_t offs=[parent offsetInFile];
+	off_t offs=parent.offsetInFile;
 	return ActualOffsetToSkip(self,offs);
 }
 
 -(BOOL)atEndOfFile
 {
-	return [super atEndOfFile];
+	return super.atEndOfFile;
 	// TODO: handle skips at EOF
 }
 
@@ -186,7 +183,7 @@ static off_t ActualOffsetToSkip(XADSkipHandle *self,off_t pos)
 
 -(int)readAtMost:(int)num toBuffer:(void *)buffer
 {
-	off_t pos=[parent offsetInFile];
+	off_t pos=parent.offsetInFile;
 	int index=FindIndexOfRegionContainingActualOffset(self,pos);
 	if(pos>=ActualGapStart(self,index)) [parent seekToFileOffset:pos=ActualStart(self,++index)];
 

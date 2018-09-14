@@ -9,8 +9,8 @@
 
 +(BOOL)recognizeFileWithHandle:(CSHandle *)handle firstBytes:(NSData *)data name:(NSString *)name
 {
-	int length=[data length];
-	const uint8_t *bytes=[data bytes];
+	NSInteger length=data.length;
+	const uint8_t *bytes=data.bytes;
 
 	BOOL found=NO;
 	int offs;
@@ -30,7 +30,7 @@
 
 	if(bytes[offs]!=':') return NO;
 
-	CSMemoryHandle *mh=[CSMemoryHandle memoryHandleForReadingBuffer:(uint8_t *)bytes+offs length:length-offs];
+	CSMemoryHandle *mh=[CSMemoryHandle memoryHandleForReadingBuffer:(uint8_t *)bytes+offs length:(unsigned int)(length-offs)];
 	XADBinHexHandle *fh=[[[XADBinHexHandle alloc] initWithHandle:mh] autorelease];
 	uint16_t crc=0;
 
@@ -52,7 +52,7 @@
 {
 	[self setIsMacArchive:YES];
 
-	CSHandle *handle=[self handle];
+	CSHandle *handle=self.handle;
 
 	uint8_t buffer[40];
 	[handle readBytes:40 toBuffer:buffer];
@@ -66,9 +66,9 @@
 	uint8_t byte;
 	do { byte=[handle readUInt8]; } while(byte!='\n'&&byte!='\r');
 
-	off_t start=[handle offsetInFile];
+	off_t start=handle.offsetInFile;
 
-	XADBinHexHandle *fh=[[[XADBinHexHandle alloc] initWithHandle:[self handle]] autorelease];
+	XADBinHexHandle *fh=[[[XADBinHexHandle alloc] initWithHandle:self.handle] autorelease];
 
 	uint8_t namelen=[fh readUInt8];
 	if(namelen>63) [XADException raiseIllegalDataException];
@@ -78,7 +78,7 @@
 	BOOL isarc=NO;
 	if(namelen>4)
 	{
-		const uint8_t *name=[namedata bytes];
+		const uint8_t *name=namedata.bytes;
 		const uint8_t *ext=name+namelen-4;
 		if(memcmp(ext,".sit",4)==0) isarc=YES;
 		else if(memcmp(ext,".cpt",4)==0) isarc=YES;
@@ -87,7 +87,7 @@
 
 	if(!isarc)
 	{
-		if([[self name] matchedByPattern:@"\\.sea(\\.|$)" options:REG_ICASE]) isarc=YES;
+		if([self.name matchedByPattern:@"\\.sea(\\.|$)" options:REG_ICASE]) isarc=YES;
 	}
 
 	[fh skipBytes:1];
@@ -100,37 +100,37 @@
 
 	[self addEntryWithDictionary:[NSMutableDictionary dictionaryWithObjectsAndKeys:
 		[self XADPathWithData:namedata separators:XADNoPathSeparator],XADFileNameKey,
-		[NSNumber numberWithUnsignedInt:datalen],XADFileSizeKey,
-		[NSNumber numberWithUnsignedInt:(datalen*4)/3],XADCompressedSizeKey,
-		[NSNumber numberWithUnsignedInt:type],XADFileTypeKey,
-		[NSNumber numberWithUnsignedInt:creator],XADFileCreatorKey,
-		[NSNumber numberWithUnsignedShort:flags],XADFinderFlagsKey,
-		[NSNumber numberWithLongLong:start],XADDataOffsetKey,
-		[NSNumber numberWithBool:isarc],XADIsArchiveKey,
-		[NSNumber numberWithUnsignedInt:22+namelen],@"BinHexDataOffset",
+		@(datalen),XADFileSizeKey,
+		@((datalen*4)/3),XADCompressedSizeKey,
+		@(type),XADFileTypeKey,
+		@(creator),XADFileCreatorKey,
+		@(flags),XADFinderFlagsKey,
+		@(start),XADDataOffsetKey,
+		@(isarc),XADIsArchiveKey,
+		@(22+namelen),@"BinHexDataOffset",
 	nil]];
 
 	if(resourcelen)
 	[self addEntryWithDictionary:[NSMutableDictionary dictionaryWithObjectsAndKeys:
 		[self XADPathWithData:namedata separators:XADNoPathSeparator],XADFileNameKey,
-		[NSNumber numberWithUnsignedInt:resourcelen],XADFileSizeKey,
+		@(resourcelen),XADFileSizeKey,
 		//[NSNumber numberWithUnsignedInt:(resourcelen*4)/3],XADCompressedSizeKey,
-		[NSNumber numberWithUnsignedInt:type],XADFileTypeKey,
-		[NSNumber numberWithUnsignedInt:creator],XADFileCreatorKey,
-		[NSNumber numberWithUnsignedShort:flags],XADFinderFlagsKey,
-		[NSNumber numberWithBool:YES],XADIsResourceForkKey,
-		[NSNumber numberWithLongLong:start],XADDataOffsetKey,
-		[NSNumber numberWithUnsignedInt:24+namelen+datalen],@"BinHexDataOffset",
+		@(type),XADFileTypeKey,
+		@(creator),XADFileCreatorKey,
+		@(flags),XADFinderFlagsKey,
+		@YES,XADIsResourceForkKey,
+		@(start),XADDataOffsetKey,
+		@(24+namelen+datalen),@"BinHexDataOffset",
 	nil]];
 }
 
 -(CSHandle *)handleForEntryWithDictionary:(NSDictionary *)dict wantChecksum:(BOOL)checksum
 {
 	CSHandle *handle=[self handleAtDataOffsetForDictionary:dict];
-	off_t size=[[dict objectForKey:XADFileSizeKey] unsignedLongValue];
+	off_t size=[dict[XADFileSizeKey] unsignedLongValue];
 
 	XADBinHexHandle *fh=[[[XADBinHexHandle alloc] initWithHandle:handle] autorelease];
-	[fh seekToFileOffset:[[dict objectForKey:@"BinHexDataOffset"] longLongValue]];
+	[fh seekToFileOffset:[dict[@"BinHexDataOffset"] longLongValue]];
 
 	if(checksum) return [XADCRCSuffixHandle CCITTCRC16SuffixHandleWithHandle:[fh nonCopiedSubHandleOfLength:size]
 	CRCHandle:[fh nonCopiedSubHandleOfLength:size+2] bigEndianCRC:YES conditioned:NO];
@@ -144,6 +144,11 @@
 
 
 @implementation XADBinHexHandle
+
+-(id)initWithHandle:(CSHandle *)handle
+{
+	return [super initWithInputBufferForHandle:handle];
+}
 
 -(void)resetByteStream
 {

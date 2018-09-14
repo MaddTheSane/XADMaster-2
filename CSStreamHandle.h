@@ -1,3 +1,4 @@
+#import <Foundation/Foundation.h>
 #import "CSHandle.h"
 #import "CSInputBuffer.h"
 
@@ -14,19 +15,20 @@
 }
 
 // Initializers
--(id)initWithName:(NSString *)descname;
--(id)initWithName:(NSString *)descname length:(off_t)length;
--(id)initWithHandle:(CSHandle *)handle;
--(id)initWithHandle:(CSHandle *)handle length:(off_t)length;
--(id)initWithHandle:(CSHandle *)handle bufferSize:(int)buffersize;
--(id)initWithHandle:(CSHandle *)handle length:(off_t)length bufferSize:(int)buffersize;
--(id)initAsCopyOf:(CSStreamHandle *)other;
--(void)dealloc;
+//-(instancetype)initWithName:(NSString *)descname;
+//-(instancetype)initWithName:(NSString *)descname length:(off_t)length;
+-(instancetype)initWithParentHandle:(CSHandle *)handle;
+-(instancetype)initWithParentHandle:(CSHandle *)handle length:(off_t)length;
+-(instancetype)initWithInputBufferForHandle:(CSHandle *)handle;
+-(instancetype)initWithInputBufferForHandle:(CSHandle *)handle length:(off_t)length;
+-(instancetype)initWithInputBufferForHandle:(CSHandle *)handle bufferSize:(int)buffersize;
+-(instancetype)initWithInputBufferForHandle:(CSHandle *)handle length:(off_t)length bufferSize:(int)buffersize;
+-(instancetype)initAsCopyOf:(CSStreamHandle *)other;
 
 // Implemented by this class
--(off_t)fileSize;
--(off_t)offsetInFile;
--(BOOL)atEndOfFile;
+@property (NS_NONATOMIC_IOSONLY, readonly) off_t fileSize;
+@property (NS_NONATOMIC_IOSONLY, readonly) off_t offsetInFile;
+@property (NS_NONATOMIC_IOSONLY, readonly) BOOL atEndOfFile;
 -(void)seekToFileOffset:(off_t)offs;
 -(void)seekToEndOfFile;
 -(int)readAtMost:(int)num toBuffer:(void *)buffer;

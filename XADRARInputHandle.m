@@ -4,19 +4,18 @@
 
 @implementation XADRARInputHandle
 
--(id)initWithRARParser:(XADRARParser *)parent parts:(NSArray *)partarray
+-(id)initWithHandle:(CSHandle *)handle parts:(NSArray *)partarray
 {
 	off_t totallength=0;
 	NSEnumerator *enumerator=[partarray objectEnumerator];
 	NSDictionary *dict;
 	while((dict=[enumerator nextObject]))
 	{
-		totallength+=[[dict objectForKey:@"InputLength"] longLongValue];
+		totallength+=[dict[@"InputLength"] longLongValue];
 	}
 
-	if((self=[super initWithName:[parent filename] length:totallength]))
+	if((self=[super initWithParentHandle:handle length:totallength]))
 	{
-		parser=parent;
 		parts=[partarray retain];
 	}
 	return self;
@@ -38,8 +37,6 @@
 
 -(int)streamAtMost:(int)num toBuffer:(void *)buffer
 {
-	CSHandle *fh=[parser handle];
-
 	uint8_t *bytebuf=buffer;
 	int total=0;
 	while(total<num)
@@ -49,17 +46,20 @@
 		int numbytes=num-total;
 		if(streampos+total+numbytes>=partend) numbytes=(int)(partend-streampos-total);
 
-		[fh readBytes:numbytes toBuffer:&bytebuf[total]];
+		[parent readBytes:numbytes toBuffer:&bytebuf[total]];
 
 		crc=XADCalculateCRC(crc,&bytebuf[total],numbytes,XADCRCTable_edb88320);
 
 		total+=numbytes;
 
-		if(streampos+total>=partend)
-		if(partend!=streamlength)
-		if(correctcrc!=0xffffffff)
-		if(~crc!=correctcrc)
-		[XADException raiseChecksumException];
+		// RAR CRCs are for compressed and encrypted data for all parts
+		// except the last one, where it is for descrypted and uncompressed data.
+		// Check the CRC on all parts but the last.
+		// TODO: Add blake2sp
+		if(streampos+total>=partend) // If at the end a block,
+		if(partend!=streamlength) // but not the end of the file,
+		if(correctcrc!=0xffffffff) // and there is a correct CRC available,
+		if(~crc!=correctcrc) [XADException raiseChecksumException]; // check it.
 	}
 
 	return num;
@@ -67,18 +67,20 @@
 
 -(void)startNextPart
 {
-	if(part>=[parts count]) [XADException raiseInputException];
-	NSDictionary *dict=[parts objectAtIndex:part];
+	if(part>=parts.count) [XADException raiseInputException];
+	NSDictionary *dict=parts[part];
 	part++;
 
-	off_t offset=[[dict objectForKey:@"Offset"] longLongValue];
-	off_t length=[[dict objectForKey:@"InputLength"] longLongValue];
+	off_t offset=[dict[@"Offset"] longLongValue];
+	off_t length=[dict[@"InputLength"] longLongValue];
 
-	[[parser handle] seekToFileOffset:offset];
+	[parent seekToFileOffset:offset];
 	partend+=length;
 
 	crc=0xffffffff;
-	correctcrc=[[dict objectForKey:@"CRC32"] unsignedIntValue];
+	NSNumber *crcnum=[dict objectForKey:@"CRC32"];
+	if(crcnum!=nil) correctcrc=[crcnum unsignedIntValue];
+	else correctcrc=0xffffffff;
 }
 
 @end

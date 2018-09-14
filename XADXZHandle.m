@@ -28,9 +28,8 @@ static uint64_t ParseInteger(CSHandle *fh);
 
 -(id)initWithHandle:(CSHandle *)handle length:(off_t)length
 {
-	if((self=[super initWithName:[handle name] length:length]))
+	if(self=[super initWithParentHandle:handle length:length])
 	{
-		parent=[handle retain];
 		startoffs=[parent offsetInFile];
 		currhandle=nil;
 	}
@@ -39,7 +38,6 @@ static uint64_t ParseInteger(CSHandle *fh);
 
 -(void)dealloc
 {
-	[parent release];
 	[currhandle release];
 	[super dealloc];
 }
@@ -90,7 +88,7 @@ static uint64_t ParseInteger(CSHandle *fh);
 				break;
 			}
 
-			off_t streamstart=[parent offsetInFile]+blockheadsize*4+3;
+			off_t streamstart=parent.offsetInFile+blockheadsize*4+3;
 
 			int blockflags=[parent readUInt8];
 			if(blockflags&0x3c) [XADException raiseIllegalDataException];
@@ -152,7 +150,7 @@ static uint64_t ParseInteger(CSHandle *fh);
 
 		case BlockDataState:
 		{
-			int actual=[currhandle readAtMost:num-bytesread toBuffer:&bytebuf[bytesread]];
+			NSInteger actual=[currhandle readAtMost:num-bytesread toBuffer:&bytebuf[bytesread]];
 
 			switch(checksumflags)
 			{
@@ -167,7 +165,7 @@ static uint64_t ParseInteger(CSHandle *fh);
 
 			bytesread+=actual;
 
-			if([currhandle atEndOfFile])
+			if(currhandle.atEndOfFile)
 			{
 				[currhandle release];
 				currhandle=nil;
@@ -177,7 +175,7 @@ static uint64_t ParseInteger(CSHandle *fh);
 		break;
 
 		case BlockPaddingState:
-			[parent skipBytes:(-([parent offsetInFile]-startoffs))&3];
+			[parent skipBytes:(-(parent.offsetInFile-startoffs))&3];
 			state=BlockChecksumState;
 		break;
 
@@ -219,7 +217,7 @@ static uint64_t ParseInteger(CSHandle *fh);
 				ParseInteger(parent);
 			}
 
-			[parent skipBytes:(-([parent offsetInFile]-startoffs))&3];
+			[parent skipBytes:(-(parent.offsetInFile-startoffs))&3];
 			[parent skipBytes:4]; // skip CRC
 
 			state=StreamFooterState;
@@ -239,7 +237,7 @@ static uint64_t ParseInteger(CSHandle *fh);
 		case StreamPaddingState:
 			for(;;)
 			{
-				if([parent atEndOfFile])
+				if(parent.atEndOfFile)
 				{
 					state=EndState;
 					break;
@@ -271,7 +269,7 @@ static uint64_t ParseInteger(CSHandle *fh);
 	return checksumscorrect;
 }
 
--(double)estimatedProgress { return [parent estimatedProgress]; } // TODO: better estimation using buffer?
+-(double)estimatedProgress { return parent.estimatedProgress; } // TODO: better estimation using buffer?
 
 @end
 

@@ -30,8 +30,8 @@
 #define SWFDefineFont3Tag 75
 #define SWFDefineBitsJPEG4Tag 90
 
-extern NSString *SWFWrongMagicException;
-extern NSString *SWFNoMoreTagsException;
+extern NSExceptionName const SWFWrongMagicException;
+extern NSExceptionName const SWFNoMoreTagsException;
 
 @interface XADSWFTagParser:NSObject
 {
@@ -51,42 +51,42 @@ extern NSString *SWFNoMoreTagsException;
 	int subframe;
 }
 
-+(XADSWFTagParser *)parserWithHandle:(CSHandle *)handle;
-+(XADSWFTagParser *)parserForPath:(NSString *)path;
++(instancetype)parserWithHandle:(CSHandle *)handle;
++(instancetype)parserForPath:(NSString *)path;
 
--(id)initWithHandle:(CSHandle *)handle;
--(void)dealloc;
+-(instancetype)init UNAVAILABLE_ATTRIBUTE;
+-(instancetype)initWithHandle:(CSHandle *)handle NS_DESIGNATED_INITIALIZER;
 
 -(void)parseHeader;
 
--(int)version;
--(BOOL)isCompressed;
--(SWFRect)rect;
--(int)frames;
--(int)framesPerSecond;
+@property (NS_NONATOMIC_IOSONLY, readonly) int version;
+@property (NS_NONATOMIC_IOSONLY, getter=isCompressed, readonly) BOOL compressed;
+@property (NS_NONATOMIC_IOSONLY, readonly) SWFRect rect;
+@property (NS_NONATOMIC_IOSONLY, readonly) int frames;
+@property (NS_NONATOMIC_IOSONLY, readonly) int framesPerSecond;
 
 -(int)nextTag;
 
--(int)tag;
--(int)tagLength;
--(int)tagBytesLeft;
--(int)frame;
--(double)time;
+@property (NS_NONATOMIC_IOSONLY, readonly) int tag;
+@property (NS_NONATOMIC_IOSONLY, readonly) int tagLength;
+@property (NS_NONATOMIC_IOSONLY, readonly) int tagBytesLeft;
+@property (NS_NONATOMIC_IOSONLY, readonly) int frame;
+@property (NS_NONATOMIC_IOSONLY, readonly) double time;
 
--(CSHandle *)handle;
--(CSHandle *)tagHandle;
--(NSData *)tagContents;
+@property (NS_NONATOMIC_IOSONLY, readonly, retain) XADHandle *handle;
+@property (NS_NONATOMIC_IOSONLY, readonly, copy) XADHandle *tagHandle;
+@property (NS_NONATOMIC_IOSONLY, readonly, copy) NSData *tagContents;
 
 -(void)parseDefineSpriteTag;
 
--(int)spriteID;
--(int)subFrames;
+@property (NS_NONATOMIC_IOSONLY, readonly) int spriteID;
+@property (NS_NONATOMIC_IOSONLY, readonly) int subFrames;
 
 -(int)nextSubTag;
--(int)subTag;
--(int)subTagLength;
--(int)subTagBytesLeft;
--(int)subFrame;
--(double)subTime;
+@property (NS_NONATOMIC_IOSONLY, readonly) int subTag;
+@property (NS_NONATOMIC_IOSONLY, readonly) int subTagLength;
+@property (NS_NONATOMIC_IOSONLY, readonly) int subTagBytesLeft;
+@property (NS_NONATOMIC_IOSONLY, readonly) int subFrame;
+@property (NS_NONATOMIC_IOSONLY, readonly) double subTime;
 
 @end

@@ -22,8 +22,7 @@
 	uint8_t outbuffer[32768];
 }
 
--(id)initWithBlockReader:(XADCABBlockReader *)blockreader windowBits:(int)windowbits;
--(void)dealloc;
+-(instancetype)initWithBlockReader:(XADCABBlockReader *)blockreader windowBits:(int)windowbits;
 
 -(void)resetCABBlockHandle;
 -(int)produceCABBlockWithInputBuffer:(uint8_t *)buffer length:(int)length atOffset:(off_t)pos length:(int)uncomplength;

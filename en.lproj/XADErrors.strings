@@ -1,0 +1,37 @@
+/* 
+  XADErrors.strings
+  XADMaster
+
+  Created by C.W. Betts on 11/26/17.
+  
+*/
+
+/* Common errors */
+"Attempted to read more data than was available" = "The archive file is incomplete";
+"Opening file failed" = "The file could not be opened";
+"Missing or wrong password" = "The supplied password was incorrect";
+"Wrong checksum" = "The archive file is corrupted";
+"Could not create directory" = "Could not create the folder";
+
+/* Uncommon or unused errors */
+"Unknown error" = "Unknown error";
+"Failed to write to file" = "Failed to write to file";
+"Function called with illegal parameters" = "Function called with illegal parameters";
+"Not enough memory available" = "Not enough memory available";
+"Data is corrupted" = "Data is corrupted";
+"File is not fully supported" = "File is not fully supported";
+"Required resource missing" = "Required resource missing";
+"Error on decrunching" = "Error on decrunching";
+"Unknown file type" = "Unknown file type";
+"File, disk has been skipped" = "File, disk has been skipped";
+"User cancelled extraction" = "User cancelled extraction";
+"File already exists" = "File already exists";
+"Verify failed (disk hook)" = "Verify failed (disk hook)";
+"Wrong drive geometry" = "Wrong drive geometry";
+"Unknown data format" = "Unknown data format";
+"Source contains no files" = "Source contains no files";
+"Unknown filesystem" = "Unknown filesystem";
+"Name of file exists as directory" = "Name of file exists as directory";
+"Buffer was too short" = "Buffer was too short";
+"Text encoding was defective" = "Text encoding was defective";
+"Could not create symlink" = "Could not create symlink";

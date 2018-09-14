@@ -13,29 +13,35 @@ typedef struct RAR5Block
 {
 	NSData *headerkey;
 	NSMutableDictionary *cryptocache;
+
+	NSMutableArray *solidstreams,*currsolidstream;
+	off_t totalsolidsize;
 }
 
 +(int)requiredHeaderSize;
 +(BOOL)recognizeFileWithHandle:(CSHandle *)handle firstBytes:(NSData *)data name:(NSString *)name;
 +(NSArray *)volumesForHandle:(CSHandle *)handle firstBytes:(NSData *)data name:(NSString *)name;
 
--(void)setPassword:(NSString *)newpassword;
-
 -(void)parse;
+-(void)addEntryWithDictionary:(NSMutableDictionary *)dict
+inputParts:(NSArray *)parts isCorrupted:(BOOL)iscorrupted;
 
 -(NSMutableDictionary *)readFileBlockHeader:(RAR5Block)block;
 -(RAR5Block)readBlockHeader;
 -(void)skipBlock:(RAR5Block)block;
 -(off_t)endOfBlockHeader:(RAR5Block)block;
 -(NSData *)encryptionKeyForPassword:(NSString *)passwordstring salt:(NSData *)salt strength:(int)strength passwordCheck:(NSData *)check;
+-(NSData *)hashKeyForPassword:(NSString *)passwordstring salt:(NSData *)salt strength:(int)strength passwordCheck:(NSData *)check;
+-(NSDictionary *)keysForPassword:(NSString *)passwordstring salt:(NSData *)salt strength:(int)strength passwordCheck:(NSData *)check;
+
+-(CSInputBuffer *)inputBufferWithDictionary:(NSDictionary *)dict;
+-(CSHandle *)inputHandleWithDictionary:(NSDictionary *)dict;
 
 -(NSString *)formatName;
 
 @end
 
 @interface XADEmbeddedRAR5Parser:XADRAR5Parser
-{
-}
 
 -(NSString *)formatName;
 

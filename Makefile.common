@@ -11,7 +11,9 @@ LIBRARY_OBJC_FILES =	CarrylessRangeCoder.m \
 			CSHexDump.m \
 			CSInputBuffer.m \
 			CSMemoryHandle.m \
+			CSMultiFileHandle.m \
 			CSMultiHandle.m \
+			CSSegmentedHandle.m \
 			CSStreamHandle.m \
 			CSSubHandle.m \
 			CSZlibHandle.m \
@@ -107,7 +109,8 @@ LIBRARY_OBJC_FILES =	CarrylessRangeCoder.m \
 			XADRAR20CryptHandle.m \
 			XADRAR20Handle.m \
 			XADRAR30Handle.m \
-			XADRAR30Filter.m \
+			XADRAR50Handle.m \
+			XADRARFilters.m \
 			XADRARInputHandle.m \
 			XADRAR5Parser.m \
 			XADRARParser.m \
@@ -218,15 +221,15 @@ LIBRARY_C_FILES =	BWT.c \
 
 LIBRARY_CXX_FILES =		
 
-XADTEST2_OBJC_FILES =	XADTest2.m
+XADTEST2_OBJC_FILES =	XADTest2.m XADTestUtilities.h
 
-XADTEST3_OBJC_FILES =	XADTest3.m
+XADTEST3_OBJC_FILES =	XADTest3.m XADTestUtilities.h
 
-XADTEST4_OBJC_FILES =	XADTest4.m
+XADTEST4_OBJC_FILES =	XADTest4.m XADTestUtilities.h
 
-XADTEST5_OBJC_FILES =	XADTest5.m
+XADTEST5_OBJC_FILES =	XADTest5.m XADTestUtilities.h
 
-XADTEST6_OBJC_FILES =	XADTest6.m
+XADTEST6_OBJC_FILES =	XADTest6.m XADTestUtilities.h
 
 UNAR_OBJC_FILES =	unar.m
 

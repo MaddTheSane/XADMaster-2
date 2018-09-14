@@ -18,23 +18,23 @@
 
 	[properties removeObjectForKey:XADDisableMacForkExpansionKey];
 	[self addEntryWithDictionary:[NSMutableDictionary dictionaryWithObjectsAndKeys:
-		[NSNumber numberWithBool:YES],XADIsMacBinaryKey,
+		@YES,XADIsMacBinaryKey,
 	nil]];
 }
 
 -(CSHandle *)rawHandleForEntryWithDictionary:(NSDictionary *)dict wantChecksum:(BOOL)checksum
 {
-	return [self handle];
+	return self.handle;
 }
 
 -(void)inspectEntryDictionary:(NSMutableDictionary *)dict
 {
-	NSNumber *rsrc=[dict objectForKey:XADIsResourceForkKey];
-	if(rsrc&&[rsrc boolValue]) return;
+	NSNumber *rsrc=dict[XADIsResourceForkKey];
+	if(rsrc&&rsrc.boolValue) return;
 
-	if([[self name] matchedByPattern:@"\\.sea(\\.|$)" options:REG_ICASE]||
-	[[[dict objectForKey:XADFileNameKey] string] matchedByPattern:@"\\.(sea|sit|cpt)$" options:REG_ICASE])
-	[dict setObject:[NSNumber numberWithBool:YES] forKey:XADIsArchiveKey];
+	if([self.name matchedByPattern:@"\\.sea(\\.|$)" options:REG_ICASE]||
+	[[dict[XADFileNameKey] string] matchedByPattern:@"\\.(sea|sit|cpt)$" options:REG_ICASE])
+	dict[XADIsArchiveKey] = @YES;
 
 	// TODO: Better detection of embedded archives. Also applies to BinHex!
 //	if([[dict objectForKey:XADFileTypeKey] unsignedIntValue]=='APPL')...

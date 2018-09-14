@@ -25,7 +25,7 @@
 	BOOL haschecksum,ischecksumcorrect;
 }
 
--(id)initWithData:(NSData *)data hasChecksum:(BOOL)hascheck isChecksumCorrect:(BOOL)iscorrect;
+-(instancetype)initWithData:(NSData *)data hasChecksum:(BOOL)hascheck isChecksumCorrect:(BOOL)iscorrect;
 
 -(BOOL)hasChecksum;
 -(BOOL)isChecksumCorrect;

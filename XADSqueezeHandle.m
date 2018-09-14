@@ -10,7 +10,7 @@
 
 -(id)initWithHandle:(CSHandle *)handle length:(off_t)length
 {
-	if((self=[super initWithHandle:handle length:length]))
+	if((self=[super initWithInputBufferForHandle:handle length:length]))
 	{
 		code=nil;
 	}
@@ -24,19 +24,25 @@
 }
 
 
-static void BuildCodeFromTree(XADPrefixCode *code,int *tree,int node,int numnodes)
+static void BuildCodeFromTree(XADPrefixCode *code,int *tree,int node,int numnodes,int depth)
 {
+	if(depth>64) [XADException raiseDecrunchException];
+
 	if(node<0)
 	{
 		[code makeLeafWithValue:-(node+1)];
 	}
-	else
+	else if(2*node+1<numnodes)
 	{
 		[code startZeroBranch];
-		BuildCodeFromTree(code,tree,tree[2*node],numnodes);
+		BuildCodeFromTree(code,tree,tree[2*node],numnodes,depth+1);
 		[code startOneBranch];
-		BuildCodeFromTree(code,tree,tree[2*node+1],numnodes);
+		BuildCodeFromTree(code,tree,tree[2*node+1],numnodes,depth+1);
 		[code finishBranches];
+	}
+	else
+	{
+		[XADException raiseDecrunchException];
 	}
 }
 
@@ -54,7 +60,7 @@ static void BuildCodeFromTree(XADPrefixCode *code,int *tree,int node,int numnode
 	code=[XADPrefixCode new];
 
 	[code startBuildingTree];
-	BuildCodeFromTree(code,nodes,0,numnodes);
+	BuildCodeFromTree(code,nodes,0,numnodes,0);
 }
 
 -(uint8_t)produceByteAtOffset:(off_t)pos

@@ -12,7 +12,7 @@
 	} trees[256];
 }
 
--(id)initWithHandle:(CSHandle *)handle length:(off_t)length numberOfTrees:(int)num;
+-(instancetype)initWithHandle:(CSHandle *)handle length:(off_t)length numberOfTrees:(int)num;
 
 -(void)resetByteStream;
 -(uint8_t)produceByteAtOffset:(off_t)pos;

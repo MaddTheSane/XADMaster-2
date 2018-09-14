@@ -1,0 +1,37 @@
+/* 
+  XADErrors.strings
+  XADMaster
+
+  Created by C.W. Betts on 11/26/17.
+  
+*/
+
+/* Common errors */
+"Attempted to read more data than was available" = "Plik archiwum jest niekompletny";
+"Opening file failed" = "Plik nie może zostać otwarty";
+"Missing or wrong password" = "Podane hasło jest nieprawidłowe";
+"Wrong checksum" = "Plik archiwum jest uszkodzony";
+"Could not create directory" = "Nie można utworzyć folderu";
+
+/* Uncommon or unused errors */
+"Unknown error" = "Nieznany błąd";
+"Failed to write to file" = "Zapis do pliku zakończony niepowodzeniem";
+"Function called with illegal parameters" = "Funkcja wywołana z nieprawidłowymi parametrami";
+"Not enough memory available" = "Za mało dostępnej pamięci";
+"Data is corrupted" = "Dane uszkodzone";
+"File is not fully supported" = "Plik nie jest w pełni obsługiwany";
+"Required resource missing" = "Brak wymaganych zasobów";
+"Error on decrunching" = "Błąd podczas decrunching";
+"Unknown file type" = "Nierozpoznany typ pliku";
+"File, disk has been skipped" = "Plik, dysk został pominięty";
+"User cancelled extraction" = "Użytkownik przerwał rozpakowywanie";
+"File already exists" = "Plik już istnieje";
+"Verify failed (disk hook)" = "Niepowodzenie weryfikacji (disk hook)";
+"Wrong drive geometry" = "Zła geometria dysku";
+"Unknown data format" = "Nieznany format danych";
+"Source contains no files" = "Źródło nie zawiera żadnych plików";
+"Unknown filesystem" = "Nieznany system plików";
+"Name of file exists as directory" = "Nazwa pliku istnieje jako katalog";
+"Buffer was too short" = "Bufor był za mały";
+"Text encoding was defective" = "Kodowanie tekstu było wadliwe";
+"Could not create symlink" = "Nie można utworzyć dowiązania";

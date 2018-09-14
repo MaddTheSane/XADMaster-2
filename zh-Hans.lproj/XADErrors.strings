@@ -1,0 +1,37 @@
+/* 
+  XADErrors.strings
+  XADMaster
+
+  Created by C.W. Betts on 11/26/17.
+  
+*/
+
+/* Common errors */
+"Attempted to read more data than was available" = "归档文件不完整";
+"Opening file failed" = "文件不能被打开";
+"Missing or wrong password" = "提供的密码不正确";
+"Wrong checksum" = "归档文件已被破坏";
+"Could not create directory" = "不能创建文件夹";
+
+/* Uncommon or unused errors */
+"Unknown error" = "未知错误";
+"Failed to write to file" = "写入文件失败";
+"Function called with illegal parameters" = "功能因为非法参数被叫停";
+"Not enough memory available" = "没有足够内存可用";
+"Data is corrupted" = "数据已被破坏";
+"File is not fully supported" = "文件不被完全支持";
+"Required resource missing" = "所需资源丢失";
+"Error on decrunching" = "粉碎文件错误";
+"Unknown file type" = "未知文件类型";
+"File, disk has been skipped" = "文件, 磁盘已被跳过";
+"User cancelled extraction" = "解压被用户叫停";
+"File already exists" = "文件已经存在";
+"Verify failed (disk hook)" = "验证失败(磁盘挂起)";
+"Wrong drive geometry" = "错误磁盘几何";
+"Unknown data format" = "未知数据格式";
+"Source contains no files" = "资源不包含文件";
+"Unknown filesystem" = "未知文件系统";
+"Name of file exists as directory" = "文件名以目录形式存在";
+"Buffer was too short" = "缓存过短 ";
+"Text encoding was defective" = "文本编码缺陷";
+"Could not create symlink" = "不能创建符号链接";

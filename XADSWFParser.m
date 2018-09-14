@@ -11,8 +11,8 @@
 
 +(BOOL)recognizeFileWithHandle:(CSHandle *)handle firstBytes:(NSData *)data name:(NSString *)name
 {
-	const uint8_t *bytes=[data bytes];
-	int length=[data length];
+	const uint8_t *bytes=data.bytes;
+	NSInteger length=data.length;
 
 	if(length<4) return NO;
 
@@ -25,7 +25,7 @@
 	return NO;
 }
 
--(id)init
+-(instancetype)init
 {
 	if((self=[super init]))
 	{
@@ -44,11 +44,11 @@
 
 -(void)parse
 {
-	parser=[[XADSWFTagParser parserWithHandle:[self handle]] retain];
+	parser=[[XADSWFTagParser parserWithHandle:self.handle] retain];
 
 	[parser parseHeader];
 
-	CSHandle *fh=[parser handle];
+	CSHandle *fh=parser.handle;
 
 	int numimages=0;
 	int numsounds=0;
@@ -58,12 +58,12 @@
 	NSMutableData *mainstream=nil;
 
 	int tag;
-	while((tag=[parser nextTag]) && [self shouldKeepParsing])
+	while((tag=[parser nextTag]) && self.shouldKeepParsing)
 	switch(tag)
 	{
 		case SWFJPEGTables:
 		{
-			int length=[parser tagLength];
+			int length=parser.tagLength;
 			if(length>=2)
 			{
 				jpegtables=[fh readDataOfLength:length-2];
@@ -84,13 +84,13 @@
 			numimages++;
 
 			[fh skipBytes:4];
-			off_t offset=[fh offsetInFile];
-			off_t length=[parser tagBytesLeft];
+			off_t offset=fh.offsetInFile;
+			off_t length=parser.tagBytesLeft;
 
 			if(!jpegtables) [XADException raiseIllegalDataException];
 
 			[self addEntryWithName:[NSString stringWithFormat:
-			@"Image %d at frame %d.jpg",numimages,[parser frame]]
+			@"Image %d at frame %d.jpg",numimages,parser.frame]
 			data:jpegtables offset:offset length:length];
 		}
 		break;
@@ -114,7 +114,7 @@
 				[fh skipBytes:2]; // Skip deblocking filter params.
 			}
 
-			off_t startoffs=[fh offsetInFile];
+			off_t startoffs=fh.offsetInFile;
 
 			int first=[fh readUInt16BE];
 			if(first==0x8950)
@@ -122,18 +122,18 @@
 				// PNG image.
 				[self reportInterestingFileWithReason:@"Image with PNG data"];
 				[self addEntryWithName:[NSString stringWithFormat:
-				@"Image %d at frame %d.png",numimages,[parser frame]]
+				@"Image %d at frame %d.png",numimages,parser.frame]
 				data:[NSData dataWithBytes:(uint8_t[2]){ 0x89,0x50 } length:2]
-				offset:[fh offsetInFile] length:[parser tagBytesLeft]];
+				offset:fh.offsetInFile length:parser.tagBytesLeft];
 			}
 			else if(first==0x4749)
 			{
 				// GIF image.
 				[self reportInterestingFileWithReason:@"Image with GIF data"];
 				[self addEntryWithName:[NSString stringWithFormat:
-				@"Image %d at frame %d.gif",numimages,[parser frame]]
+				@"Image %d at frame %d.gif",numimages,parser.frame]
 				data:[NSData dataWithBytes:(uint8_t[2]){ 0x47,0x49 } length:2]
-				offset:[fh offsetInFile] length:[parser tagBytesLeft]];
+				offset:fh.offsetInFile length:parser.tagBytesLeft];
 			}
 			else if(first==0xffd8||first==0xffd9)
 			{
@@ -161,8 +161,8 @@
 					{
 						[header writeUInt16BE:marker];
 
-						off_t imagestart=[fh offsetInFile];
-						int imagelength=[parser tagBytesLeft];
+						off_t imagestart=fh.offsetInFile;
+						int imagelength=parser.tagBytesLeft;
 
 						// Calculate alpha channel extent and adjust
 						// main image if needed.
@@ -177,14 +177,14 @@
 
 						// Emit main image.
 						[self addEntryWithName:[NSString stringWithFormat:
-						@"Image %d at frame %d.jpg",numimages,[parser frame]]
-						data:[header data] offset:imagestart length:imagelength];
+						@"Image %d at frame %d.jpg",numimages,parser.frame]
+						data:header.data offset:imagestart length:imagelength];
 
 						// Emit alpha channel image if one exists.
 						if(alphaoffs && width && height)
 						{
 							[self addEntryWithName:[NSString stringWithFormat:
-							@"Image %d alpha channel at frame %d.png",numimages,[parser frame]]
+							@"Image %d alpha channel at frame %d.png",numimages,parser.frame]
 							losslessFormat:-1 width:width height:height alpha:NO
 							offset:alphastart length:alphalength];
 						}
@@ -219,7 +219,7 @@
 					}
 				}
 			}
-			else NSLog(@"Error loading SWF file: invalid JPEG data in tag %d",[parser tag]);
+			else NSLog(@"Error loading SWF file: invalid JPEG data in tag %d",parser.tag);
 		}
 		break;
 
@@ -236,9 +236,9 @@
 			if(format==3||format==4||format==5)
 			{
 				[self addEntryWithName:[NSString stringWithFormat:
-				@"Image %d at frame %d.png",numimages,[parser frame]]
+				@"Image %d at frame %d.png",numimages,parser.frame]
 				losslessFormat:format width:width height:height alpha:tag==SWFDefineBitsLossless2Tag
-				offset:[fh offsetInFile] length:[parser tagBytesLeft]];
+				offset:fh.offsetInFile length:parser.tagBytesLeft];
 			}
 			else [self reportInterestingFileWithReason:@"Unsupported lossless format %d",format];
 		}
@@ -258,8 +258,8 @@
 				[fh skipBytes:4]; //uint32_t numsamples=[fh readUInt32LE];
 
 				[self addEntryWithName:[NSString stringWithFormat:
-				@"Sound %d at frame %d.mp3",numsounds,[parser frame]]
-				offset:[fh offsetInFile] length:[parser tagBytesLeft]];
+				@"Sound %d at frame %d.mp3",numsounds,parser.frame]
+				offset:fh.offsetInFile length:parser.tagBytesLeft];
 			}
 			else if(format==0||format==3)
 			{
@@ -268,12 +268,12 @@
 
 				[fh skipBytes:4]; //uint32_t numsamples=[fh readUInt32LE];
 
-				int length=[parser tagBytesLeft];
+				int length=parser.tagBytesLeft;
 
 				[self addEntryWithName:[NSString stringWithFormat:
-				@"Sound %d at frame %d.wav",numsounds,[parser frame]]
+				@"Sound %d at frame %d.wav",numsounds,parser.frame]
 				data:[self createWAVHeaderForFlags:flags length:length]
-				offset:[fh offsetInFile] length:length];
+				offset:fh.offsetInFile length:length];
 			}
 			else if(format==1) // ADPCM
 			{
@@ -307,12 +307,12 @@
 
 		case SWFSoundStreamBlockTag:
 		{
-			if(laststreamframe!=[parser frame])
+			if(laststreamframe!=parser.frame)
 			{
-				laststreamframe=[parser frame];
+				laststreamframe=parser.frame;
 				[fh skipBytes:4];
 			}
-			[mainstream appendData:[fh readDataOfLength:[parser tagBytesLeft]]];
+			[mainstream appendData:[fh readDataOfLength:parser.tagBytesLeft]];
 		}
 		break;
 
@@ -324,7 +324,7 @@
 			int lastsubframe=-1;
 
 			int tag;
-			while((tag=[parser nextSubTag]) && [self shouldKeepParsing])
+			while((tag=[parser nextSubTag]) && self.shouldKeepParsing)
 			switch(tag)
 			{
 				case SWFSoundStreamHeadTag:
@@ -347,29 +347,29 @@
 
 				case SWFSoundStreamBlockTag:
 				{
-					if(lastsubframe!=[parser subFrame])
+					if(lastsubframe!=parser.subFrame)
 					{
-						lastsubframe=[parser subFrame];
+						lastsubframe=parser.subFrame;
 						[fh skipBytes:4];
 					}
-					[substream appendData:[fh readDataOfLength:[parser subTagBytesLeft]]];
+					[substream appendData:[fh readDataOfLength:parser.subTagBytesLeft]];
 				}
 				break;
 			}
 
-			if(substream && [substream length])
+			if(substream && substream.length)
 			{
 				numstreams++;
 
 				[self addEntryWithName:[NSString stringWithFormat:
-				@"Stream %d at frame %d.mp3",numstreams,[parser frame]]
+				@"Stream %d at frame %d.mp3",numstreams,parser.frame]
 				data:substream];
 			}
 		}
 		break;
 	}
 
-	if(mainstream && [mainstream length])
+	if(mainstream && mainstream.length)
 	{
 		[self addEntryWithName:[NSString stringWithFormat:@"Stream.mp3"]
 		data:mainstream];
@@ -426,15 +426,15 @@
 	NSUInteger index=[dataobjects indexOfObjectIdenticalTo:data];
 	if(index==NSNotFound)
 	{
-		index=[dataobjects count];
+		index=dataobjects.count;
 		[dataobjects addObject:data];
 	}
 
 	NSMutableDictionary *dict=[NSMutableDictionary dictionaryWithObjectsAndKeys:
 		[self XADPathWithString:name],XADFileNameKey,
-		[NSNumber numberWithLongLong:[data length]],XADFileSizeKey,
-		[self XADStringWithString:[parser isCompressed]?@"Zlib":@"None"],XADCompressionNameKey,
-		[NSNumber numberWithInt:index],@"SWFDataIndex",
+		@(data.length),XADFileSizeKey,
+		[self XADStringWithString:parser.compressed?@"Zlib":@"None"],XADCompressionNameKey,
+		@(index),@"SWFDataIndex",
 	nil];
 	[self addEntryWithDictionary:dict];
 }
@@ -444,10 +444,10 @@ offset:(off_t)offset length:(off_t)length
 {
 	NSMutableDictionary *dict=[NSMutableDictionary dictionaryWithObjectsAndKeys:
 		[self XADPathWithString:name],XADFileNameKey,
-		[NSNumber numberWithLongLong:length],XADFileSizeKey,
-		[NSNumber numberWithLongLong:length],@"SWFDataLength",
-		[NSNumber numberWithLongLong:offset],@"SWFDataOffset",
-		[self XADStringWithString:[parser isCompressed]?@"Zlib":@"None"],XADCompressionNameKey,
+		@(length),XADFileSizeKey,
+		@(length),@"SWFDataLength",
+		@(offset),@"SWFDataOffset",
+		[self XADStringWithString:parser.compressed?@"Zlib":@"None"],XADCompressionNameKey,
 	nil];
 	[self addEntryWithDictionary:dict];
 }
@@ -458,17 +458,17 @@ offset:(off_t)offset length:(off_t)length
 	NSUInteger index=[dataobjects indexOfObjectIdenticalTo:data];
 	if(index==NSNotFound)
 	{
-		index=[dataobjects count];
+		index=dataobjects.count;
 		[dataobjects addObject:data];
 	}
 
 	NSMutableDictionary *dict=[NSMutableDictionary dictionaryWithObjectsAndKeys:
 		[self XADPathWithString:name],XADFileNameKey,
-		[NSNumber numberWithLongLong:length+[data length]],XADFileSizeKey,
-		[NSNumber numberWithLongLong:length],@"SWFDataLength",
-		[NSNumber numberWithLongLong:offset],@"SWFDataOffset",
-		[self XADStringWithString:[parser isCompressed]?@"Zlib":@"None"],XADCompressionNameKey,
-		[NSNumber numberWithInt:index],@"SWFDataIndex",
+		@(length+data.length),XADFileSizeKey,
+		@(length),@"SWFDataLength",
+		@(offset),@"SWFDataOffset",
+		[self XADStringWithString:parser.compressed?@"Zlib":@"None"],XADCompressionNameKey,
+		@(index),@"SWFDataIndex",
 	nil];
 	[self addEntryWithDictionary:dict];
 }
@@ -480,12 +480,12 @@ offset:(off_t)offset length:(off_t)length
 	NSMutableDictionary *dict=[NSMutableDictionary dictionaryWithObjectsAndKeys:
 		[self XADPathWithString:name],XADFileNameKey,
 		//[NSNumber numberWithLongLong:length],XADFileSizeKey,
-		[NSNumber numberWithLongLong:length],@"SWFDataLength",
-		[NSNumber numberWithLongLong:offset],@"SWFDataOffset",
-		[NSNumber numberWithInt:format],@"SWFLosslessFormat",
-		[NSNumber numberWithInt:width],@"SWFLosslessWidth",
-		[NSNumber numberWithInt:height],@"SWFLosslessHeight",
-		[NSNumber numberWithBool:alpha],@"SWFLosslessAlpha",
+		@(length),@"SWFDataLength",
+		@(offset),@"SWFDataOffset",
+		@(format),@"SWFLosslessFormat",
+		@(width),@"SWFLosslessWidth",
+		@(height),@"SWFLosslessHeight",
+		@(alpha),@"SWFLosslessAlpha",
 		[self XADStringWithString:@"Zlib"],XADCompressionNameKey,
 	nil];
 	[self addEntryWithDictionary:dict];
@@ -497,36 +497,36 @@ offset:(off_t)offset length:(off_t)length
 -(CSHandle *)handleForEntryWithDictionary:(NSDictionary *)dict wantChecksum:(BOOL)checksum
 {
 	CSHandle *handle=nil;
-	NSNumber *offsetnum=[dict objectForKey:@"SWFDataOffset"];
-	NSNumber *lengthnum=[dict objectForKey:@"SWFDataLength"];
+	NSNumber *offsetnum=dict[@"SWFDataOffset"];
+	NSNumber *lengthnum=dict[@"SWFDataLength"];
 	if(offsetnum&&lengthnum)
 	{
-		handle=[[parser handle] nonCopiedSubHandleFrom:[offsetnum longLongValue]
-		length:[lengthnum longLongValue]];
+		handle=[parser.handle nonCopiedSubHandleFrom:offsetnum.longLongValue
+		length:lengthnum.longLongValue];
 
-		NSNumber *formatnum=[dict objectForKey:@"SWFLosslessFormat"];
-		if(formatnum)
+		NSNumber *formatnum=dict[@"SWFLosslessFormat"];
+		if(formatnum != nil)
 		{
 			return [CSMemoryHandle memoryHandleForReadingData:
-			[self convertLosslessFormat:[formatnum intValue]
-			width:[[dict objectForKey:@"SWFLosslessWidth"] intValue]
-			height:[[dict objectForKey:@"SWFLosslessHeight"] intValue]
-			alpha:[[dict objectForKey:@"SWFLosslessAlpha"] boolValue]
+			[self convertLosslessFormat:formatnum.intValue
+			width:[dict[@"SWFLosslessWidth"] intValue]
+			height:[dict[@"SWFLosslessHeight"] intValue]
+			alpha:[dict[@"SWFLosslessAlpha"] boolValue]
 			handle:handle]];
 		}
 	}
 
 	CSHandle *datahandle=nil;
-	NSNumber *indexnum=[dict objectForKey:@"SWFDataIndex"];
-	if(indexnum)
+	NSNumber *indexnum=dict[@"SWFDataIndex"];
+	if(indexnum != nil)
 	{
 		datahandle=[CSMemoryHandle memoryHandleForReadingData:
-		[dataobjects objectAtIndex:[indexnum intValue]]];
+		dataobjects[indexnum.intValue]];
 	}
 
 	if(handle&&datahandle)
 	{
-		return [CSMultiHandle multiHandleWithHandles:datahandle,handle,nil];
+		return [CSMultiHandle handleWithHandles:datahandle,handle,nil];
 	}
 	else if(datahandle)
 	{

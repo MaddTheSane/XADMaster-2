@@ -11,7 +11,6 @@ typedef struct XADTarSparseRegion
 
 @interface XADTarSparseHandle:CSHandle
 {
-	CSHandle *parent;
 	XADTarSparseRegion *regions;
 	int numRegions;
 	int currentRegion;
@@ -19,17 +18,16 @@ typedef struct XADTarSparseRegion
 	off_t realFileSize;
 }
 
--(id)initWithHandle:(CSHandle *)handle size:(off_t)size;
--(id)initAsCopyOf:(XADTarSparseHandle *)other;
--(void)dealloc;
+-(instancetype)initWithHandle:(CSHandle *)handle size:(off_t)size;
+-(instancetype)initAsCopyOf:(XADTarSparseHandle *)other;
 
 -(void)addSparseRegionFrom:(off_t)start length:(off_t)length;
 -(void)addFinalSparseRegionEndingAt:(off_t)regionEndsAt;
 -(void)setSingleEmptySparseRegion;
 
--(off_t)fileSize;
--(off_t)offsetInFile;
--(BOOL)atEndOfFile;
+@property (NS_NONATOMIC_IOSONLY, readonly) off_t fileSize;
+@property (NS_NONATOMIC_IOSONLY, readonly) off_t offsetInFile;
+@property (NS_NONATOMIC_IOSONLY, readonly) BOOL atEndOfFile;
 
 -(void)seekToFileOffset:(off_t)offs;
 -(void)seekToEndOfFile;

@@ -1,0 +1,37 @@
+/* 
+  XADErrors.strings
+  XADMaster
+
+  Created by C.W. Betts on 11/26/17.
+  
+*/
+
+/* Common errors */
+"Attempted to read more data than was available" = "Das Archiv ist nicht komplett";
+"Opening file failed" = "Datei konnte nicht geöffnet werden";
+"Missing or wrong password" = "Falsches oder fehlendes Kennwort";
+"Wrong checksum" = "Falsche Prüfsumme";
+"Could not create directory" = "Ordner konnte nicht erstellt werden";
+
+/* Uncommon or unused errors */
+"Unknown error" = "Unbekannter Fehler";
+"Failed to write to file" = "Schreiben der Datei fehlgeschlagen";
+"Function called with illegal parameters" = "Funktionsaufruf mit ungültigen Parametern";
+"Not enough memory available" = "Ausreichender Speicher nicht verfügbar";
+"Data is corrupted" = "Daten sind beschädigt";
+"File is not fully supported" = "Datei ist nicht vollständig unstützt";
+"Required resource missing" = "Erforderliche Resource fehlt";
+"Error on decrunching" = "Fehler beim Decrunchen";
+"Unknown file type" = "Unbekannter Dateityp";
+"File, disk has been skipped" = "Datei, Festplatte wird übersprungen";
+"User cancelled extraction" = "Benutzer hat Extrahierung abgebrochen";
+"File already exists" = "Datei existiert bereits";
+"Verify failed (disk hook)" = "Überprüfung fehlgeschlagen (Disk Hook)";
+"Wrong drive geometry" = "Falsche Festplattengeometrie";
+"Unknown data format" = "Unbekanntes Datenformat";
+"Source contains no files" = "Quelle enthält keine Dateien";
+"Unknown filesystem" = "Unbekanntes Dateisystem";
+"Name of file exists as directory" = "Dateiname existiert bereits als Ordner";
+"Buffer was too short" = "Puffer zu kurz";
+"Text encoding was defective" = "Formaterkennung defekt";
+"Could not create symlink" = "Symlink konnte nicht erstellt werden";

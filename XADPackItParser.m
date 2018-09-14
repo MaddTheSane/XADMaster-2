@@ -12,8 +12,8 @@
 
 +(BOOL)recognizeFileWithHandle:(CSHandle *)handle firstBytes:(NSData *)data name:(NSString *)name
 {
-	int length=[data length];
-	const uint8_t *bytes=[data bytes];
+	NSInteger length=data.length;
+	const uint8_t *bytes=data.bytes;
 
 	if(length<4) return NO;
 
@@ -27,14 +27,14 @@
 {
 	[self setIsMacArchive:YES];
 
-	CSHandle *handle=[self handle];
+	CSHandle *handle=self.handle;
 
 	for(;;)
 	{
 		uint32_t magic=[handle readID];
 		if(magic=='PEnd') break;
 
-		off_t start=[handle offsetInFile];
+		off_t start=handle.offsetInFile;
 
 		BOOL comp,encrypted;
 		CSHandle *fh;
@@ -60,13 +60,13 @@
 			else if(magic=='PMa5')
 			{
 				src=[[[XADPackItXORHandle alloc] initWithHandle:handle
-				password:[[self password] dataUsingEncoding:NSMacOSRomanStringEncoding]] autorelease];
+				password:[self.password dataUsingEncoding:NSMacOSRomanStringEncoding]] autorelease];
 				encrypted=YES;
 			}
 			else //if(magic=='PMa6')
 			{
 				src=[[[XADPackItDESHandle alloc] initWithHandle:handle
-				password:[[self password] dataUsingEncoding:NSMacOSRomanStringEncoding]] autorelease];
+				password:[self.password dataUsingEncoding:NSMacOSRomanStringEncoding]] autorelease];
 				encrypted=YES;
 			}
 
@@ -105,9 +105,9 @@
 			end=start+94+datacompsize+rsrccompsize+2;
 
 			datadesc=[NSMutableDictionary dictionaryWithObjectsAndKeys:
-				[NSNumber numberWithLongLong:start+94],@"Offset",
-				[NSNumber numberWithLongLong:datasize+rsrcsize],@"Length",
-				[NSNumber numberWithInt:crc],@"CRC",
+				@(start+94),@"Offset",
+				@(datasize+rsrcsize),@"Length",
+				@(crc),@"CRC",
 			nil];
 		}
 		else
@@ -136,11 +136,11 @@
 			}
 
 			datadesc=[NSMutableDictionary dictionaryWithObjectsAndKeys:
-				[NSNumber numberWithLongLong:start],@"Offset",
-				[NSNumber numberWithLongLong:end-start],@"Length",
-				[NSNumber numberWithLongLong:datasize+rsrcsize+94],@"UncompressedLength",
-				[NSNumber numberWithInt:crc],@"CRC",
-				[NSNumber numberWithInt:crypto],@"Crypto",
+				@(start),@"Offset",
+				@(end-start),@"Length",
+				@(datasize+rsrcsize+94),@"UncompressedLength",
+				@(crc),@"CRC",
+				@(crypto),@"Crypto",
 			nil];
 		}
 
@@ -148,19 +148,19 @@
 		{
 			[self addEntryWithDictionary:[NSMutableDictionary dictionaryWithObjectsAndKeys:
 				name,XADFileNameKey,
-				[NSNumber numberWithUnsignedInt:type],XADFileTypeKey,
-				[NSNumber numberWithUnsignedInt:creator],XADFileCreatorKey,
-				[NSNumber numberWithInt:finderflags],XADFinderFlagsKey,
-				[NSNumber numberWithUnsignedInt:datasize],XADFileSizeKey,
-				[NSNumber numberWithUnsignedInt:datacompsize],XADCompressedSizeKey,
+				@(type),XADFileTypeKey,
+				@(creator),XADFileCreatorKey,
+				@(finderflags),XADFinderFlagsKey,
+				@(datasize),XADFileSizeKey,
+				@(datacompsize),XADCompressedSizeKey,
 				[NSDate XADDateWithTimeIntervalSince1904:modification],XADLastModificationDateKey,
 				[NSDate XADDateWithTimeIntervalSince1904:creation],XADCreationDateKey,
 				[self XADStringWithString:comp?@"Huffman":@"None"],XADCompressionNameKey,
-				[NSNumber numberWithBool:encrypted],XADIsEncryptedKey,
+				@(encrypted),XADIsEncryptedKey,
 
 				datadesc,XADSolidObjectKey,
-				[NSNumber numberWithUnsignedInt:0],XADSolidOffsetKey,
-				[NSNumber numberWithUnsignedInt:datasize],XADSolidLengthKey,
+				@0U,XADSolidOffsetKey,
+				@(datasize),XADSolidLengthKey,
 			nil]];
 		}
 
@@ -168,20 +168,20 @@
 		{
 			[self addEntryWithDictionary:[NSMutableDictionary dictionaryWithObjectsAndKeys:
 				name,XADFileNameKey,
-				[NSNumber numberWithUnsignedInt:type],XADFileTypeKey,
-				[NSNumber numberWithUnsignedInt:creator],XADFileCreatorKey,
-				[NSNumber numberWithInt:finderflags],XADFinderFlagsKey,
-				[NSNumber numberWithUnsignedInt:rsrcsize],XADFileSizeKey,
-				[NSNumber numberWithUnsignedInt:rsrccompsize],XADCompressedSizeKey,
+				@(type),XADFileTypeKey,
+				@(creator),XADFileCreatorKey,
+				@(finderflags),XADFinderFlagsKey,
+				@(rsrcsize),XADFileSizeKey,
+				@(rsrccompsize),XADCompressedSizeKey,
 				[NSDate XADDateWithTimeIntervalSince1904:modification],XADLastModificationDateKey,
 				[NSDate XADDateWithTimeIntervalSince1904:creation],XADCreationDateKey,
 				[self XADStringWithString:comp?@"Huffman":@"None"],XADCompressionNameKey,
-				[NSNumber numberWithBool:encrypted],XADIsEncryptedKey,
-				[NSNumber numberWithBool:YES],XADIsResourceForkKey,
+				@(encrypted),XADIsEncryptedKey,
+				@YES,XADIsResourceForkKey,
 
 				datadesc,XADSolidObjectKey,
-				[NSNumber numberWithUnsignedInt:datasize],XADSolidOffsetKey,
-				[NSNumber numberWithUnsignedInt:rsrcsize],XADSolidLengthKey,
+				@(datasize),XADSolidOffsetKey,
+				@(rsrcsize),XADSolidLengthKey,
 			nil]];
 		}
 
@@ -196,25 +196,25 @@
 
 -(CSHandle *)handleForSolidStreamWithObject:(id)obj wantChecksum:(BOOL)checksum
 {
-	off_t offs=[[obj objectForKey:@"Offset"] longLongValue];
-	off_t len=[[obj objectForKey:@"Length"] longLongValue];
-	CSHandle *handle=[[self handle] nonCopiedSubHandleFrom:offs length:len];
+	off_t offs=[obj[@"Offset"] longLongValue];
+	off_t len=[obj[@"Length"] longLongValue];
+	CSHandle *handle=[self.handle nonCopiedSubHandleFrom:offs length:len];
 
-	NSNumber *uncomplennum=[obj objectForKey:@"UncompressedLength"];
-	if(uncomplennum)
+	NSNumber *uncomplennum=obj[@"UncompressedLength"];
+	if(uncomplennum != nil)
 	{
-		off_t uncomplen=[uncomplennum longLongValue];
-		int crypto=[[obj objectForKey:@"Crypto"] intValue];
+		off_t uncomplen=uncomplennum.longLongValue;
+		int crypto=[obj[@"Crypto"] intValue];
 
 		if(crypto==1)
 		{
 			handle=[[[XADPackItXORHandle alloc] initWithHandle:handle length:len
-			password:[[self password] dataUsingEncoding:NSMacOSRomanStringEncoding]] autorelease];
+			password:[self.password dataUsingEncoding:NSMacOSRomanStringEncoding]] autorelease];
 		}
 		else if(crypto==2)
 		{
 			handle=[[[XADPackItDESHandle alloc] initWithHandle:handle length:len
-			password:[[self password] dataUsingEncoding:NSMacOSRomanStringEncoding]] autorelease];
+			password:[self.password dataUsingEncoding:NSMacOSRomanStringEncoding]] autorelease];
 		}
 
 		handle=[[[XADStuffItHuffmanHandle alloc] initWithHandle:handle length:uncomplen] autorelease];
@@ -223,8 +223,8 @@
 
 	if(checksum)
 	{
-		handle=[XADCRCHandle CCITTCRC16HandleWithHandle:handle length:[handle fileSize]
-		correctCRC:[[obj objectForKey:@"CRC"] intValue] conditioned:NO];
+		handle=[XADCRCHandle CCITTCRC16HandleWithHandle:handle length:handle.fileSize
+		correctCRC:[obj[@"CRC"] intValue] conditioned:NO];
 	}
 
 	return handle;
@@ -248,10 +248,10 @@
 
 -(id)initWithHandle:(CSHandle *)handle length:(off_t)length password:(NSData *)passdata
 {
-	if((self=[super initWithHandle:handle length:length]))
+	if((self=[super initWithInputBufferForHandle:handle length:length]))
 	{
-		const uint8_t *passbytes=[passdata bytes];
-		int passlen=[passdata length];
+		const uint8_t *passbytes=passdata.bytes;
+		NSInteger passlen=passdata.length;
 
 		uint8_t passbuf[8];
 
@@ -303,10 +303,10 @@
 
 -(id)initWithHandle:(CSHandle *)handle length:(off_t)length password:(NSData *)passdata
 {
-	if((self=[super initWithHandle:handle length:length]))
+	if((self=[super initWithInputBufferForHandle:handle length:length]))
 	{
-		const uint8_t *passbytes=[passdata bytes];
-		int passlen=[passdata length];
+		const uint8_t *passbytes=passdata.bytes;
+		NSInteger passlen=passdata.length;
 
 		uint8_t key[8];
 		memset(key,0,8);

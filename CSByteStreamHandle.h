@@ -1,6 +1,7 @@
+#import <Foundation/Foundation.h>
 #import "CSStreamHandle.h"
 
-#import <setjmp.h>
+#include <setjmp.h>
 
 #define CSByteStreamHandle XADByteStreamHandle
 
@@ -13,9 +14,9 @@
 }
 
 // Intializers
--(id)initWithName:(NSString *)descname length:(off_t)length;
--(id)initWithHandle:(CSHandle *)handle length:(off_t)length bufferSize:(int)buffersize;
--(id)initAsCopyOf:(CSByteStreamHandle *)other;
+//-(instancetype)initWithName:(NSString *)descname length:(off_t)length;
+-(instancetype)initWithInputBufferForHandle:(CSHandle *)handle length:(off_t)length bufferSize:(int)buffersize;
+-(instancetype)initAsCopyOf:(CSByteStreamHandle *)other;
 
 // Implemented by this class
 -(int)streamAtMost:(int)num toBuffer:(void *)buffer;
@@ -32,7 +33,7 @@
 
 
 
-extern NSString *CSByteStreamEOFReachedException;
+extern NSString *const CSByteStreamEOFReachedException;
 
 static inline void CSByteStreamEOF(CSByteStreamHandle *self) __attribute__((noreturn));
 static inline void CSByteStreamEOF(CSByteStreamHandle *self) { longjmp(self->eofenv,1); }

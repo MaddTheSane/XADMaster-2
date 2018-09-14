@@ -14,25 +14,24 @@
 +(BOOL)recognizeFileWithHandle:(CSHandle *)handle firstBytes:(NSData *)data name:(NSString *)name;
 +(NSArray *)volumesForHandle:(CSHandle *)handle firstBytes:(NSData *)data name:(NSString *)name;
 
--(id)init;
--(void)dealloc;
+-(instancetype)init;
 
 -(void)parseWithSeparateMacForks;
 
 -(NSArray *)parseFilesForHandle:(CSHandle *)handle;
 
 -(void)parseBitVectorForHandle:(CSHandle *)handle array:(NSArray *)array key:(NSString *)key;
--(NSIndexSet *)parseDefintionVectorForHandle:(CSHandle *)handle numberOfElements:(int)num;
+-(NSIndexSet *)parseDefintionVectorForHandle:(CSHandle *)handle numberOfElements:(NSInteger)num;
 -(void)parseDatesForHandle:(CSHandle *)handle array:(NSMutableArray *)array key:(NSString *)key;
 -(void)parseCRCsForHandle:(CSHandle *)handle array:(NSMutableArray *)array;
 -(void)parseNamesForHandle:(CSHandle *)handle array:(NSMutableArray *)array;
 -(void)parseAttributesForHandle:(CSHandle *)handle array:(NSMutableArray *)array;
 
 -(NSDictionary *)parseStreamsForHandle:(CSHandle *)handle;
--(NSArray *)parsePackedStreamsForHandle:(CSHandle *)handle;
--(NSArray *)parseFoldersForHandle:(CSHandle *)handle packedStreams:(NSArray *)packedstreams;
+-(NSArray<NSMutableDictionary<NSString*,id>*> *)parsePackedStreamsForHandle:(CSHandle *)handle;
+-(NSArray<NSMutableDictionary<NSString*,id>*> *)parseFoldersForHandle:(CSHandle *)handle packedStreams:(NSArray *)packedstreams;
 -(void)parseFolderForHandle:(CSHandle *)handle dictionary:(NSMutableDictionary *)dictionary
-packedStreams:(NSArray *)packedstreams packedStreamIndex:(int *)packedstreamindex;
+packedStreams:(NSArray *)packedstreams packedStreamIndex:(NSInteger *)packedstreamindex;
 -(void)parseSubStreamsInfoForHandle:(CSHandle *)handle folders:(NSArray *)folders;
 -(void)setupDefaultSubStreamsForFolders:(NSArray *)folders;
 -(NSArray *)collectAllSubStreamsFromFolders:(NSArray *)folders;

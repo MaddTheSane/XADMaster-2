@@ -96,11 +96,11 @@ void HMAC_SHA256_UpdateKey(HMAC_SHA256_CTX *ctx, const unsigned char *key, unsig
 			ctx->hashkey = 1;
 
 			/* Init. the hash beastie... */
-			SHA256_Init(&ctx->shactx);
+			XADSHA256_Init(&ctx->shactx);
 
 			/* If there's any previous key data, use it */
 			if (ctx->keylen > 0) {
-				SHA256_Update(&ctx->shactx, &(ctx->key[0]), ctx->keylen);
+				XADSHA256_Update(&ctx->shactx, &(ctx->key[0]), ctx->keylen);
 			}
 
 			/*
@@ -110,7 +110,7 @@ void HMAC_SHA256_UpdateKey(HMAC_SHA256_CTX *ctx, const unsigned char *key, unsig
 			ctx->keylen = HMAC_SHA256_DIGEST_LENGTH;
 		}
 		/* Now feed the latest key data to the has monster */
-		SHA256_Update(&ctx->shactx, key, keylen);
+		XADSHA256_Update(&ctx->shactx, key, keylen);
 	} else {
 		/*
 		 * Key data length hasn't yet exceeded the hash
@@ -131,7 +131,7 @@ void HMAC_SHA256_EndKey(HMAC_SHA256_CTX *ctx) {
 	if (ctx->hashkey) {
 		memset(&(ctx->key[0]), ZERO_BYTE, HMAC_SHA256_BLOCK_LENGTH);
 		/* Yes, so finish up and copy the key data */
-		SHA256_Final(&(ctx->key[0]), &ctx->shactx);
+		XADSHA256_Final(&(ctx->key[0]), &ctx->shactx);
 		/* ctx->keylen was already set correctly */
 	}
 	/* Pad the key if necessary with zero bytes */
@@ -152,23 +152,23 @@ void HMAC_SHA256_EndKey(HMAC_SHA256_CTX *ctx) {
 }
 
 void HMAC_SHA256_StartMessage(HMAC_SHA256_CTX *ctx) {
-	SHA256_Init(&ctx->shactx);
-	SHA256_Update(&ctx->shactx, &(ctx->ipad[0]), HMAC_SHA256_BLOCK_LENGTH);
+	XADSHA256_Init(&ctx->shactx);
+	XADSHA256_Update(&ctx->shactx, &(ctx->ipad[0]), HMAC_SHA256_BLOCK_LENGTH);
 }
 
 void HMAC_SHA256_UpdateMessage(HMAC_SHA256_CTX *ctx, const unsigned char *data, unsigned int datalen) {
-	SHA256_Update(&ctx->shactx, data, datalen);
+	XADSHA256_Update(&ctx->shactx, data, datalen);
 }
 
 void HMAC_SHA256_EndMessage(unsigned char *out, HMAC_SHA256_CTX *ctx) {
 	unsigned char	buf[HMAC_SHA256_DIGEST_LENGTH];
-	SHA_CTX		*c = &ctx->shactx;
+	XADSHA256		*c = &ctx->shactx;
 
-	SHA256_Final(&(buf[0]), c);
-	SHA256_Init(c);
-	SHA256_Update(c, &(ctx->opad[0]), HMAC_SHA256_BLOCK_LENGTH);
-	SHA256_Update(c, buf, HMAC_SHA256_DIGEST_LENGTH);
-	SHA256_Final(out, c);
+	XADSHA256_Final(&(buf[0]), c);
+	XADSHA256_Init(c);
+	XADSHA256_Update(c, &(ctx->opad[0]), HMAC_SHA256_BLOCK_LENGTH);
+	XADSHA256_Update(c, buf, HMAC_SHA256_DIGEST_LENGTH);
+	XADSHA256_Final(out, c);
 }
 
 void HMAC_SHA256_Done(HMAC_SHA256_CTX *ctx) {

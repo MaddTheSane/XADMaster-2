@@ -7,13 +7,13 @@
 
 +(BOOL)recognizeFileWithHandle:(CSHandle *)handle firstBytes:(NSData *)data name:(NSString *)name;
 {
-	const uint8_t *bytes=[data bytes];
-	int length=[data length];
+	const uint8_t *bytes=data.bytes;
+	NSInteger length=data.length;
 
 	if(length<12) return NO;
 	if(bytes[0]!=0x4d||bytes[1]!=0x5a) return NO;
 
-	for(int i=2;i<length-9;i++)
+	for(NSInteger i=2;i<length-9;i++)
 	{
 		if(bytes[i]=='P'&&bytes[i+1]=='K'&&bytes[i+2]==3&&bytes[i+3]==4)
 		if(bytes[i+4]>=10&&bytes[i+4]<40&&!bytes[i+9]) return YES;
@@ -34,13 +34,13 @@
 
 +(BOOL)recognizeFileWithHandle:(CSHandle *)handle firstBytes:(NSData *)data name:(NSString *)name;
 {
-	const uint8_t *bytes=[data bytes];
-	int length=[data length];
+	const uint8_t *bytes=data.bytes;
+	NSInteger length=data.length;
 
 	if(length<26) return NO;
 	if(bytes[0]!=0x4d||bytes[1]!=0x5a) return NO;
 
-	for(int i=2;i<length-24;++i)
+	for(NSInteger i=2;i<length-24;++i)
 	{
 		if(memcmp(bytes+i,"WinZip(R) Self-Extractor",24)==0) return YES;
 	}
@@ -60,8 +60,8 @@
 
 +(BOOL)recognizeFileWithHandle:(CSHandle *)handle firstBytes:(NSData *)data name:(NSString *)name;
 {
-	const uint8_t *bytes=[data bytes];
-	int length=[data length];
+	const uint8_t *bytes=data.bytes;
+	NSInteger length=data.length;
 
 	if(length<4) return NO;
 	if(CSUInt32BE(bytes)=='Joy!') return YES;
@@ -90,7 +90,7 @@
 
 	// Try to locate the end of central directory.
 	[handle seekToEndOfFile];
-	off_t end=[handle offsetInFile];
+	off_t end=handle.offsetInFile;
 
 	int numbytes=0x10011;
 	if(numbytes>end) numbytes=(int)end;
@@ -114,17 +114,17 @@
 {
 	NSArray *volumes=[self scanForVolumesWithFilename:name
 	regex:[XADRegex regexWithPattern:[NSString stringWithFormat:@"^%@\\.(zip|z[0-9]{2})$",
-		[[name stringByDeletingPathExtension] escapedPattern]] options:REG_ICASE]
+		name.stringByDeletingPathExtension.escapedPattern] options:REG_ICASE]
 	firstFileExtension:@"z01"];
 
-	if([volumes count]>1) return volumes;
+	if(volumes.count>1) return volumes;
 
 	volumes=[self scanForVolumesWithFilename:name
 	regex:[XADRegex regexWithPattern:[NSString stringWithFormat:@"^%@(\\.[0-9]+|())\\.zip$",
-		[[name stringByDeletingPathExtension] escapedPattern]] options:REG_ICASE]
+		name.stringByDeletingPathExtension.escapedPattern] options:REG_ICASE]
 	firstFileExtension:nil];
 
-	if([volumes count]>1) return volumes;
+	if(volumes.count>1) return volumes;
 
 	return nil;
 }

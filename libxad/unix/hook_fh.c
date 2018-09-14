@@ -234,7 +234,7 @@ static xadINT32 opendestfile(struct xadArchiveInfoP *ai)
   {
     xadSTRPTR buf;
 
-    i = strlen((const char *)name)+1;
+    i = (xadUINT32)strlen((const char *)name)+1;
     if((buf = (xadSTRPTR) xadAllocVec(XADM i, XADMEMF_PUBLIC)))
     {
       i = 0;

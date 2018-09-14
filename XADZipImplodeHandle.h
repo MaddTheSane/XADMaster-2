@@ -8,9 +8,8 @@
 	BOOL literals;
 }
 
--(id)initWithHandle:(CSHandle *)handle length:(off_t)length
+-(instancetype)initWithHandle:(CSHandle *)handle length:(off_t)length
 largeDictionary:(BOOL)largedict hasLiterals:(BOOL)hasliterals;
--(void)dealloc;
 
 -(void)resetLZSSHandle;
 -(XADPrefixCode *)allocAndParseCodeOfSize:(int)size;

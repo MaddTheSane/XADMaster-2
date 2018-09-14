@@ -16,7 +16,6 @@
 
 @interface XADLZMAHandle:CSStreamHandle
 {
-	CSHandle *parent;
 	off_t startoffs;
 
 	CLzmaDec lzma;
@@ -25,9 +24,8 @@
 	int bufbytes,bufoffs;
 }
 
--(id)initWithHandle:(CSHandle *)handle propertyData:(NSData *)propertydata;
--(id)initWithHandle:(CSHandle *)handle length:(off_t)length propertyData:(NSData *)propertydata;
--(void)dealloc;
+-(instancetype)initWithHandle:(CSHandle *)handle propertyData:(NSData *)propertydata;
+-(instancetype)initWithHandle:(CSHandle *)handle length:(off_t)length propertyData:(NSData *)propertydata;
 
 -(void)resetStream;
 -(int)streamAtMost:(int)num toBuffer:(void *)buffer;

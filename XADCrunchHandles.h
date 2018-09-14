@@ -8,7 +8,7 @@
 	BOOL oldversion,haschecksum,checksumcorrect;
 }
 
--(id)initWithHandle:(CSHandle *)handle old:(BOOL)old hasChecksum:(BOOL)checksum;
+-(instancetype)initWithHandle:(CSHandle *)handle old:(BOOL)old hasChecksum:(BOOL)checksum;
 -(xadINT32)unpackData;
 
 @end
@@ -18,7 +18,7 @@
 	BOOL oldversion,haschecksum,checksumcorrect;
 }
 
--(id)initWithHandle:(CSHandle *)handle old:(BOOL)old hasChecksum:(BOOL)checksum;
+-(instancetype)initWithHandle:(CSHandle *)handle old:(BOOL)old hasChecksum:(BOOL)checksum;
 -(xadINT32)unpackData;
 
 @end

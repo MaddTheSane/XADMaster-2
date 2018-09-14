@@ -5,24 +5,24 @@
 
 @interface CSHandle (Progress)
 
--(double)estimatedProgress;
+@property (readonly) double estimatedProgress;
 
 @end
 
 @interface CSZlibHandle (Progress)
 
--(double)estimatedProgress;
+@property (readonly) double estimatedProgress;
 
 @end
 
 @interface CSStreamHandle (progress)
 
--(double)estimatedProgress;
+@property (readonly) double estimatedProgress;
 
 @end
 
 @interface CSBzip2Handle (progress)
 
--(double)estimatedProgress;
+@property (readonly) double estimatedProgress;
 
 @end

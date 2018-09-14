@@ -8,8 +8,7 @@
 	off_t blockstart;
 }
 
--(id)initWithHandle:(CSHandle *)handle blockSize:(int)blocklen;
--(void)dealloc;
+-(instancetype)initWithHandle:(CSHandle *)handle blockSize:(int)blocklen;
 
 -(void)resetLZSSHandle;
 -(XADPrefixCode *)allocAndParseCodeOfSize:(int)size;

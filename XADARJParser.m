@@ -17,12 +17,12 @@ static NSData *ReadNullTerminatedString(CSHandle *fh);
 
 +(BOOL)recognizeFileWithHandle:(CSHandle *)handle firstBytes:(NSData *)data name:(NSString *)name
 {
-	const uint8_t *bytes=[data bytes];
-	int length=[data length];
+	const uint8_t *bytes=data.bytes;
+	NSInteger length=data.length;
 
 	if(length<40) return NO;
 
-	for(int i=0;i<=length-4;i++)
+	for(NSInteger i=0;i<=length-4;i++)
 	{
 		if(bytes[i]==0x60&&bytes[i+1]==0xea)
 		{
@@ -34,14 +34,14 @@ static NSData *ReadNullTerminatedString(CSHandle *fh);
 				if(storedcrc==~headcrc) return YES;
 			}
 		}
-    }
+	}
 
 	return NO;
 }
 
 -(void)parse
 {
-	CSHandle *fh=[self handle];
+	CSHandle *fh=self.handle;
 
 	int headersize;
 	NSData *header;
@@ -53,14 +53,14 @@ static NSData *ReadNullTerminatedString(CSHandle *fh);
 
 		if(byte==0xea)
 		{
-			off_t pos=[fh offsetInFile];
+			off_t pos=fh.offsetInFile;
 
 			headersize=[fh readUInt16LE];
 			if(headersize>=32 && headersize<=2600)
 			{
 				header=[fh readDataOfLength:headersize];
 				uint32_t crc=[fh readUInt32LE];
-				if(XADCalculateCRC(0xffffffff,[header bytes],headersize,XADCRCTable_edb88320)==~crc)
+				if(XADCalculateCRC(0xffffffff,header.bytes,headersize,XADCRCTable_edb88320)==~crc)
 				break;
 			}
 
@@ -68,12 +68,12 @@ static NSData *ReadNullTerminatedString(CSHandle *fh);
 		}
 	}
 
-	const uint8_t *headerbytes=[header bytes];
+	const uint8_t *headerbytes=header.bytes;
 
 	int firstsize=headerbytes[0];
 	//int version=headerbytes[1];
 	//int minversion=headerbytes[2];
-	int os=headerbytes[3];
+	//int os=headerbytes[3];
 	//int archiveflags=headerbytes[4];
 	//int securityversion=headerbytes[5];
 	int filetype=headerbytes[6];
@@ -92,26 +92,15 @@ static NSData *ReadNullTerminatedString(CSHandle *fh);
 	const char *comment=(const char *)&headerbytes[firstsize+filenamelen+1];
 	int commentlen=StringLength(comment,(const char *)&headerbytes[headersize]);
 
-	if(os==2) // Unix dates
-	{
-		[properties setObject:[NSDate dateWithTimeIntervalSince1970:archivecreataion] forKey:XADCreationDateKey];
-		[properties setObject:[NSDate dateWithTimeIntervalSince1970:archivemodification] forKey:XADLastModificationDateKey];
-	}
-	else // MS-DOS/Windows dates
-	{
-		[properties setObject:[NSDate XADDateWithMSDOSDateTime:archivecreataion] forKey:XADCreationDateKey];
-		[properties setObject:[NSDate XADDateWithMSDOSDateTime:archivemodification] forKey:XADLastModificationDateKey];
-	}
-
-	if(filenamelen) [properties setObject:[self XADStringWithBytes:filename length:filenamelen]
-	forKey:@"ARJOriginalArchiveName"];
-	if(commentlen) [properties setObject:[self XADStringWithBytes:comment length:commentlen]
-	forKey:XADCommentKey];
+	properties[XADCreationDateKey] = [NSDate XADDateWithMSDOSDateTime:archivecreataion];
+	properties[XADLastModificationDateKey] = [NSDate XADDateWithMSDOSDateTime:archivemodification];
+	if(filenamelen) properties[@"ARJOriginalArchiveName"] = [self XADStringWithBytes:filename length:filenamelen];
+	if(commentlen) properties[XADCommentKey] = [self XADStringWithBytes:comment length:commentlen];
 
 	int extlen=[fh readUInt16LE];
 	if(extlen) [fh skipBytes:extlen+4];
 
-	while([self shouldKeepParsing])
+	while(self.shouldKeepParsing)
 	{
 		if([fh readUInt8]!=0x60||[fh readUInt8]!=0xea) [XADException raiseIllegalDataException];
 
@@ -143,11 +132,11 @@ static NSData *ReadNullTerminatedString(CSHandle *fh);
 		int extlen=[fh readUInt16LE];
 		if(extlen) [fh skipBytes:extlen+4];
 
-		const char *separator;
+		XADPathSeparator separator;
 		if(flags&0x10) separator=XADUnixPathSeparator;
 		else separator=XADWindowsPathSeparator;
 
-		off_t pos=[fh offsetInFile];
+		off_t pos=fh.offsetInFile;
 
 		NSDate *modificationdate;
 		if(os==2) modificationdate=[NSDate dateWithTimeIntervalSince1970:modification];
@@ -155,27 +144,27 @@ static NSData *ReadNullTerminatedString(CSHandle *fh);
 
 		NSMutableDictionary *dict=[NSMutableDictionary dictionaryWithObjectsAndKeys:
 			[self XADPathWithData:filename separators:separator],XADFileNameKey,
-			[NSNumber numberWithLongLong:pos],XADDataOffsetKey,
-			[NSNumber numberWithLongLong:compsize],XADDataLengthKey,
-			[NSNumber numberWithLongLong:compsize],XADCompressedSizeKey,
-			[NSNumber numberWithLongLong:size],XADFileSizeKey,
+			@(pos),XADDataOffsetKey,
+			@(compsize),XADDataLengthKey,
+			@(compsize),XADCompressedSizeKey,
+			@(size),XADFileSizeKey,
 			modificationdate,XADLastModificationDateKey,
-			[NSNumber numberWithInt:accessmode],XADDOSFileAttributesKey,
-			[NSNumber numberWithInt:version],@"ARJVersion",
-			[NSNumber numberWithInt:minversion],@"ARJMinimumVersion",
-			[NSNumber numberWithInt:os],@"ARJOS",
-			[NSNumber numberWithInt:flags],@"ARJFlags",
-			[NSNumber numberWithInt:method],@"ARJMethod",
-			[NSNumber numberWithInt:filetype],@"ARJFileType",
-			[NSNumber numberWithInt:crc],@"ARJCRC32",
+			@(accessmode),XADDOSFileAttributesKey,
+			@(version),@"ARJVersion",
+			@(minversion),@"ARJMinimumVersion",
+			@(os),@"ARJOS",
+			@(flags),@"ARJFlags",
+			@(method),@"ARJMethod",
+			@(filetype),@"ARJFileType",
+			@(crc),@"ARJCRC32",
 		nil];
 
-		if(filetype==3) [dict setObject:[NSNumber numberWithBool:YES] forKey:XADIsDirectoryKey];
+		if(filetype==3) dict[XADIsDirectoryKey] = @YES;
 
 		if(flags&0x01)
 		{
-			[dict setObject:[NSNumber numberWithBool:YES] forKey:XADIsEncryptedKey];
-			[dict setObject:[NSNumber numberWithInt:passwordmod] forKey:@"ARJPasswordModifier"];
+			dict[XADIsEncryptedKey] = @YES;
+			dict[@"ARJPasswordModifier"] = @(passwordmod);
 		}
 
 		NSString *osname=nil;
@@ -193,8 +182,9 @@ static NSData *ReadNullTerminatedString(CSHandle *fh);
 			case 9: osname=@"VAX VMS"; break;
 			case 10: osname=@"Windows 95"; break;
 			case 11: osname=@"Win32"; break;
+			default: osname=@"Unknown"; break;
 		}
-		if(osname) [dict setObject:[self XADStringWithString:osname] forKey:@"ARJOSName"];
+		dict[@"ARJOSName"] = [self XADStringWithString:osname];
 
 		NSString *methodname=nil;
 		switch(method)
@@ -204,10 +194,11 @@ static NSData *ReadNullTerminatedString(CSHandle *fh);
 			case 2: methodname=@"Medium"; break;
 			case 3: methodname=@"Fast"; break;
 			case 4: methodname=@"Fastest"; break;
+			default: methodname=@"Unknown"; break;
 		}
-		if(methodname) [dict setObject:[self XADStringWithString:methodname] forKey:XADCompressionNameKey];
+		dict[XADCompressionNameKey] = [self XADStringWithString:methodname];
 
-		if([comment length]) [dict setObject:[self XADStringWithData:comment] forKey:XADCommentKey];
+		if(comment.length) dict[XADCommentKey] = [self XADStringWithData:comment];
 
 		[self addEntryWithDictionary:dict];
 
@@ -219,17 +210,17 @@ static NSData *ReadNullTerminatedString(CSHandle *fh);
 -(CSHandle *)handleForEntryWithDictionary:(NSDictionary *)dict wantChecksum:(BOOL)checksum
 {
 	CSHandle *handle=[self handleAtDataOffsetForDictionary:dict];
-	off_t size=[[dict objectForKey:XADFileSizeKey] longLongValue];
-	int method=[[dict objectForKey:@"ARJMethod"] intValue];
-	uint32_t crc=[[dict objectForKey:@"ARJCRC32"] unsignedLongValue];
-	NSNumber *crypto=[dict objectForKey:XADIsEncryptedKey];
+	off_t size=[dict[XADFileSizeKey] longLongValue];
+	int method=[dict[@"ARJMethod"] intValue];
+	uint32_t crc=[dict[@"ARJCRC32"] unsignedIntValue];
+	NSNumber *crypto=dict[XADIsEncryptedKey];
 
-	if(crypto&&[crypto boolValue])
+	if(crypto&&crypto.boolValue)
 	{
-		NSMutableData *passdata=[NSMutableData dataWithData:[self encodedPassword]];
-		uint8_t *passbytes=[passdata mutableBytes];
-		int passlength=[passdata length];
-		int mod=[[dict objectForKey:@"ARJPasswordModifier"] intValue];
+		NSMutableData *passdata=[NSMutableData dataWithData:self.encodedPassword];
+		uint8_t *passbytes=passdata.mutableBytes;
+		int passlength=(int)passdata.length;
+		int mod=[dict[@"ARJPasswordModifier"] intValue];
 
 		for(int i=0;i<passlength;i++) passbytes[i]+=mod;
 

@@ -3,7 +3,7 @@
 
 typedef struct CSInputBuffer
 {
-	CSHandle *parent;
+	__unsafe_unretained CSHandle *parent;
 	off_t startoffs;
 	BOOL eof;
 
@@ -20,7 +20,7 @@ typedef struct CSInputBuffer
 
 CSInputBuffer *CSInputBufferAlloc(CSHandle *parent,int size);
 CSInputBuffer *CSInputBufferAllocWithBuffer(const uint8_t *buffer,int length,off_t startoffs);
-CSInputBuffer *CSInputBufferAllocEmpty();
+CSInputBuffer *CSInputBufferAllocEmpty(void);
 void CSInputBufferFree(CSInputBuffer *self);
 
 void CSInputSetMemoryBuffer(CSInputBuffer *self,uint8_t *buffer,int length,off_t startoffs);
@@ -56,7 +56,9 @@ void _CSInputFillBuffer(CSInputBuffer *self);
 
 static inline void _CSInputBufferRaiseEOF(CSInputBuffer *self)
 {
-	[self->parent _raiseEOF];
+	if(self->parent) [self->parent _raiseEOF];
+	else [NSException raise:CSEndOfFileException
+	format:@"Attempted to read past the end of memory buffer."];
 }
 
 static inline int _CSInputBytesLeftInBuffer(CSInputBuffer *self)
@@ -74,7 +76,7 @@ static inline void CSInputSkipBytes(CSInputBuffer *self,int num)
 	self->currbyte+=num;
 }
 
-static inline int _CSInputPeekByteWithoutEOF(CSInputBuffer *self,int offs)
+static inline uint32_t _CSInputPeekByteWithoutEOF(CSInputBuffer *self,int offs)
 {
 	return self->buffer[self->currbyte+offs];
 }

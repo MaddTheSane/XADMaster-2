@@ -1633,7 +1633,7 @@ XADGETINFO(SDSSFX)
     j = (xadINT32)ai->xai_InPos;
     if(!(err = xadHookAccess(XADM XADAC_READ, sizeof(struct SDSSFXData), &sd, ai)))
     {
-      if(!(i = strlen((char *)sd.Name)))
+      if(!(i = (xadINT32)strlen((char *)sd.Name)))
         break; /* last entry */
       else if((fi = (struct xadFileInfo *) xadAllocObject(XADM XADOBJ_FILEINFO,
       XAD_OBJNAMESIZE, i, TAG_DONE)))

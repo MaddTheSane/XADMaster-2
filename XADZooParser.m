@@ -9,8 +9,8 @@
 
 +(BOOL)recognizeFileWithHandle:(CSHandle *)handle firstBytes:(NSData *)data name:(NSString *)name
 {
-	const uint8_t *bytes=[data bytes];
-	int length=[data length];
+	const uint8_t *bytes=data.bytes;
+	NSInteger length=data.length;
 
 	if(length<0x22) return NO;
 	if(bytes[0x14]!=0xdc||bytes[0x15]!=0xa7||bytes[0x16]!=0xc4||bytes[0x17]!=0xfd) return NO;
@@ -20,14 +20,14 @@
 
 -(void)parse
 {
-	CSHandle *fh=[self handle];
+	CSHandle *fh=self.handle;
 
 	[fh seekToFileOffset:0x18];
 	uint32_t firstoffset=[fh readUInt32LE];
 
 	[fh seekToFileOffset:firstoffset];
 
-	while([self shouldKeepParsing])
+	while(self.shouldKeepParsing)
 	{
 		uint32_t magic=[fh readUInt32LE];
 		if(magic!=0xfdc4a7dc) [XADException raiseIllegalDataException];
@@ -57,17 +57,17 @@
 		NSData *shortnamedata=[NSData dataWithBytes:shortnamebuf length:shortnamelength];
 
 		NSMutableDictionary *dict=[NSMutableDictionary dictionaryWithObjectsAndKeys:
-			[NSNumber numberWithUnsignedLong:uncompsize],XADFileSizeKey,
-			[NSNumber numberWithUnsignedLong:compsize],XADCompressedSizeKey,
-			[NSNumber numberWithUnsignedLong:dataoffset],XADDataOffsetKey,
-			[NSNumber numberWithUnsignedLong:compsize],XADDataLengthKey,
-			[NSNumber numberWithInt:type],@"ZooType",
-			[NSNumber numberWithInt:method],@"ZooMethod",
-			[NSNumber numberWithInt:crc16],@"ZooCRC16",
-			[NSNumber numberWithInt:creatorversion],@"ZooCreatorVersion",
-			[NSNumber numberWithInt:minversion],@"ZooMinimumVersion",
-			[NSNumber numberWithInt:deleted],@"ZooIsDeleted",
-			[NSNumber numberWithInt:structure],@"ZooStructure",
+			@(uncompsize),XADFileSizeKey,
+			@(compsize),XADCompressedSizeKey,
+			@(dataoffset),XADDataOffsetKey,
+			@(compsize),XADDataLengthKey,
+			@(type),@"ZooType",
+			@(method),@"ZooMethod",
+			@(crc16),@"ZooCRC16",
+			@(creatorversion),@"ZooCreatorVersion",
+			@(minversion),@"ZooMinimumVersion",
+			@(deleted),@"ZooIsDeleted",
+			@(structure),@"ZooStructure",
 			shortnamedata,@"ZooShortnameData",
 		nil];
 
@@ -78,7 +78,7 @@
 			case 1: methodname=@"LZW"; break;
 			case 2: methodname=@"LZH"; break;
 		}
-		if(methodname) [dict setObject:[self XADStringWithString:methodname] forKey:XADCompressionNameKey];
+		if(methodname) dict[XADCompressionNameKey] = [self XADStringWithString:methodname];
 
 		XADPath *path=nil;
 		NSTimeZone *timezone=nil;
@@ -91,7 +91,7 @@
 
 			if(tzoffs<128) timezone=[NSTimeZone timeZoneForSecondsFromGMT:tzoffs*15*60];
 			else timezone=[NSTimeZone timeZoneForSecondsFromGMT:(tzoffs-256)*15*60];
-			[dict setObject:[NSNumber numberWithInt:tzoffs] forKey:@"ZooTimeZone"];
+			dict[@"ZooTimeZone"] = @(tzoffs);
 
 			NSData *longnamedata=nil,*dirdata=nil;
 			int longnamelength=0,dirlength=0;
@@ -104,7 +104,7 @@
 
 				// Strip trailing nul byte, if it exists. Not sure if it is
 				// always present, so make this conditional.
-				const uint8_t *bytes=[longnamedata bytes];
+				const uint8_t *bytes=longnamedata.bytes;
 				if(bytes[longnamelength-1]==0)
 				longnamedata=[longnamedata subdataWithRange:NSMakeRange(0,longnamelength-1)];
 			}
@@ -115,47 +115,47 @@
 
 				// Strip trailing nul byte, if it exists. Not sure if it is
 				// always present, so make this conditional.
-				const uint8_t *bytes=[dirdata bytes];
+				const uint8_t *bytes=dirdata.bytes;
 				if(bytes[dirlength-1]==0)
 				dirdata=[dirdata subdataWithRange:NSMakeRange(0,dirlength-1)];
 			}
 
-			if(longnamedata) [dict setObject:longnamedata forKey:@"ZooLongNameData"];
-			if(dirdata) [dict setObject:dirdata forKey:@"ZooDirectoryData"];
+			if(longnamedata) dict[@"ZooLongNameData"] = longnamedata;
+			if(dirdata) dict[@"ZooDirectoryData"] = dirdata;
 
 			int totalnamelength=2+longnamelength+dirlength;
 
 			if(varlength>totalnamelength+2)
 			{
 				int system=[fh readUInt16LE];
-				[dict setObject:[NSNumber numberWithInt:system] forKey:@"ZooSystem"];
+				dict[@"ZooSystem"] = @(system);
 			}
 
 			if(varlength>totalnamelength+5)
 			{
 				int perm=[fh readUInt16LE];
 				perm+=[fh readUInt8]<<16;
-				[dict setObject:[NSNumber numberWithInt:perm] forKey:@"ZooPermissions"];
+				dict[@"ZooPermissions"] = @(perm);
 			}
 
 			int generation=0;
 			if(varlength>totalnamelength+6)
 			{
 				generation=[fh readUInt8];
-				[dict setObject:[NSNumber numberWithInt:generation] forKey:@"ZooGeneration"];
+				dict[@"ZooGeneration"] = @(generation);
 			}
 
 			if(varlength>totalnamelength+8)
 			{
 				int extraversion=[fh readUInt16LE];
-				[dict setObject:[NSNumber numberWithInt:extraversion] forKey:@"ZooExtraVersion"];
+				dict[@"ZooExtraVersion"] = @(extraversion);
 			}
 
 			if(longnamedata||dirdata||generation)
 			{
 				XADPath *parent;
 				if(dirdata) parent=[self XADPathWithData:dirdata separators:XADUnixPathSeparator];
-				else parent=[self XADPath];
+				else parent=self.XADPath;
 
 				NSData *namedata;
 				if(longnamedata) namedata=longnamedata;
@@ -174,11 +174,10 @@
 			}
 		}
 
-		if(path) [dict setObject:path forKey:XADFileNameKey];
-		else [dict setObject:[self XADPathWithData:shortnamedata separators:XADNoPathSeparator] forKey:XADFileNameKey];
+		if(path) dict[XADFileNameKey] = path;
+		else dict[XADFileNameKey] = [self XADPathWithData:shortnamedata separators:XADNoPathSeparator];
 
-		[dict setObject:[NSDate XADDateWithMSDOSDate:date time:time timeZone:timezone]
-		forKey:XADLastModificationDateKey];
+		dict[XADLastModificationDateKey] = [NSDate XADDateWithMSDOSDate:date time:time timeZone:timezone];
 
 		if(commentoffset&&commentlength)
 		{
@@ -187,11 +186,11 @@
 
 			// Strip trailing nul byte, if it exists. Not sure if it is
 			// always present, so make this conditional.
-			const uint8_t *bytes=[commentdata bytes];
+			const uint8_t *bytes=commentdata.bytes;
 			if(bytes[commentlength-1]==0)
 			commentdata=[commentdata subdataWithRange:NSMakeRange(0,commentlength-1)];
 
-			[dict setObject:[self XADStringWithData:commentdata] forKey:XADCommentKey];
+			dict[XADCommentKey] = [self XADStringWithData:commentdata];
 		}
 
 		[self addEntryWithDictionary:dict];
@@ -203,9 +202,9 @@
 -(CSHandle *)handleForEntryWithDictionary:(NSDictionary *)dict wantChecksum:(BOOL)checksum
 {
 	CSHandle *handle=[self handleAtDataOffsetForDictionary:dict];
-	int method=[[dict objectForKey:@"ZooMethod"] intValue];
-	int crc=[[dict objectForKey:@"ZooCRC16"] intValue];
-	uint32_t length=[[dict objectForKey:XADFileSizeKey] unsignedIntValue];
+	int method=[dict[@"ZooMethod"] intValue];
+	int crc=[dict[@"ZooCRC16"] intValue];
+	uint32_t length=[dict[XADFileSizeKey] unsignedIntValue];
 
 	switch(method)
 	{
@@ -240,7 +239,7 @@
 
 -(id)initWithHandle:(CSHandle *)handle length:(off_t)length
 {
-	if((self=[super initWithHandle:handle length:length]))
+	if((self=[super initWithInputBufferForHandle:handle length:length]))
 	{
 		lzw=AllocLZW(8192,2);
 	}

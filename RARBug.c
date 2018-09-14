@@ -13,7 +13,7 @@
 #define R3(v,w,x,y,z,i) {z+=(((w|x)&y)|(w&x))+blk(i)+0x8F1BBCDC+rol(v,5);w=rol(w,30);}
 #define R4(v,w,x,y,z,i) {z+=(w^x^y)+blk(i)+0xCA62C1D6+rol(v,5);w=rol(w,30);}
 
-void GarbleBlock(unsigned char *block,uint32_t a,uint32_t b,uint32_t c,uint32_t d,uint32_t e)
+static void GarbleBlock(unsigned char *block,uint32_t a,uint32_t b,uint32_t c,uint32_t d,uint32_t e)
 {
 	uint32_t W[16];
 	for(int i=0;i<16;i++) W[i]=(block[4*i+0]<<24)|(block[4*i+1]<<16)|(block[4*i+2]<<8)|block[4*i+3];
@@ -42,6 +42,8 @@ void GarbleBlock(unsigned char *block,uint32_t a,uint32_t b,uint32_t c,uint32_t 
 	for(int i=0;i<64;i++) block[i]=W[i/4]>>(i%4)*8;
 }
 
+#if !defined(USE_COMMON_CRYPTO) && !USE_COMMON_CRYPTO
+
 void SHA1_Update_WithRARBug(SHA_CTX *ctx,void *bytes,unsigned long length,int bug)
 {
 	int firstbytes=64-(ctx->s1.bitcount/8)%64;
@@ -49,7 +51,7 @@ void SHA1_Update_WithRARBug(SHA_CTX *ctx,void *bytes,unsigned long length,int bu
 
 	SHA1_Update(ctx,bytes,firstbytes);
 
-	int numblocks=(length-firstbytes)/64;
+	long numblocks=(length-firstbytes)/64;
 	int lastbytes=(length-firstbytes)%64;
 
 	for(int i=0;i<numblocks;i++)
@@ -67,3 +69,41 @@ void SHA1_Update_WithRARBug(SHA_CTX *ctx,void *bytes,unsigned long length,int bu
 
 	SHA1_Update(ctx,(void *)((unsigned char *)bytes+firstbytes+numblocks*64),lastbytes);
 }
+
+#else
+
+static inline uint64_t bitCountFromCommonCrypto(CC_SHA1_CTX *ctx)
+{
+	uint64_t bigNum = (((uint64_t)ctx->Nl) | ((uint64_t)ctx->Nh)<<32);
+	return bigNum;
+}
+
+void CC_SHA1_Update_WithRARBug(CC_SHA1_CTX *ctx, const void *bytes, size_t length, bool bug)
+{
+	//TODO: validate this against real data!
+	int firstbytes=64-(bitCountFromCommonCrypto(ctx)/8)%64;
+	if(!bug||length<=firstbytes) {
+		CC_SHA1_Update(ctx, bytes, (CC_LONG)length);
+		return;
+	}
+	
+	CC_SHA1_Update(ctx, bytes, firstbytes);
+	
+	long numblocks=(length-firstbytes)/64;
+	int lastbytes=(length-firstbytes)%64;
+	
+	for(long i=0;i<numblocks;i++) {
+		unsigned char *block=(unsigned char *)bytes+firstbytes+i*64;
+		uint32_t a=ctx->h0;
+		uint32_t b=ctx->h1;
+		uint32_t c=ctx->h2;
+		uint32_t d=ctx->h3;
+		uint32_t e=ctx->h4;
+		
+		CC_SHA1_Update(ctx,(void *)block,64);
+		GarbleBlock(block,a,b,c,d,e);
+	}
+	
+	CC_SHA1_Update(ctx,(void *)((unsigned char *)bytes+firstbytes+numblocks*64),lastbytes);
+}
+#endif

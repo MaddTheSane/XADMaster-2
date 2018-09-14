@@ -348,7 +348,7 @@ static void LHAreconst(struct LhADecrData *dat, xadINT32 start, xadINT32 end)
     {
       dat->d.st.freq[i] = dat->d.st.freq[j];
       dat->d.st.child[i] = dat->d.st.child[j];
-      i--, j--;
+      i--; j--;
     }
     f = dat->d.st.freq[l] + dat->d.st.freq[l + 1];
     for(k = start; f < dat->d.st.freq[k]; k++)
@@ -357,7 +357,7 @@ static void LHAreconst(struct LhADecrData *dat, xadINT32 start, xadINT32 end)
     {
       dat->d.st.freq[i] = dat->d.st.freq[j];
       dat->d.st.child[i] = dat->d.st.child[j];
-      i--, j--;
+      i--; j--;
     }
     dat->d.st.freq[i] = f;
     dat->d.st.child[i] = l + 1;
@@ -1024,9 +1024,9 @@ static xadINT32 LhA_Decrunch(struct xadInOut *io, xadUINT32 Method)
 
   if((dd = xadAllocVec(XADM sizeof(struct LhADecrData), XADMEMF_PUBLIC|XADMEMF_CLEAR)))
   {
-    void (*DecodeStart)(struct LhADecrData *);
-    xadUINT16 (*DecodeC)(struct LhADecrData *);
-    xadUINT16 (*DecodeP)(struct LhADecrData *);
+    void (*DecodeStart)(struct LhADecrData *)  = NULL;
+    xadUINT16 (*DecodeC)(struct LhADecrData *) = NULL;
+    xadUINT16 (*DecodeP)(struct LhADecrData *) = NULL;
 
     /* most often used stuff */
     dd->io = io;

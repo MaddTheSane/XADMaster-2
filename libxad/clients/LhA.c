@@ -60,6 +60,9 @@ XADCLIENTVERSTR("LhA 1.13 (21.02.2004)")
 
 /* ------------------------------------------------------------------------ */
 
+#undef UCHAR_MAX
+#undef CHAR_BIT
+
 #define UCHAR_MAX       ((1<<(sizeof(xadUINT8)*8))-1)
 #define MAX_DICBIT      16
 #define CHAR_BIT        8

@@ -1,0 +1,37 @@
+/* 
+  XADErrors.strings
+  XADMaster
+
+  Created by C.W. Betts on 11/26/17.
+  
+*/
+
+/* Common errors */
+"Attempted to read more data than was available" = "Непълен файл на архива";
+"Opening file failed" = "Невъзможно отваряне на файла";
+"Missing or wrong password" = "Предложената парола е неправилна";
+"Wrong checksum" = "Повреден файл на архива";
+"Could not create directory" = "Невъзможно създаване на папка";
+
+/* Uncommon or unused errors */
+"Unknown error" = "Неизвестна грешка";
+"Failed to write to file" = "Провалено писане на файл";
+"Function called with illegal parameters" = "Функцията е извикана с недопустими параметри";
+"Not enough memory available" = "Недостатъчно налична памет";
+"Data is corrupted" = "Повредени данни";
+"File is not fully supported" = "Непълно поддържан файл";
+"Required resource missing" = "Липсващ изискван ресурс";
+"Error on decrunching" = "Грешка при раздробяване";
+"Unknown file type" = "Неизвестен вид файл";
+"File, disk has been skipped" = "Пропуснат файл или диск";
+"User cancelled extraction" = "Извличането е прекратено от потребителя";
+"File already exists" = "Вече съществуващ файл";
+"Verify failed (disk hook)" = "Провалено проверяване (disk hook)";
+"Wrong drive geometry" = "Грешна геометричност на устройство";
+"Unknown data format" = "Неизвестен формат на данните";
+"Source contains no files" = "Източникът не съдържа файлове";
+"Unknown filesystem" = "Неизвестна файлова система";
+"Name of file exists as directory" = "Името на файла съществува като директория";
+"Buffer was too short" = "Твърде къс буфер";
+"Text encoding was defective" = "Сгрешено текстово кодиране";
+"Could not create symlink" = "Невъзможно създаване на символна връзка";

@@ -7,8 +7,8 @@
 
 +(BOOL)recognizeFileWithHandle:(CSHandle *)handle firstBytes:(NSData *)data name:(NSString *)name;
 {
-	const uint8_t *bytes=[data bytes];
-	int length=[data length];
+	const uint8_t *bytes=data.bytes;
+	NSInteger length=data.length;
 
 	if(length<6) return NO;
 
@@ -18,11 +18,11 @@
 
 -(void)parse
 {
-	NSString *name=[self name];
-	NSString *extension=[[name pathExtension] lowercaseString];
+	NSString *name=self.name;
+	NSString *extension=name.pathExtension.lowercaseString;
 	NSString *contentname;
-	if([extension isEqual:@"txz"]) contentname=[[name stringByDeletingPathExtension] stringByAppendingPathExtension:@"tar"];
-	else contentname=[name stringByDeletingPathExtension];
+	if([extension isEqual:@"txz"]) contentname=[name.stringByDeletingPathExtension stringByAppendingPathExtension:@"tar"];
+	else contentname=name.stringByDeletingPathExtension;
 
 	// TODO: set no filename flag
 	NSMutableDictionary *dict=[NSMutableDictionary dictionaryWithObjectsAndKeys:
@@ -31,18 +31,18 @@
 	nil];
 
 	if([contentname matchedByPattern:@"\\.(tar|cpio|pax)$" options:REG_ICASE])
-	[dict setObject:[NSNumber numberWithBool:YES] forKey:XADIsArchiveKey];
+	dict[XADIsArchiveKey] = @YES;
 
-	off_t filesize=[[self handle] fileSize];
+	off_t filesize=self.handle.fileSize;
 	if(filesize!=CSHandleMaxLength)
-	[dict setObject:[NSNumber numberWithUnsignedLongLong:filesize] forKey:XADCompressedSizeKey];
+	dict[XADCompressedSizeKey] = @(filesize);
 
 	[self addEntryWithDictionary:dict];
 }
 
 -(CSHandle *)handleForEntryWithDictionary:(NSDictionary *)dictionary wantChecksum:(BOOL)checksum
 {
-	CSHandle *handle=[self handle];
+	CSHandle *handle=self.handle;
 	[handle seekToFileOffset:0];
 	return [[[XADXZHandle alloc] initWithHandle:handle] autorelease];
 }

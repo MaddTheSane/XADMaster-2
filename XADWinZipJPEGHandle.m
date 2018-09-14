@@ -5,7 +5,7 @@
 
 -(id)initWithHandle:(CSHandle *)handle length:(off_t)length
 {
-	if((self=[super initWithHandle:handle length:length]))
+	if((self=[super initWithInputBufferForHandle:handle length:length]))
 	{
 		decompressor=NULL;
 	}
@@ -23,7 +23,7 @@
 static size_t ReadFunction(void *context,uint8_t *buffer,size_t length)
 {
 	CSInputBuffer *input=(CSInputBuffer *)context;
-	for(int i=0;i<length;i++)
+	for(size_t i=0;i<length;i++)
 	{
 		if(CSInputAtEOF(input)) return i;
 		buffer[i]=CSInputNextByte(input);
@@ -36,7 +36,7 @@ static size_t ReadFunction(void *context,uint8_t *buffer,size_t length)
 	if(decompressor) FreeWinZipJPEGDecompressor(decompressor);
 
 	decompressor=AllocWinZipJPEGDecompressor(ReadFunction,input);
-	if(!decompressor) [XADException raiseExceptionWithXADError:XADOutOfMemoryError];
+	if(!decompressor) [XADException raiseExceptionWithXADError:XADErrorOutOfMemory];
 
 	int error=ReadWinZipJPEGHeader(decompressor);
 	if(error)
@@ -69,14 +69,14 @@ static size_t ReadFunction(void *context,uint8_t *buffer,size_t length)
 		if(error)
 		{
 			fprintf(stderr,"Error %d while trying to read next WinZip JPEG slice.\n",error);
-			[XADException raiseExceptionWithXADError:XADInputError];
+			[XADException raiseExceptionWithXADError:XADErrorInput];
 		}
 	}
 
 	size_t actual=EncodeWinZipJPEGBlocksToBuffer(decompressor,buffer,sizeof(buffer));
 	[self setBlockPointer:buffer];
 
-	return actual;
+	return (int)actual;
 }
 
 @end

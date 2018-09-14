@@ -22,10 +22,10 @@
 	int tarFormat = TAR_FORMAT_V7;
 	unsigned char magic[8];
 	[header getBytes:magic range:NSMakeRange(257,8)]; // "ustar\000" (ustar) / "ustar  \0" (gnu)
-	
+
 	unsigned char starExtendedMagic[4];
 	[header getBytes:starExtendedMagic range:NSMakeRange(508,4)]; // "tar\0"
-	
+
 	unsigned int checksum = (unsigned int)[XADTarParser readOctalNumberInRangeFromBuffer:NSMakeRange(148,8) buffer:header];
 	if( [XADTarParser isTarChecksumCorrect:header checksum:checksum] == YES )
 	{
@@ -56,7 +56,7 @@
 // TAR_FORMAT_V7_RECOGNIZED via checksums)
 +(BOOL)recognizeFileWithHandle:(CSHandle *)handle firstBytes:(NSData *)data name:(NSString *)name
 {
-	if([data length]<512) return NO;
+	if(data.length<512) return NO;
 	return(
 		[name matchedByPattern:@"^(.*)\\.tar$" options:REG_ICASE] ||
 		([XADTarParser getTarType:data] != TAR_FORMAT_V7)
@@ -181,8 +181,8 @@
 			break;
 		}
 
-		[[dict objectForKey:@"TARSparseRegionOffsets"] addObject:[NSNumber numberWithLongLong:regionOffset]];
-		[[dict objectForKey:@"TARSparseRegionLengths"] addObject:[NSNumber numberWithLongLong:regionLength]];
+		[dict[@"TARSparseRegionOffsets"] addObject:@(regionOffset)];
+		[dict[@"TARSparseRegionLengths"] addObject:@(regionLength)];
 	}
 }
 
@@ -191,25 +191,25 @@
 	char name[101];
 	[header getBytes:name range:NSMakeRange(0,100)];
 	name[100] = '\000';
-	[dict setObject:[self XADPathWithCString:name separators:XADUnixPathSeparator] forKey:XADFileNameKey];
-	
+	dict[XADFileNameKey] = [self XADPathWithCString:name separators:XADUnixPathSeparator];
+
 	unsigned int mode = (unsigned int)[XADTarParser readOctalNumberInRangeFromBuffer:NSMakeRange(100,8) buffer:header];
-	[dict setObject:[NSNumber numberWithInt:mode] forKey:XADPosixPermissionsKey];
+	dict[XADPosixPermissionsKey] = @(mode);
 
 	unsigned int uid = (unsigned int)[XADTarParser readOctalNumberInRangeFromBuffer:NSMakeRange(108,8) buffer:header];
-	[dict setObject:[NSNumber numberWithInt:uid] forKey:XADPosixUserKey];
+	dict[XADPosixUserKey] = @(uid);
 
 	unsigned int gid = (unsigned int)[XADTarParser readOctalNumberInRangeFromBuffer:NSMakeRange(116,8) buffer:header];
-	[dict setObject:[NSNumber numberWithInt:gid] forKey:XADPosixGroupKey];
+	dict[XADPosixGroupKey] = @(gid);
 
 	uint64_t size = [XADTarParser readOctalNumberInRangeFromBuffer:NSMakeRange(124,12) buffer:header];
-	
-	[dict setObject:[NSNumber numberWithLongLong:size] forKey:XADFileSizeKey];
-	[dict setObject:[NSNumber numberWithLongLong:(size+(512-size%512))] forKey:XADCompressedSizeKey];
-	[dict setObject:[NSNumber numberWithLongLong:size] forKey:XADDataLengthKey];
+
+	dict[XADFileSizeKey] = @(size);
+	dict[XADCompressedSizeKey] = @((size+(512-size%512)));
+	dict[XADDataLengthKey] = @(size);
 
 	unsigned long mtime = (unsigned int)[XADTarParser readOctalNumberInRangeFromBuffer:NSMakeRange(136,12) buffer:header];
-	[dict setObject:[NSDate dateWithTimeIntervalSince1970:mtime] forKey:XADLastModificationDateKey];
+	dict[XADLastModificationDateKey] = [NSDate dateWithTimeIntervalSince1970:mtime];
 
 	unsigned int checksum = (unsigned int)[XADTarParser readOctalNumberInRangeFromBuffer:NSMakeRange(148,8) buffer:header];
 	if( [XADTarParser isTarChecksumCorrect:header checksum:checksum] == NO )
@@ -220,11 +220,11 @@
 	char typeFlag;
 	[header getBytes:&typeFlag range:NSMakeRange(156,1)];
 	
-	// There are only two type flags that tar, in general, supports.	
+	// There are only two type flags that tar, in general, supports.
 	// "Directory"
 	if( typeFlag == '5' )
 	{
-		[dict setObject:[NSNumber numberWithBool:YES] forKey:XADIsDirectoryKey];
+		dict[XADIsDirectoryKey] = @YES;
 	}
 
 	// "Hard link / soft link"
@@ -233,13 +233,13 @@
 		char linkName[101];
 		[header getBytes:linkName range:NSMakeRange(157,100)];
 		linkName[100] = '\000';
-		[dict setObject:[self XADStringWithCString:linkName] forKey:XADLinkDestinationKey];
-		[dict setObject:[NSNumber numberWithInt:(typeFlag%2)] forKey:XADIsHardLinkKey];
+		dict[XADLinkDestinationKey] = [self XADStringWithCString:linkName];
+		dict[XADIsHardLinkKey] = @(typeFlag%2);
 	}
 
 	// KLUDGE: Fix broken directory typeflags.
 	if( typeFlag == 0 && name[strlen(name)-1] == '/' ) {
-		[dict setObject:[NSNumber numberWithBool:YES] forKey:XADIsDirectoryKey];
+		dict[XADIsDirectoryKey] = @YES;
 	}
 
 	// KLUDGE: Fix broken ant tar wrong magic files.
@@ -254,12 +254,12 @@
 
 -(void)parsePaxTarHeader:(NSData *)header toDict:(NSMutableDictionary *)dict {
 	int position = 0;
-	while( position < [header length] ) {
+	while( position < header.length ) {
 		// Get next pair length.
 		int start_pos = position;
 		int read_length = 0;
 		char current_char = '\0';
-		while( current_char != ' ' && current_char != 0 && read_length < 16 && position < [header length] ) {
+		while( current_char != ' ' && current_char != 0 && read_length < 16 && position < header.length ) {
 			[header getBytes:&current_char range:NSMakeRange(position,1)];
 			position++;
 			read_length++;
@@ -277,8 +277,8 @@
 
 		// Parse the pair into key/value.
 		read_length = 0;
-		start_pos = position;
-		int max_len = strlen( key_val_pair );
+		//start_pos = position;
+		int max_len = (int)strlen( key_val_pair );
 		while( key_val_pair[read_length] != '=' && read_length < max_len ) {
 			position++;
 			read_length++;
@@ -288,50 +288,50 @@
 		key[read_length] = '\0';
 		char value[max_len - read_length + 1];
 		memcpy( value, key_val_pair + read_length + 1, (max_len - read_length) );
-		value[(max_len - read_length)] = '\0';		
+		value[(max_len - read_length)] = '\0';
 
 		// Check keys and add proper value to dict.
 		// Accessed/Created/Last Modified
 		if( strcmp( key, "atime" ) == 0 ) {
-			[dict setObject:[NSDate dateWithTimeIntervalSince1970:[XADTarParser doubleFromCString:value]] forKey:XADLastAccessDateKey];
+			dict[XADLastAccessDateKey] = [NSDate dateWithTimeIntervalSince1970:[XADTarParser doubleFromCString:value]];
 		}
 		else if( strcmp( key, "ctime" ) == 0 ) {
-			[dict setObject:[NSDate dateWithTimeIntervalSince1970:[XADTarParser doubleFromCString:value]] forKey:XADCreationDateKey];
+			dict[XADCreationDateKey] = [NSDate dateWithTimeIntervalSince1970:[XADTarParser doubleFromCString:value]];
 		}
 		else if( strcmp( key, "mtime" ) == 0 ) {
-			[dict setObject:[NSDate dateWithTimeIntervalSince1970:[XADTarParser doubleFromCString:value]] forKey:XADLastModificationDateKey];
+			dict[XADLastModificationDateKey] = [NSDate dateWithTimeIntervalSince1970:[XADTarParser doubleFromCString:value]];
 		}
 
 		// User/Group ids/names.
 		else if( strcmp( key, "uname" ) == 0 ) {
-			[dict setObject:[self XADStringWithCString:value encodingName:XADUTF8StringEncodingName] forKey:XADPosixUserNameKey];
+			dict[XADPosixUserNameKey] = [self XADStringWithCString:value encodingName:XADUTF8StringEncodingName];
 		}
 		else if( strcmp( key, "gname" ) == 0 ) {
-			[dict setObject:[self XADStringWithCString:value encodingName:XADUTF8StringEncodingName] forKey:XADPosixGroupNameKey];
+			dict[XADPosixGroupNameKey] = [self XADStringWithCString:value encodingName:XADUTF8StringEncodingName];
 		}
 		else if( strcmp( key, "uid" ) == 0 ) {
-			[dict setObject:[NSNumber numberWithInt:(int)[XADTarParser longFromCString:value]] forKey:XADPosixUserKey];
+			dict[XADPosixUserKey] = @((int)[XADTarParser longFromCString:value]);
 		}
 		else if( strcmp( key, "gid" ) == 0 ) {
-			[dict setObject:[NSNumber numberWithInt:(int)[XADTarParser longFromCString:value]] forKey:XADPosixGroupKey];
+			dict[XADPosixGroupKey] = @((int)[XADTarParser longFromCString:value]);
 		}
 		
 		// File path and link path.
 		else if( strcmp( key, "path" ) == 0 ) {
-			[dict setObject:[self XADPathWithCString:value encodingName:XADUTF8StringEncodingName separators:XADUnixPathSeparator] forKey:XADFileNameKey];
+			dict[XADFileNameKey] = [self XADPathWithCString:value encodingName:XADUTF8StringEncodingName separators:XADUnixPathSeparator];
 		}
 		else if( strcmp( key, "linkpath" ) == 0 ) {
-			[dict setObject:[self XADStringWithCString:value encodingName:XADUTF8StringEncodingName] forKey:XADLinkDestinationKey];
+			dict[XADLinkDestinationKey] = [self XADStringWithCString:value encodingName:XADUTF8StringEncodingName];
 		}
 
 		// File size.
 		else if( strcmp( key, "size" ) == 0 ) {
-			[dict setObject:[NSNumber numberWithInt:(int)[XADTarParser longFromCString:value]] forKey:XADFileSizeKey];
+			dict[XADFileSizeKey] = @((int)[XADTarParser longFromCString:value]);
 		}
 
 		// Comment.
 		else if( strcmp( key, "comment" ) == 0 ) {
-			[dict setObject:[self XADStringWithCString:value encodingName:XADUTF8StringEncodingName] forKey:XADCommentKey];
+			dict[XADCommentKey] = [self XADStringWithCString:value encodingName:XADUTF8StringEncodingName];
 		}
 
 		// Continue after the pair.
@@ -345,13 +345,13 @@
 	char userName[33];
 	[header getBytes:userName range:NSMakeRange(265,32)];
 	userName[32] = '\000';
-	[dict setObject:[self XADStringWithCString:userName] forKey:XADPosixUserNameKey];
+	dict[XADPosixUserNameKey] = [self XADStringWithCString:userName];
 
 	char groupName[33];
 	[header getBytes:groupName range:NSMakeRange(297,32)];
 	groupName[32] = '\000';
-	[dict setObject:[self XADStringWithCString:groupName] forKey:XADPosixGroupNameKey];
-	
+	dict[XADPosixGroupNameKey] = [self XADStringWithCString:groupName];
+
 	unsigned int devMajor = (unsigned int)[XADTarParser readOctalNumberInRangeFromBuffer:NSMakeRange(329,8) buffer:header];
 
 	unsigned int devMinor = (unsigned int)[XADTarParser readOctalNumberInRangeFromBuffer:NSMakeRange(337,8) buffer:header];
@@ -371,7 +371,7 @@
 		strcat( fullName, "/" );
 		strcat( fullName, name );
 		fullName[256] = '\000';
-		[dict setObject:[self XADPathWithCString:fullName separators:XADUnixPathSeparator] forKey:XADFileNameKey];
+		dict[XADFileNameKey] = [self XADPathWithCString:fullName separators:XADUnixPathSeparator];
 	}
 
 	char typeFlag;
@@ -380,38 +380,38 @@
 	// Global header parse.
 	[self parsePaxTarHeader:currentGlobalHeader toDict:dict];
 
-// 	printf( "Ustar header parse after global\n" );
+//	printf( "Ustar header parse after global\n" );
 
 	// Needed later for extended headers, possibly.
-	CSHandle *handle = [self handle];
-	long size = [[dict objectForKey:XADDataLengthKey] longValue];
-	off_t offset = [handle offsetInFile];;
+	CSHandle *handle = self.handle;
+	long size = [dict[XADDataLengthKey] longValue];
+	off_t offset = handle.offsetInFile;;
 	offset += size;
 	offset += (offset % 512 == 0 ? 0 : 512 - (offset % 512) );
 
 	switch( typeFlag ) {
 		// Device files
 		case '3':
-			[dict setObject:[NSNumber numberWithInt:1] forKey:XADIsCharacterDeviceKey];
-			[dict setObject:[NSNumber numberWithInt:devMajor] forKey:XADDeviceMajorKey];
-			[dict setObject:[NSNumber numberWithInt:devMinor] forKey:XADDeviceMinorKey];
+			dict[XADIsCharacterDeviceKey] = @1;
+			dict[XADDeviceMajorKey] = @(devMajor);
+			dict[XADDeviceMinorKey] = @(devMinor);
 		break;
 		case '4':
-			[dict setObject:[NSNumber numberWithInt:1] forKey:XADIsBlockDeviceKey];
-			[dict setObject:[NSNumber numberWithInt:devMajor] forKey:XADDeviceMajorKey];
-			[dict setObject:[NSNumber numberWithInt:devMinor] forKey:XADDeviceMinorKey];
+			dict[XADIsBlockDeviceKey] = @1;
+			dict[XADDeviceMajorKey] = @(devMajor);
+			dict[XADDeviceMinorKey] = @(devMinor);
 		break;
 
 		// FIFOs
 		case '6':
-			[dict setObject:[NSNumber numberWithInt:1] forKey:XADIsFIFOKey];
+			dict[XADIsFIFOKey] = @1;
 		break;
 
 		// POSIX.2001 global header.
 		case 'g': {
 			// Read in the header and store for parsing
 			[currentGlobalHeader release];
-			currentGlobalHeader = [[handle readDataOfLength:size] retain];
+			currentGlobalHeader = [[handle readDataOfLength:(int)size] retain];
 			[handle seekToFileOffset:offset];
 
 			// Parse next header.
@@ -424,7 +424,7 @@
 		// POSIX.2001 extended header.
 		case 'x': {
 			// Read in the header.
-			NSData *extendedHeader = [handle readDataOfLength:size];
+			NSData *extendedHeader = [handle readDataOfLength:(int)size];
 			[handle seekToFileOffset:offset];
 
 			// Prepare a new dictionary with the next header.
@@ -445,21 +445,21 @@
 	[header getBytes:&typeFlag range:NSMakeRange(156,1)];
 
 	// In case of LongName / LongLink, we need the data.
-	CSHandle *handle = [self handle];
-	long size = [[dict objectForKey:XADDataLengthKey] longValue];
-	off_t offset = [handle offsetInFile];
+	CSHandle *handle = self.handle;
+	long size = [dict[XADDataLengthKey] longValue];
+	off_t offset = handle.offsetInFile;
 	offset += size;
 	offset += (offset % 512 == 0 ? 0 : 512 - (offset % 512) );
 
 	// LongName or LongLink?
 	if( typeFlag == 'L' || typeFlag == 'K' ) {
 		// Read in the header
-		NSData *longHeader = [handle readDataOfLength:size];
+		NSData *longHeader = [handle readDataOfLength:(int)size];
 		[handle seekToFileOffset:offset];
 
 		// Check if there is a terminating null byte, and eliminate it.
-		int length=[longHeader length];
-		const uint8_t *bytes=[longHeader bytes];
+		NSInteger length=longHeader.length;
+		const uint8_t *bytes=longHeader.bytes;
 		if(length>0 && bytes[length-1]==0) longHeader=[longHeader subdataWithRange:NSMakeRange(0,length-1)];
 		
 		// Prepare a new dictionary with the next header.
@@ -470,10 +470,10 @@
 
 		// Set the proper key.
 		if( typeFlag == 'L' ) {
-			[dict setObject:[self XADPathWithData:longHeader separators:XADUnixPathSeparator] forKey:XADFileNameKey];
+			dict[XADFileNameKey] = [self XADPathWithData:longHeader separators:XADUnixPathSeparator];
 		}
 		else {
-			[dict setObject:[self XADStringWithData:longHeader] forKey:XADLinkDestinationKey];
+			dict[XADLinkDestinationKey] = [self XADStringWithData:longHeader];
 		}
 	}
 
@@ -485,15 +485,15 @@
 // 		off_t size = [XADTarParser readOctalNumberInRangeFromBuffer:NSMakeRange(483,12) buffer:header];
 // 		[dict setObject:[NSNumber numberWithLongLong:size] forKey:XADFileSizeKey];
 // 		[dict setObject:[NSNumber numberWithLongLong:size] forKey:XADDataLengthKey];
-// 
+//
 // 		// Set up sparse map storage.
-		[dict setObject:[NSNumber numberWithBool:YES] forKey:@"TARIsSparseFile"];
+		dict[@"TARIsSparseFile"] = @YES;
 // 		[dict setObject:[[NSMutableArray alloc] init] forKey:@"TARSparseRegionOffsets"];
 // 		[dict setObject:[[NSMutableArray alloc] init] forKey:@"TARSparseRegionLengths"];
-// 		
+//
 // 		NSData* sparseMap = [header subdataWithRange:NSMakeRange(386,96)];
 // 		[self parseSparseHeadersFromData:sparseMap numHeaders:4 toDict:dict];
-// 
+//
 // 		// Handle extended sparse headers.
 // 		char hasExtended;
 // 		[header getBytes:&hasExtended range:NSMakeRange(482,1)];
@@ -508,10 +508,10 @@
 
 -(void)addTarEntryWithDictionaryAndSeek:(NSMutableDictionary *)dict
 {
-	CSHandle *handle = [self handle];
-	off_t size = [[dict objectForKey:XADDataLengthKey] longLongValue];
-	off_t offset = [handle offsetInFile];
-	[dict setObject:[NSNumber numberWithLongLong:offset] forKey:XADDataOffsetKey];
+	CSHandle *handle = self.handle;
+	off_t size = [dict[XADDataLengthKey] longLongValue];
+	off_t offset = handle.offsetInFile;
+	dict[XADDataOffsetKey] = @(offset);
 	[self addEntryWithDictionary:dict];
 	offset += size;
 	offset += (offset % 512 == 0 ? 0 : 512 - (offset % 512) );
@@ -522,25 +522,25 @@
 {
 	// Reset global current header for posix.2001;
 	currentGlobalHeader = [NSData new];
-	
-	CSHandle *handle = [self handle];
+
+	CSHandle *handle = self.handle;
 	int tarFormat = -1;
 
-	while([self shouldKeepParsing])
+	while(self.shouldKeepParsing)
 	{
 		NSAutoreleasePool *pool = [NSAutoreleasePool new];
 
 		// Read next header.
-		if([handle atEndOfFile]) break;
+		if(handle.atEndOfFile) break;
 		NSData *header = [handle readDataOfLength:512];
 
 		// Figure out format if we haven't yet done so.
 		if( tarFormat == -1 ) tarFormat = [XADTarParser getTarType:header];
 		
 		// See if there are 512 nullbytes. That means the file is over.
-		const char *firstBytes = [header bytes];
+		const char *firstBytes = header.bytes;
 		BOOL isArchiverOver = YES;
-		for( int i = 0; i < 512; i++ ) {		
+		for( int i = 0; i < 512; i++ ) {
 			if( firstBytes[i] != '\000' ) {
 				isArchiverOver = NO;
 			}
@@ -554,7 +554,7 @@
 		NSMutableDictionary *dict = [NSMutableDictionary dictionary];
 
 		// Reset sparseity.
-		[dict setObject:[NSNumber numberWithBool:NO] forKey:@"TARIsSparseFile"];
+		dict[@"TARIsSparseFile"] = @NO;
 
 		int wrongFormat = [self parseGenericTarHeader:header toDict:dict];
 		if( wrongFormat == 1 ) {
@@ -588,12 +588,12 @@
 -(CSHandle *)rawHandleForEntryWithDictionary:(NSDictionary *)dict wantChecksum:(BOOL)checksum
 {
 	CSHandle* retHandle = [self handleAtDataOffsetForDictionary:dict];
-	if( [[dict objectForKey:@"TARIsSparseFile"] boolValue] ) {
+	if( [dict[@"TARIsSparseFile"] boolValue] ) {
 		// Just return nil.
 		return( nil );
-	
+
 // 		XADTarSparseHandle* sparseHandle = [[XADTarSparseHandle alloc] initWithHandle:retHandle size:[[dict objectForKey:XADDataLengthKey] longValue]];
-// 		NSArray* offsets = [dict objectForKey:@"TARSparseRegionOffsets"];	
+// 		NSArray* offsets = [dict objectForKey:@"TARSparseRegionOffsets"];
 // 		NSArray* lengths = [dict objectForKey:@"TARSparseRegionLengths"];
 // 		int sparseRegionCount = [offsets count];
 // 		for( int i = 0; i < sparseRegionCount; i++ ) {

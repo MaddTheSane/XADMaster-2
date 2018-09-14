@@ -1,0 +1,37 @@
+/* 
+  XADErrors.strings
+  XADMaster
+
+  Created by C.W. Betts on 11/26/17.
+  
+*/
+
+/* Common errors */
+"Attempted to read more data than was available" = "Soubor archivu není kompletní";
+"Opening file failed" = "Soubor nelze otevřít";
+"Missing or wrong password" = "Zadané heslo není správné";
+"Wrong checksum" = "Soubor achivu je poškozený";
+"Could not create directory" = "Nelze vytvořit složku";
+
+/* Uncommon or unused errors */
+"Unknown error" = "Neznámá chyba";
+"Failed to write to file" = "Chyba při zápisu do souboru";
+"Function called with illegal parameters" = "Funkce volána s neplatnými parametry";
+"Not enough memory available" = "Nedostatek volné paměti";
+"Data is corrupted" = "Data jsou poškozena";
+"File is not fully supported" = "Soubor není plně podporován";
+"Required resource missing" = "Požadovaný zdrojový soubor chybí";
+"Error on decrunching" = "Chyba při louskání";
+"Unknown file type" = "Neznámý typ souboru";
+"File, disk has been skipped" = "Soubor či disk byl přeskočen";
+"User cancelled extraction" = "Uživatelem zrušené rozbalování";
+"File already exists" = "Soubor již existuje";
+"Verify failed (disk hook)" = "Kontrola selhala (disk)";
+"Wrong drive geometry" = "Chybná geometrie disku";
+"Unknown data format" = "Neznámý formát dat";
+"Source contains no files" = "Zdroj neobsahuje žádné soubory";
+"Unknown filesystem" = "Neznámý souborový systém";
+"Name of file exists as directory" = "Název souboru již existuje v podobě složky";
+"Buffer was too short" = "Zásobník je příliš malý";
+"Text encoding was defective" = "Kódování textu bylo chybné";
+"Could not create symlink" = "Nelze vytvořit symbolického zástupce";

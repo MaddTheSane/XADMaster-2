@@ -4,6 +4,8 @@
 
 -(int)intValueForKey:(NSString *)key default:(int)def;
 -(unsigned int)unsignedIntValueForKey:(NSString *)key default:(unsigned int)def;
+-(NSInteger)integerValueForKey:(NSString *)key default:(NSInteger)def;
+-(NSUInteger)unsignedIntegerValueForKey:(NSString *)key default:(NSUInteger)def;
 -(BOOL)boolValueForKey:(NSString *)key default:(BOOL)def;
 -(float)floatValueForKey:(NSString *)key default:(float)def;
 -(double)doubleValueForKey:(NSString *)key default:(double)def;

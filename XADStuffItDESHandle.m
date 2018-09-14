@@ -17,10 +17,10 @@ static inline uint32_t RotateRight(uint32_t val,int n) { return (val>>n)+(val<<(
 {
 	StuffItDESKeySchedule ks;
 
-	if(!mkey||[mkey length]!=8) [XADException raiseIllegalDataException];
+	if(!mkey||mkey.length!=8) [XADException raiseIllegalDataException];
 
 	uint8_t passblock[8]={0,0,0,0,0,0,0,0};
-	int length=[passworddata length];
+	NSUInteger length=passworddata.length;
 	if(length>8) length=8;
 	memcpy(passblock,[passworddata bytes],length);
 
@@ -31,7 +31,7 @@ static inline uint32_t RotateRight(uint32_t val,int n) { return (val>>n)+(val<<(
 	for(int i=0;i<8;i++) archivekey[i]=initialkey[i]^(passblock[i]&0x7f);
 	StuffItDESSetKey(initialkey,&ks);
 	StuffItDESCrypt(archivekey,&ks,YES);
-	
+
 	memcpy(archiveiv,[mkey bytes],8);
 	StuffItDESSetKey(archivekey,&ks);
 	StuffItDESCrypt(archiveiv,&ks,NO);
@@ -53,7 +53,7 @@ static inline uint32_t RotateRight(uint32_t val,int n) { return (val>>n)+(val<<(
 	for(int i=0;i<8;i++) filekey[i]^=archiveiv[i];
 	StuffItDESSetKey(filekey,&ks);
 	StuffItDESCrypt(fileiv,&ks,NO);
-	
+
 	NSMutableData *key=[NSMutableData dataWithBytes:filekey length:8];
 	[key appendBytes:fileiv length:8];
 
@@ -68,9 +68,9 @@ static inline uint32_t RotateRight(uint32_t val,int n) { return (val>>n)+(val<<(
 -(id)initWithHandle:(CSHandle *)handle length:(off_t)length key:(NSData *)keydata
 {
 	if([keydata length]!=16) [XADException raiseUnknownException];
-	if((self=[super initWithHandle:handle length:length]))
+	if((self=[super initWithInputBufferForHandle:handle length:length]))
 	{
-		const uint8_t *keybytes=[keydata bytes];
+		const uint8_t *keybytes=keydata.bytes;
 		A=CSUInt32BE(&keybytes[0]);
 		B=CSUInt32BE(&keybytes[4]);
 		C=CSUInt32BE(&keybytes[8]);
@@ -88,7 +88,7 @@ static inline uint32_t RotateRight(uint32_t val,int n) { return (val>>n)+(val<<(
 		if(CSInputAtEOF(input)) [XADException raiseIllegalDataException];
 		block[i]=CSInputNextByte(input);
 	}
-	
+
 	uint32_t left=CSUInt32BE(&block[0]);
 	uint32_t right=CSUInt32BE(&block[4]);
 	uint32_t l=left^A^C;
@@ -134,7 +134,7 @@ static void StuffItDESSetKey(const uint8_t key[8],StuffItDESKeySchedule *ks)
 		uint32_t subkey1=((Nibble(key,i)>>2)|(Nibble(key,i+13)<<2));
 		subkey1|=((Nibble(key,i+11)>>2)|(Nibble(key,i+6)<<2))<<8;
 		subkey1|=((Nibble(key,i+3)>>2)|(Nibble(key,i+10)<<2))<<16;
-		subkey1|=((Nibble(key,i+8)>>2)|(Nibble(key,i+1)<<2))<<24;		
+		subkey1|=((Nibble(key,i+8)>>2)|(Nibble(key,i+1)<<2))<<24;
 		uint32_t subkey0=((Nibble(key,i+9)|(Nibble(key,i)<<4))&0x3f);
 		subkey0|=((Nibble(key,i+2)|(Nibble(key,i+11)<<4))&0x3f)<<8;
 		subkey0|=((Nibble(key,i+14)|(Nibble(key,i+3)<<4))&0x3f)<<16;

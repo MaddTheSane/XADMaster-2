@@ -8,34 +8,34 @@
 
 +(BOOL)recognizeFileWithHandle:(CSHandle *)handle firstBytes:(NSData *)data name:(NSString *)name
 {
-	int length=[data length];
-	const uint8_t *bytes=[data bytes];
+	NSInteger length=data.length;
+	const uint8_t *bytes=data.bytes;
 
 	return length>=3&&bytes[0]==0x1f&&bytes[1]==0x9d;
 }
 
 -(void)parse
 {
-	CSHandle *fh=[self handle];
+	CSHandle *fh=self.handle;
 
 	[fh skipBytes:2];
 	int flags=[fh readUInt8];
 
-	NSString *contentname=[[self name] stringByDeletingPathExtension];
+	NSString *contentname=self.name.stringByDeletingPathExtension;
 
 	NSMutableDictionary *dict=[NSMutableDictionary dictionaryWithObjectsAndKeys:
 		[self XADPathWithUnseparatedString:contentname],XADFileNameKey,
 		[self XADStringWithString:@"Compress"],XADCompressionNameKey,
-		[NSNumber numberWithLongLong:3],XADDataOffsetKey,
-		[NSNumber numberWithInt:flags],@"CompressFlags",
+		@3LL,XADDataOffsetKey,
+		@(flags),@"CompressFlags",
 	nil];
 
 	if([contentname matchedByPattern:@"\\.(tar|cpio|pax)$" options:REG_ICASE])
-	[dict setObject:[NSNumber numberWithBool:YES] forKey:XADIsArchiveKey];
+	dict[XADIsArchiveKey] = @YES;
 
-	off_t size=[[self handle] fileSize];
+	off_t size=self.handle.fileSize;
 	if(size!=CSHandleMaxLength)
-	[dict setObject:[NSNumber numberWithLongLong:size-3] forKey:XADCompressedSizeKey];
+	dict[XADCompressedSizeKey] = @(size-3);
 
 	[self addEntryWithDictionary:dict];
 }
@@ -43,7 +43,7 @@
 -(CSHandle *)handleForEntryWithDictionary:(NSDictionary *)dict wantChecksum:(BOOL)checksum
 {
 	return [[[XADCompressHandle alloc] initWithHandle:[self handleAtDataOffsetForDictionary:dict]
-	flags:[[dict objectForKey:@"CompressFlags"] intValue]] autorelease];
+	flags:[dict[@"CompressFlags"] intValue]] autorelease];
 }
 
 -(NSString *)formatName { return @"Compress"; }

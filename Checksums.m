@@ -17,13 +17,13 @@
 
 -(BOOL)hasChecksum
 {
-	off_t length=[parent fileSize];
+	off_t length=parent.fileSize;
 	if(length==CSHandleMaxLength) return NO;
 
-	return end==length&&[parent hasChecksum];
+	return end==length&&parent.hasChecksum;
 }
 
--(BOOL)isChecksumCorrect { return [parent isChecksumCorrect]; }
+-(BOOL)isChecksumCorrect { return parent.checksumCorrect; }
 
 @end
 
@@ -34,13 +34,13 @@
 
 -(BOOL)hasChecksum
 {
-	if(input) return [CSInputHandle(input) hasChecksum];
+	if(input) return CSInputHandle(input).hasChecksum;
 	else return NO;
 }
 
 -(BOOL)isChecksumCorrect
 {
-	if(input) return [CSInputHandle(input) isChecksumCorrect];
+	if(input) return CSInputHandle(input).checksumCorrect;
 	else return YES;
 }
 
@@ -53,9 +53,8 @@
 
 -(id)initWithHandle:(CSHandle *)handle checksumHandle:(CSHandle *)checksumhandle
 {
-	if((self=[super initWithName:[handle name]]))
+	if((self=[super initWithParentHandle:handle]))
 	{
-		parent=[handle retain];
 		checksum=[checksumhandle retain];
 	}
 	return self;
@@ -63,21 +62,20 @@
 
 -(void)dealloc
 {
-	[parent release];
 	[checksum release];
 	[super dealloc];
 }
 
--(off_t)fileSize { return [parent fileSize]; }
--(off_t)offsetInFile { return [parent offsetInFile]; }
--(BOOL)atEndOfFile { return [parent atEndOfFile]; }
+-(off_t)fileSize { return parent.fileSize; }
+-(off_t)offsetInFile { return parent.offsetInFile; }
+-(BOOL)atEndOfFile { return parent.atEndOfFile; }
 -(void)seekToFileOffset:(off_t)offs { [parent seekToFileOffset:offs]; }
 -(void)seekToEndOfFile { [parent seekToEndOfFile]; }
 -(void)pushBackByte:(int)byte { [parent pushBackByte:byte]; }
 -(int)readAtMost:(int)num toBuffer:(void *)buffer { return [parent readAtMost:num toBuffer:buffer]; }
 -(void)writeBytes:(int)num fromBuffer:(const void *)buffer { [parent writeBytes:num fromBuffer:buffer]; }
 
--(BOOL)hasChecksum { return [checksum hasChecksum]; }
--(BOOL)isChecksumCorrect { return [checksum isChecksumCorrect]; }
+-(BOOL)hasChecksum { return checksum.hasChecksum; }
+-(BOOL)isChecksumCorrect { return checksum.checksumCorrect; }
 
 @end

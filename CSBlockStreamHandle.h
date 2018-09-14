@@ -1,3 +1,4 @@
+#import <Foundation/Foundation.h>
 #import "CSStreamHandle.h"
 
 #define CSBlockStreamHandle XADBlockStreamHandle
@@ -11,9 +12,9 @@
 }
 
 // Intializers
--(id)initWithName:(NSString *)descname length:(off_t)length;
--(id)initWithHandle:(CSHandle *)handle length:(off_t)length bufferSize:(int)buffersize;
--(id)initAsCopyOf:(CSBlockStreamHandle *)other;
+//-(instancetype)initWithName:(NSString *)descname length:(off_t)length;
+-(instancetype)initWithInputBufferForHandle:(CSHandle *)handle length:(off_t)length bufferSize:(int)buffersize;
+-(instancetype)initAsCopyOf:(CSBlockStreamHandle *)other;
 
 // Implemented by this class
 -(void)seekToFileOffset:(off_t)offs;

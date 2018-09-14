@@ -4,9 +4,8 @@
 
 -(id)initWithHandle:(CSHandle *)handle blockSize:(int)size
 {
-	if((self=[super initWithName:[handle name]]))
+	if((self=[super initWithParentHandle:handle]))
 	{
-		parent=[handle retain];
 		currpos=0;
 		length=CSHandleMaxLength;
 		numblocks=0;
@@ -18,9 +17,8 @@
 
 -(id)initWithHandle:(CSHandle *)handle length:(off_t)maxlength blockSize:(int)size
 {
-	if((self=[super initWithName:[handle name]]))
+	if((self=[super initWithParentHandle:handle]))
 	{
-		parent=[handle retain];
 		currpos=0;
 		length=maxlength;
 		numblocks=0;
@@ -32,7 +30,7 @@
 
 -(void)dealloc
 {
-	[parent release];
+	free(blockoffsets);
 	[super dealloc];
 }
 
@@ -49,7 +47,8 @@ firstBlock:(uint32_t)first headerSize:(off_t)headersize
 	}
 
 	free(blockoffsets);
-	blockoffsets=malloc(numblocks*sizeof(off_t));
+	if(numblocks==0) blockoffsets=NULL;
+	else blockoffsets=malloc(numblocks*sizeof(off_t));
 
 	block=first;
 	for(int i=0;i<numblocks;i++)

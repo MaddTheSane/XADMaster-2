@@ -3,11 +3,25 @@
 #import "CSZlibHandle.h"
 
 
-NSString *SWFWrongMagicException=@"SWFWrongMagicException";
-NSString *SWFNoMoreTagsException=@"SWFNoMoreTagsException";
+NSString *const SWFWrongMagicException=@"SWFWrongMagicException";
+NSString *const SWFNoMoreTagsException=@"SWFNoMoreTagsException";
 
 
 @implementation XADSWFTagParser
+@synthesize version;
+@synthesize compressed;
+@synthesize rect;
+@synthesize frames;
+@synthesize framesPerSecond = fps;
+@synthesize tag = currtag;
+@synthesize tagLength = currlen;
+@synthesize frame = currframe;
+@synthesize handle = fh;
+@synthesize spriteID = spriteid;
+@synthesize subFrames = subframes;
+@synthesize subTag = subtag;
+@synthesize subTagLength = sublen;
+@synthesize subFrame = subframe;
 
 +(XADSWFTagParser *)parserWithHandle:(CSHandle *)handle
 {
@@ -20,7 +34,7 @@ NSString *SWFNoMoreTagsException=@"SWFNoMoreTagsException";
 	return [[[XADSWFTagParser alloc] initWithHandle:handle] autorelease];
 }
 
--(id)initWithHandle:(CSHandle *)handle
+-(instancetype)initWithHandle:(CSHandle *)handle
 {
 	if((self=[super init]))
 	{
@@ -62,19 +76,13 @@ NSString *SWFNoMoreTagsException=@"SWFNoMoreTagsException";
 	fps=[fh readUInt16LE];
 	frames=[fh readUInt16LE];
 
-	nexttag=[fh offsetInFile];
+	nexttag=fh.offsetInFile;
 
 	currtag=0;
 	currlen=0;
 	currframe=0;
 }
 
-
--(int)version { return version; }
--(BOOL)isCompressed { return compressed; }
--(SWFRect)rect { return rect; }
--(int)frames { return frames; }
--(int)framesPerSecond { return fps; }
 
 -(int)nextTag
 {
@@ -95,20 +103,16 @@ NSString *SWFNoMoreTagsException=@"SWFNoMoreTagsException";
 	currlen=tagval&0x3f;
 	if(currlen==0x3f) currlen=[fh readUInt32LE];
 
-	nexttag=[fh offsetInFile]+currlen;
+	nexttag=fh.offsetInFile+currlen;
 
 	return currtag;
 }
 
--(int)tag { return currtag; }
--(int)tagLength { return currlen; }
--(int)tagBytesLeft { return (int)(nexttag-[fh offsetInFile]); }
--(int)frame { return currframe; }
+-(int)tagBytesLeft { return (int)(nexttag-fh.offsetInFile); }
 -(double)time { return (double)currframe/((double)fps/256.0); }
 
--(CSHandle *)handle { return fh; }
--(CSHandle *)tagHandle { return [fh subHandleOfLength:[self tagBytesLeft]]; }
--(NSData *)tagContents { return [fh readDataOfLength:[self tagBytesLeft]]; }
+-(CSHandle *)tagHandle { return [fh subHandleOfLength:self.tagBytesLeft]; }
+-(NSData *)tagContents { return [fh readDataOfLength:self.tagBytesLeft]; }
 
 
 
@@ -117,15 +121,12 @@ NSString *SWFNoMoreTagsException=@"SWFNoMoreTagsException";
 	spriteid=[fh readUInt16LE];
 	subframes=[fh readUInt16LE];
 
-	nextsubtag=[fh offsetInFile];
+	nextsubtag=fh.offsetInFile;
 
 	subtag=0;
 	sublen=0;
 	subframe=0;
 }
-
--(int)spriteID { return spriteid; }
--(int)subFrames { return subframes; }
 
 -(int)nextSubTag
 {
@@ -146,15 +147,12 @@ NSString *SWFNoMoreTagsException=@"SWFNoMoreTagsException";
 	sublen=tagval&0x3f;
 	if(sublen==0x3f) sublen=[fh readUInt32LE];
 
-	nextsubtag=[fh offsetInFile]+sublen;
+	nextsubtag=fh.offsetInFile+sublen;
 
 	return subtag;
 }
 
--(int)subTag { return subtag; }
--(int)subTagLength { return sublen; }
--(int)subTagBytesLeft { return (int)(nextsubtag-[fh offsetInFile]); }
--(int)subFrame { return subframe; }
+-(int)subTagBytesLeft { return (int)(nextsubtag-fh.offsetInFile); }
 -(double)subTime { return (double)subframe/((double)fps/256.0); }
 
 @end

@@ -1,25 +1,41 @@
 #import <Foundation/Foundation.h>
 #import "../CSHandle.h"
 #import "../CSBlockStreamHandle.h"
+
+#if defined(USE_COMMON_CRYPTO) && USE_COMMON_CRYPTO
+#include <CommonCrypto/CommonCrypto.h>
+#include <Security/Security.h>
+typedef CC_MD5_CTX XADMD5;
+#define XADMD5_Init CC_MD5_Init
+#define XADMD5_Update CC_MD5_Update
+#define XADMD5_Final CC_MD5_Final
+#else
 #import "../Crypto/md5.h"
 #import "../Crypto/aes.h"
+typedef MD5_CTX XADMD5;
+#define XADMD5_Init MD5_Init
+#define XADMD5_Update MD5_Update
+#define XADMD5_Final MD5_Final
+#endif
 
-extern NSString *PDFMD5FinishedException;
+#import "../Crypto/aes.h"
+
+extern NSString *const PDFMD5FinishedException;
 
 
 
 @interface PDFMD5Engine:NSObject
 {
-	MD5_CTX md5;
+	XADMD5 md5;
 	unsigned char digest_bytes[16];
 	BOOL done;
 }
 
-+(PDFMD5Engine *)engine;
++(instancetype)engine;
 +(NSData *)digestForData:(NSData *)data;
 +(NSData *)digestForBytes:(const void *)bytes length:(int)length;
 
--(id)init;
+-(instancetype)init;
 
 -(void)updateWithData:(NSData *)data;
 -(void)updateWithBytes:(const void *)bytes length:(unsigned long)length;
@@ -36,17 +52,19 @@ extern NSString *PDFMD5FinishedException;
 
 @interface PDFAESHandle:CSBlockStreamHandle
 {
-	CSHandle *parent;
 	off_t startoffs;
 
 	NSData *key,*iv;
 
+#if (defined(USE_COMMON_CRYPTO) && USE_COMMON_CRYPTO) && TARGET_OS_OSX
+	SecKeyRef aeskey;
+#else
 	aes_decrypt_ctx aes;
+#endif
 	uint8_t ivbuffer[16],streambuffer[16];
 }
 
--(id)initWithHandle:(CSHandle *)handle key:(NSData *)keydata;
--(void)dealloc;
+-(instancetype)initWithHandle:(CSHandle *)handle key:(NSData *)keydata;
 
 -(void)resetBlockStream;
 -(int)produceBlockAtOffset:(off_t)pos;

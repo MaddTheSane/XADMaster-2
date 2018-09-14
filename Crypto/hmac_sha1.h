@@ -48,7 +48,19 @@
  * Or you can use Steve Reid's public domain SHA1 implementation:
  */
 
+#if defined(USE_COMMON_CRYPTO) && USE_COMMON_CRYPTO
+#include <CommonCrypto/CommonDigest.h>
+typedef CC_SHA1_CTX XADSHA1;
+#define XADSHA1_Init CC_SHA1_Init
+#define XADSHA1_Final CC_SHA1_Final
+#define XADSHA1_Update CC_SHA1_Update
+#else
 #include "sha.h"
+typedef SHA_CTX XADSHA1;
+#define XADSHA1_Init SHA1_Init
+#define XADSHA1_Final SHA1_Final
+#define XADSHA1_Update SHA1_Update
+#endif
 
 #ifdef  __cplusplus
 extern "C" {
@@ -57,11 +69,11 @@ extern "C" {
 #define HMAC_SHA1_DIGEST_LENGTH	20
 #define HMAC_SHA1_BLOCK_LENGTH	64
 
-/* The HMAC_SHA1 structure: */
+/** The HMAC_SHA1 structure: */
 typedef struct _HMAC_SHA1_CTX {
 	unsigned char	ipad[HMAC_SHA1_BLOCK_LENGTH];
 	unsigned char	opad[HMAC_SHA1_BLOCK_LENGTH];
-	SHA_CTX		shactx;
+	XADSHA1		shactx;
 	unsigned char	key[HMAC_SHA1_BLOCK_LENGTH];
 	unsigned int	keylen;
 	unsigned int	hashkey;

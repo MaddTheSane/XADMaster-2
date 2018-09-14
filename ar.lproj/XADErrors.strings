@@ -1,0 +1,37 @@
+/* 
+  XADErrors.strings
+  XADMaster
+
+  Created by C.W. Betts on 11/26/17.
+  
+*/
+
+/* Common errors */
+"Attempted to read more data than was available" = "ملف الأرشيف غير كامل";
+"Opening file failed" = "لا يمكن فتح الملف";
+"Missing or wrong password" = "كلمة المرور خاطئة";
+"Wrong checksum" = "ملف الأرشيف معطوب";
+"Could not create directory" = "فشل إنشاء المجلد";
+
+/* Uncommon or unused errors */
+"Unknown error" = "خطأ غير معروف";
+"Failed to write to file" = "فشلت الكتابة في الملف";
+"Function called with illegal parameters" = "استُدعيت الدالة بوسطاء خاطئة";
+"Not enough memory available" = "لا يتوفر ذاكرة كافية";
+"Data is corrupted" = "البيانات معطوبة";
+"File is not fully supported" = "الملف غير مدعوم بشكل كامل";
+"Required resource missing" = "لم يُعثر على مورد مطلوب";
+"Error on decrunching" = "حدث خطأ أثناء الاستخراج";
+"Unknown file type" = "نوع الملف غير معروف";
+"File, disk has been skipped" = "تم تخطي ملف، قرص";
+"User cancelled extraction" = "ألغى المستخدم استخراج المتحوى";
+"File already exists" = "الملف موجود مسبقًا";
+"Verify failed (disk hook)" = "فشل التحقق ‪(‬disk hook‪)‬";
+"Wrong drive geometry" = "خطأ في هندسة القرص";
+"Unknown data format" = "صيغة البيانات غير معروفة";
+"Source contains no files" = "المصدر لا يحوي ملفات";
+"Unknown filesystem" = "نظام الملفات غير معروف";
+"Name of file exists as directory" = "اسم الملف موجود مسبقًا كاسم لمجلد";
+"Buffer was too short" = "التخزين المؤقت قصير للغاية";
+"Text encoding was defective" = "يوجد خطأ في ترميز النص";
+"Could not create symlink" = "فشل إنشاء الاختصار";

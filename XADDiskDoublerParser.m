@@ -28,8 +28,8 @@
 
 +(BOOL)recognizeFileWithHandle:(CSHandle *)handle firstBytes:(NSData *)data name:(NSString *)name
 {
-	int length=[data length];
-	const uint8_t *bytes=[data bytes];
+	NSInteger length=data.length;
+	const uint8_t *bytes=data.bytes;
 
 	if(length>=84)
 	{
@@ -62,13 +62,13 @@
 {
 	[self setIsMacArchive:YES];
 
-	CSHandle *fh=[self handle];
+	CSHandle *fh=self.handle;
 	uint32_t magic=[fh readID];
 
 	if(magic==0xabcd0054)
 	{
-		NSString *name=[self name];
-		if([[name pathExtension] isEqual:@"dd"]) name=[name stringByDeletingPathExtension];
+		NSString *name=self.name;
+		if([name.pathExtension isEqual:@"dd"]) name=name.stringByDeletingPathExtension;
 		XADPath *xadname=[self XADPathWithUnseparatedString:name];
 		[self parseFileHeaderWithHandle:fh name:xadname];
 	}
@@ -80,14 +80,14 @@
 
 -(void)parseArchive
 {
-	CSHandle *fh=[self handle];
+	CSHandle *fh=self.handle;
 	[fh skipBytes:74];
 
-	XADPath *currdir=[self XADPath];
+	XADPath *currdir=self.XADPath;
 
-	while([self shouldKeepParsing])
+	while(self.shouldKeepParsing)
 	{
-		if([fh atEndOfFile]) break;
+		if(fh.atEndOfFile) break;
 		uint32_t magic=[fh readID];
 
 		if(magic==0xabcd0054)
@@ -122,11 +122,11 @@
 
 		XADPath *name=[currdir pathByAppendingXADStringComponent:[self XADStringWithBytes:namebuf length:namelen]];
 
-		off_t start=[fh offsetInFile];
+		off_t start=fh.offsetInFile;
 
 		if(enddir)
 		{
-			currdir=[currdir pathByDeletingLastPathComponent];
+			currdir=currdir.pathByDeletingLastPathComponent;
 		}
 		else if(isdir)
 		{
@@ -134,8 +134,8 @@
 				name,XADFileNameKey,
 				[NSDate XADDateWithTimeIntervalSince1904:creation],XADCreationDateKey,
 				[NSDate XADDateWithTimeIntervalSince1904:modification],XADLastModificationDateKey,
-				[NSNumber numberWithInt:finderflags],XADFinderFlagsKey, // TODO: is this valid?
-				[NSNumber numberWithBool:YES],XADIsDirectoryKey,
+				@(finderflags),XADFinderFlagsKey, // TODO: is this valid?
+				@YES,XADIsDirectoryKey,
 			nil];
 
 			[self addEntryWithDictionary:dict];
@@ -149,20 +149,20 @@
 			{
 				[self addEntryWithDictionary:[NSMutableDictionary dictionaryWithObjectsAndKeys:
 					name,XADFileNameKey,
-					[NSNumber numberWithUnsignedInt:datasize],XADFileSizeKey,
-					[NSNumber numberWithUnsignedInt:datasize],XADCompressedSizeKey,
+					@(datasize),XADFileSizeKey,
+					@(datasize),XADCompressedSizeKey,
 					[NSDate XADDateWithTimeIntervalSince1904:modification],XADLastModificationDateKey,
 					[NSDate XADDateWithTimeIntervalSince1904:creation],XADCreationDateKey,
-					[NSNumber numberWithUnsignedInt:type],XADFileTypeKey,
-					[NSNumber numberWithUnsignedInt:creator],XADFileCreatorKey,
-					[NSNumber numberWithInt:finderflags],XADFinderFlagsKey,
+					@(type),XADFileTypeKey,
+					@(creator),XADFileCreatorKey,
+					@(finderflags),XADFinderFlagsKey,
 					[self XADStringWithString:[self nameForMethod:0]],XADCompressionNameKey,
 
-					[NSNumber numberWithLongLong:start],XADDataOffsetKey,
-					[NSNumber numberWithUnsignedInt:datasize],XADDataLengthKey,
-					[NSNumber numberWithInt:0],@"DiskDoublerMethod",
-					[NSNumber numberWithInt:datacrc],@"DiskDoublerCRC",
-					[NSNumber numberWithInt:0],@"DiskDoublerDeltaType",
+					@(start),XADDataOffsetKey,
+					@(datasize),XADDataLengthKey,
+					@0,@"DiskDoublerMethod",
+					@(datacrc),@"DiskDoublerCRC",
+					@0,@"DiskDoublerDeltaType",
 				nil]];
 			}
 
@@ -170,21 +170,21 @@
 			{
 				[self addEntryWithDictionary:[NSMutableDictionary dictionaryWithObjectsAndKeys:
 					name,XADFileNameKey,
-					[NSNumber numberWithUnsignedInt:rsrcsize],XADFileSizeKey,
-					[NSNumber numberWithUnsignedInt:rsrcsize],XADCompressedSizeKey,
+					@(rsrcsize),XADFileSizeKey,
+					@(rsrcsize),XADCompressedSizeKey,
 					[NSDate XADDateWithTimeIntervalSince1904:modification],XADLastModificationDateKey,
 					[NSDate XADDateWithTimeIntervalSince1904:creation],XADCreationDateKey,
-					[NSNumber numberWithUnsignedInt:type],XADFileTypeKey,
-					[NSNumber numberWithUnsignedInt:creator],XADFileCreatorKey,
-					[NSNumber numberWithInt:finderflags],XADFinderFlagsKey,
+					@(type),XADFileTypeKey,
+					@(creator),XADFileCreatorKey,
+					@(finderflags),XADFinderFlagsKey,
 					[self XADStringWithString:[self nameForMethod:0]],XADCompressionNameKey,
-					[NSNumber numberWithBool:YES],XADIsResourceForkKey,
+					@YES,XADIsResourceForkKey,
 
-					[NSNumber numberWithLongLong:start+datasize],XADDataOffsetKey,
-					[NSNumber numberWithUnsignedInt:rsrcsize],XADDataLengthKey,
-					[NSNumber numberWithInt:0],@"DiskDoublerMethod",
-					[NSNumber numberWithInt:rsrccrc],@"DiskDoublerCRC",
-					[NSNumber numberWithInt:0],@"DiskDoublerDeltaType",
+					@(start+datasize),XADDataOffsetKey,
+					@(rsrcsize),XADDataLengthKey,
+					@0,@"DiskDoublerMethod",
+					@(rsrccrc),@"DiskDoublerCRC",
+					@0,@"DiskDoublerDeltaType",
 				nil]];
 			}
 
@@ -203,15 +203,15 @@
 
 -(void)parseArchive2
 {
-	CSHandle *fh=[self handle];
+	CSHandle *fh=self.handle;
 	[fh skipBytes:58];
 
-	XADPath *currdir=[self XADPath];
+	XADPath *currdir=self.XADPath;
 	int lastdirlevel=0;
 
-	while([self shouldKeepParsing])
+	while(self.shouldKeepParsing)
 	{
-		off_t start=[fh offsetInFile];
+		off_t start=fh.offsetInFile;
 
 		uint32_t magic=[fh readID];
 		if(magic!='DDA2') [XADException raiseIllegalDataException];
@@ -233,7 +233,7 @@
 			continue;
 		}
 
-		for(int i=dirlevel;i<lastdirlevel;i++) currdir=[currdir pathByDeletingLastPathComponent];
+		for(int i=dirlevel;i<lastdirlevel;i++) currdir=currdir.pathByDeletingLastPathComponent;
 		lastdirlevel=dirlevel;
 
 		XADPath *name=[currdir pathByAppendingXADStringComponent:[self XADStringWithBytes:namebuf length:namelen]];
@@ -250,7 +250,7 @@
 					name,XADFileNameKey,
 					[NSDate XADDateWithTimeIntervalSince1904:creation],XADCreationDateKey,
 					[NSDate XADDateWithTimeIntervalSince1904:modification],XADLastModificationDateKey,
-					[NSNumber numberWithBool:YES],XADIsDirectoryKey,
+					@YES,XADIsDirectoryKey,
 				nil];
 
 				[self addEntryWithDictionary:dict];
@@ -297,29 +297,29 @@
 	int rsrccrc2=[fh readUInt16BE];
 	[fh skipBytes:2];
 
-	off_t start=[fh offsetInFile];
+	off_t start=fh.offsetInFile;
 
 	if(datasize||!rsrcsize)
 	{
 		[self addEntryWithDictionary:[NSMutableDictionary dictionaryWithObjectsAndKeys:
 			name,XADFileNameKey,
-			[NSNumber numberWithUnsignedInt:datasize],XADFileSizeKey,
-			[NSNumber numberWithUnsignedInt:datacompsize],XADCompressedSizeKey,
+			@(datasize),XADFileSizeKey,
+			@(datacompsize),XADCompressedSizeKey,
 			[NSDate XADDateWithTimeIntervalSince1904:modification],XADLastModificationDateKey,
 			[NSDate XADDateWithTimeIntervalSince1904:creation],XADCreationDateKey,
-			[NSNumber numberWithUnsignedInt:type],XADFileTypeKey,
-			[NSNumber numberWithUnsignedInt:creator],XADFileCreatorKey,
-			[NSNumber numberWithInt:finderflags],XADFinderFlagsKey,
+			@(type),XADFileTypeKey,
+			@(creator),XADFileCreatorKey,
+			@(finderflags),XADFinderFlagsKey,
 			[self XADStringWithString:[self nameForMethod:datamethod]],XADCompressionNameKey,
 
-			[NSNumber numberWithLongLong:start],XADDataOffsetKey,
-			[NSNumber numberWithUnsignedInt:datacompsize],XADDataLengthKey,
-			[NSNumber numberWithInt:datamethod],@"DiskDoublerMethod",
-			[NSNumber numberWithInt:datacrc],@"DiskDoublerCRC",
-			[NSNumber numberWithInt:datacrc2],@"DiskDoublerCRC2",
-			[NSNumber numberWithInt:datadelta],@"DiskDoublerDeltaType",
-			[NSNumber numberWithInt:info1],@"DiskDoublerInfo1",
-			[NSNumber numberWithInt:info2],@"DiskDoublerInfo2",
+			@(start),XADDataOffsetKey,
+			@(datacompsize),XADDataLengthKey,
+			@(datamethod),@"DiskDoublerMethod",
+			@(datacrc),@"DiskDoublerCRC",
+			@(datacrc2),@"DiskDoublerCRC2",
+			@(datadelta),@"DiskDoublerDeltaType",
+			@(info1),@"DiskDoublerInfo1",
+			@(info2),@"DiskDoublerInfo2",
 		nil]];
 	}
 
@@ -327,24 +327,24 @@
 	{
 		[self addEntryWithDictionary:[NSMutableDictionary dictionaryWithObjectsAndKeys:
 			name,XADFileNameKey,
-			[NSNumber numberWithUnsignedInt:rsrcsize],XADFileSizeKey,
-			[NSNumber numberWithUnsignedInt:rsrccompsize],XADCompressedSizeKey,
+			@(rsrcsize),XADFileSizeKey,
+			@(rsrccompsize),XADCompressedSizeKey,
 			[NSDate XADDateWithTimeIntervalSince1904:modification],XADLastModificationDateKey,
 			[NSDate XADDateWithTimeIntervalSince1904:creation],XADCreationDateKey,
-			[NSNumber numberWithUnsignedInt:type],XADFileTypeKey,
-			[NSNumber numberWithUnsignedInt:creator],XADFileCreatorKey,
-			[NSNumber numberWithInt:finderflags],XADFinderFlagsKey,
+			@(type),XADFileTypeKey,
+			@(creator),XADFileCreatorKey,
+			@(finderflags),XADFinderFlagsKey,
 			[self XADStringWithString:[self nameForMethod:rsrcmethod]],XADCompressionNameKey,
-			[NSNumber numberWithBool:YES],XADIsResourceForkKey,
+			@YES,XADIsResourceForkKey,
 
-			[NSNumber numberWithLongLong:start+datacompsize],XADDataOffsetKey,
-			[NSNumber numberWithUnsignedInt:rsrccompsize],XADDataLengthKey,
-			[NSNumber numberWithInt:rsrcmethod],@"DiskDoublerMethod",
-			[NSNumber numberWithInt:rsrccrc],@"DiskDoublerCRC",
-			[NSNumber numberWithInt:rsrccrc2],@"DiskDoublerCRC2",
-			[NSNumber numberWithInt:rsrcdelta],@"DiskDoublerDeltaType",
-			[NSNumber numberWithInt:info1],@"DiskDoublerInfo1",
-			[NSNumber numberWithInt:info2],@"DiskDoublerInfo2",
+			@(start+datacompsize),XADDataOffsetKey,
+			@(rsrccompsize),XADDataLengthKey,
+			@(rsrcmethod),@"DiskDoublerMethod",
+			@(rsrccrc),@"DiskDoublerCRC",
+			@(rsrccrc2),@"DiskDoublerCRC2",
+			@(rsrcdelta),@"DiskDoublerDeltaType",
+			@(info1),@"DiskDoublerInfo1",
+			@(info2),@"DiskDoublerInfo2",
 		nil]];
 	}
 
@@ -372,15 +372,15 @@
 
 -(CSHandle *)handleForEntryWithDictionary:(NSDictionary *)dict wantChecksum:(BOOL)checksum
 {
-	if([dict objectForKey:XADIsDirectoryKey]) return nil;
+	if(dict[XADIsDirectoryKey]) return nil;
 
 	CSHandle *handle=[self handleAtDataOffsetForDictionary:dict];
-	off_t size=[[dict objectForKey:XADFileSizeKey] longLongValue];
+	off_t size=[dict[XADFileSizeKey] longLongValue];
 
-	int method=[[dict objectForKey:@"DiskDoublerMethod"] intValue];
-	int info1=[[dict objectForKey:@"DiskDoublerInfo1"] intValue];
-	int info2=[[dict objectForKey:@"DiskDoublerInfo2"] intValue];
-	int correctchecksum=[[dict objectForKey:@"DiskDoublerCRC"] intValue];
+	int method=[dict[@"DiskDoublerMethod"] intValue];
+	int info1=[dict[@"DiskDoublerInfo1"] intValue];
+	int info2=[dict[@"DiskDoublerInfo2"] intValue];
+	int correctchecksum=[dict[@"DiskDoublerCRC"] intValue];
 
 	switch(method&0x7f)
 	{
@@ -528,7 +528,7 @@
 			return nil;
 	}
 
-	int delta=[[dict objectForKey:@"DiskDoublerDeltaType"] intValue];
+	int delta=[dict[@"DiskDoublerDeltaType"] intValue];
 	switch(delta)
 	{
 		case 0: break; // No delta processing

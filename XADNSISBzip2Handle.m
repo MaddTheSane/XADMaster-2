@@ -8,20 +8,13 @@ static int start_bunzip(bunzip_data *bd,CSHandle *inhandle,uint32_t *dbuf,bool h
 
 -(id)initWithHandle:(CSHandle *)handle length:(off_t)length hasRandomizationBit:(BOOL)hasrandbit
 {
-	if((self=[super initWithName:[handle name] length:length]))
+	if((self=[super initWithParentHandle:handle length:length]))
 	{
-		parent=[handle retain];
 		startoffs=[handle offsetInFile];
 		hasrand=hasrandbit;
 		[self setBlockPointer:outblock];
 	}
 	return self;
-}
-
--(void)dealloc
-{
-	[parent release];
-	[super dealloc];
 }
 
 -(void)resetBlockStream
@@ -205,7 +198,7 @@ static int get_next_block(bunzip_data *bd)
 		pp=0;
 		for(i=minLen;i<=maxLen;i++) {
 			temp[i]=limit[i]=0;
-			for(t=0;t<symCount;t++) 
+			for(t=0;t<symCount;t++)
 				if(length[t]==i) hufGroup->permute[pp++] = t;
 		}
 		/* Count symbols coded for at each bit length */
@@ -341,7 +334,7 @@ got_huff_bits:
 		dbuf[dbufCount++] = (unsigned int)uc;
 	}
 	/* At this point, we've read all the huffman-coded symbols (and repeated
-       runs) for this block from the input stream, and decoded them into the
+	   runs) for this block from the input stream, and decoded them into the
 	   intermediate buffer.  There are dbufCount many decoded bytes in dbuf[].
 	   Now undo the Burrows-Wheeler transform on dbuf.
 	   See http://dogma.net/markn/articles/bwt/bwt.htm
@@ -365,7 +358,7 @@ got_huff_bits:
 	if(dbufCount) {
 		if(origPtr>=dbufCount) return RETVAL_DATA_ERROR;
 		bd->writePos=dbuf[origPtr];
-	    bd->writeCurrent=(unsigned char)(bd->writePos&0xff);
+		bd->writeCurrent=(unsigned char)(bd->writePos&0xff);
 		bd->writePos>>=8;
 		bd->writeRunCountdown=5;
 	}

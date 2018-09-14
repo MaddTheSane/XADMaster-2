@@ -1,37 +1,40 @@
+#import <Foundation/Foundation.h>
 #import "CSStreamHandle.h"
-
-#include <bzlib.h>
 
 #define CSBzip2Handle XADBzip2Handle
 
-extern NSString *CSBzip2Exception;
+extern NSExceptionName const CSBzip2Exception;
+extern NSErrorDomain const CSBzip2ErrorDomain;
+
+typedef NS_ERROR_ENUM(CSBzip2ErrorDomain, CSBzip2Error) {
+	CSBzip2ErrorSequence = -1, //!< BZ_SEQUENCE_ERROR
+	CSBzip2ErrorParameter = -2, //!< BZ_PARAM_ERROR
+	CSBzip2ErrorMemory = -3, //!< BZ_MEM_ERROR
+	CSBzip2ErrorData = -4, //!< BZ_DATA_ERROR
+	CSBzip2ErrorInvalidMagic = -5, //!< BZ_DATA_ERROR_MAGIC
+	CSBzip2ErrorIO = -6, //!< BZ_IO_ERROR
+	CSBzip2ErrorUnexpectedEndOfFile = -7, //!< BZ_UNEXPECTED_EOF
+	CSBzip2ErrorOutBufferFull = -8, //!< BZ_OUTBUFF_FULL
+	CSBzip2ErrorConfiguration = -9 //!< BZ_CONFIG_ERROR
+};
 
 @interface CSBzip2Handle:CSStreamHandle
-{
-	CSHandle *parent;
-	off_t startoffs;
-	bz_stream bzs;
-	BOOL inited,checksumcorrect;
-
-	uint8_t inbuffer[16*1024];
-}
 
 +(CSBzip2Handle *)bzip2HandleWithHandle:(CSHandle *)handle;
 +(CSBzip2Handle *)bzip2HandleWithHandle:(CSHandle *)handle length:(off_t)length;
 
 // Initializers.
--(id)initWithHandle:(CSHandle *)handle length:(off_t)length name:(NSString *)descname;
--(void)dealloc;
+-(instancetype)initWithHandle:(CSHandle *)handle length:(off_t)length;
 
 // Implemented by this class.
 -(void)resetStream;
 -(int)streamAtMost:(int)num toBuffer:(void *)buffer;
 
 // Checksum functions for XADMaster.
--(BOOL)hasChecksum;
--(BOOL)isChecksumCorrect;
+@property (NS_NONATOMIC_IOSONLY, readonly) BOOL hasChecksum;
+@property (NS_NONATOMIC_IOSONLY, readonly, getter=isChecksumCorrect) BOOL checksumCorrect;
 
 // Internal methods.
--(void)_raiseBzip2:(int)error;
+-(void)_raiseBzip2:(int)error NS_SWIFT_UNAVAILABLE("Call throws");
 
 @end

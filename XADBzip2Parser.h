@@ -1,8 +1,6 @@
 #import "XADArchiveParser.h"
 
 @interface XADBzip2Parser:XADArchiveParser
-{
-}
 
 +(int)requiredHeaderSize;
 +(BOOL)recognizeFileWithHandle:(CSHandle *)handle firstBytes:(NSData *)data name:(NSString *)name;

@@ -5,8 +5,9 @@
 
 -(double)estimatedProgress
 {
-	off_t size=[self fileSize];
+	off_t size=self.fileSize;
 	if(size==CSHandleMaxLength) return 0;
+	if(size==1) return 1;
 	return (double)[self offsetInFile]/(double)size;
 }
 
@@ -18,7 +19,7 @@
 {
 	if(streamlength==CSHandleMaxLength)
 	{
-		if(input) return [input->parent estimatedProgress]; // TODO: better estimation
+		if(input) return input->parent.estimatedProgress; // TODO: better estimation
 		else return 0;
 	}
 	else return (double)streampos/(double)streamlength;
@@ -28,13 +29,13 @@
 
 @implementation CSZlibHandle (Progress)
 
--(double)estimatedProgress { return [parent estimatedProgress]; } // TODO: better estimation using buffer?
+-(double)estimatedProgress { return parent.estimatedProgress; } // TODO: better estimation using buffer?
 
 @end
 
 @implementation CSBzip2Handle (progress)
 
--(double)estimatedProgress { return [parent estimatedProgress]; } // TODO: better estimation using buffer?
+-(double)estimatedProgress { return parent.estimatedProgress; } // TODO: better estimation using buffer?
 
 @end
 

@@ -1,6 +1,6 @@
 #import <XADMaster/XADArchive.h>
 
-@interface TestDelegate:NSObject
+@interface TestDelegate:NSObject<XADArchiveDelegate>
 @end
 
 @implementation TestDelegate
@@ -39,11 +39,11 @@
 
 #endif
 
--(XADAction)archive:(XADArchive *)archive extractionOfEntryDidFail:(int)n error:(xadERROR)error
-{ NSLog(@"archive:extractionOfEntryDidFail:%d error:%@",n,[archive describeError:error]); return XADSkip; }
+-(XADAction)archive:(XADArchive *)archive extractionOfEntryDidFail:(NSInteger)n error:(XADError)error
+{ NSLog(@"archive:extractionOfEntryDidFail:%ld error:%@",(long)n,[archive describeError:error]); return XADSkipAction; }
 
--(XADAction)archive:(XADArchive *)archive extractionOfResourceForkForEntryDidFail:(int)n error:(xadERROR)error
-{ NSLog(@"archive:extractionOfResourceForkEntryDidFail:%d error:%@",n,[archive describeError:error]); return XADSkip; }
+-(XADAction)archive:(XADArchive *)archive extractionOfResourceForkForEntryDidFail:(NSInteger)n error:(XADError)error
+{ NSLog(@"archive:extractionOfResourceForkEntryDidFail:%ld error:%@",(long)n,[archive describeError:error]); return XADSkipAction; }
 
 @end
 
@@ -78,7 +78,7 @@ XADError error;
 
 	printf("%s\n",[[archive description] UTF8String]);
 
-	int n=[archive numberOfEntries];
+	NSInteger n=[archive numberOfEntries];
 
 	if(n==1&&[[[archive nameOfEntry:0] pathExtension] isEqual:@"tar"])
 	{

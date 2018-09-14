@@ -6,8 +6,12 @@
 #include <sys/xattr.h>
 #endif
 
+#if !__has_feature(objc_arc)
+#error this file needs to be compiled with Automatic Reference Counting (ARC)
+#endif
 
 @implementation XADSimpleUnarchiver
+@synthesize delegate;
 
 +(XADSimpleUnarchiver *)simpleUnarchiverForPath:(NSString *)path
 {
@@ -18,19 +22,26 @@
 {
 	XADArchiveParser *archiveparser=[XADArchiveParser archiveParserForPath:path error:errorptr];
 	if(!archiveparser) return nil;
-	return [[[self alloc] initWithArchiveParser:archiveparser] autorelease];
+	return [[self alloc] initWithArchiveParser:archiveparser];
 }
 
--(id)initWithArchiveParser:(XADArchiveParser *)archiveparser
++(XADSimpleUnarchiver *)simpleUnarchiverForPath:(NSString *)path nserror:(NSError *_Nullable __autoreleasing *_Nullable)errorptr;
+{
+	XADArchiveParser *archiveparser=[XADArchiveParser archiveParserForPath:path nserror:errorptr];
+	if(!archiveparser) return nil;
+	return [[self alloc] initWithArchiveParser:archiveparser];
+}
+
+-(instancetype)initWithArchiveParser:(XADArchiveParser *)archiveparser
 {
 	return [self initWithArchiveParser:archiveparser entries:nil];
 }
 
--(id)initWithArchiveParser:(XADArchiveParser *)archiveparser entries:(NSArray *)entryarray
+-(instancetype)initWithArchiveParser:(XADArchiveParser *)archiveparser entries:(NSArray *)entryarray
 {
 	if((self=[super init]))
 	{
-		parser=[archiveparser retain];
+		parser=archiveparser;
 		unarchiver=[[XADUnarchiver alloc] initWithArchiveParser:archiveparser];
 		subunarchiver=nil;
 
@@ -39,17 +50,16 @@
 
 		destination=nil;
 
-		NSString *name=[archiveparser name];
+		NSString *name=archiveparser.name;
 		if([name matchedByPattern:
 		@"\\.(part[0-9]+\\.rar|tar\\.gz|tar\\.bz2|tar\\.lzma|tar\\.xz|tar\\.Z|sit\\.hqx)$"
 		options:REG_ICASE])
 		{
-			enclosingdir=[[[name stringByDeletingPathExtension]
-			stringByDeletingPathExtension] retain];
+			enclosingdir=name.stringByDeletingPathExtension.stringByDeletingPathExtension;
 		}
 		else
 		{
-			enclosingdir=[[name stringByDeletingPathExtension] retain];
+			enclosingdir=name.stringByDeletingPathExtension;
 		}
 
 		// TODO: Check if we accidentally create a package. Seems impossible, though.
@@ -76,8 +86,8 @@
 		renames=[NSMutableDictionary new];
 		resourceforks=[NSMutableSet new];
 
-		NSString *archivename=[parser filename];
-		if(archivename) metadata=[[XADPlatform readCloneableMetadataFromPath:archivename] retain];
+		NSString *archivename=parser.filename;
+		if(archivename) metadata=[XADPlatform readCloneableMetadataFromPath:archivename];
 		else metadata=nil;
 
 		unpackdestination=nil;
@@ -93,120 +103,63 @@
 	return self;
 }
 
--(void)dealloc
-{
-	[parser release];
-	[unarchiver release];
-	[subunarchiver release];
-
-	[destination release];
-	[enclosingdir release];
-
-	[regexes release];
-	[indices release];
-
-	[entries release];
-	[reasonsforinterest release];
-	[renames release];
-	[resourceforks release];
-	[metadata release];
-
-	[unpackdestination release];
-	[finaldestination release];
-	[overridesoloitem release];
-
-	[toplevelname release];
-
-	[super dealloc];
-}
-
 -(XADArchiveParser *)archiveParser
 {
-	if(subunarchiver) return [subunarchiver archiveParser];
+	if(subunarchiver) return subunarchiver.archiveParser;
 	else return parser;
 }
 
--(XADArchiveParser *)outerArchiveParser { return parser; }
--(XADArchiveParser *)innerArchiveParser { return [subunarchiver archiveParser]; }
+@synthesize outerArchiveParser=parser;
+-(XADArchiveParser *)innerArchiveParser { return subunarchiver.archiveParser; }
 
--(NSArray *)reasonsForInterest { return reasonsforinterest; }
+@synthesize reasonsForInterest=reasonsforinterest;
 
--(id)delegate { return delegate; }
--(void)setDelegate:(id)newdelegate { delegate=newdelegate; }
 
--(NSString *)password { return [parser password]; }
+-(NSString *)password { return parser.password; }
 -(void)setPassword:(NSString *)password
 {
-	[parser setPassword:password];
-	[[subunarchiver archiveParser] setPassword:password];
+	parser.password = password;
+	subunarchiver.archiveParser.password = password;
 }
 
--(NSString *)destination { return destination; }
--(void)setDestination:(NSString *)destpath
+@synthesize destination;
+@synthesize enclosingDirectoryName=enclosingdir;
+
+@synthesize removesEnclosingDirectoryForSoloItems = removesolo;
+@synthesize alwaysOverwritesFiles = overwrite;
+@synthesize alwaysRenamesFiles = rename;
+@synthesize alwaysSkipsFiles = skip;
+@synthesize extractsSubArchives = extractsubarchives;
+@synthesize copiesArchiveModificationTimeToEnclosingDirectory = copydatetoenclosing;
+@synthesize copiesArchiveModificationTimeToSoloItems = copydatetosolo;
+@synthesize resetsDateForSoloItems = resetsolodate;
+@synthesize propagatesRelevantMetadata=propagatemetadata;
+
+
+-(XADForkStyle)macResourceForkStyle { return unarchiver.macResourceForkStyle; }
+-(void)setMacResourceForkStyle:(XADForkStyle)style
 {
-	if(destpath!=destination)
-	{
-		[destination release];
-		destination=[destpath retain];
-	}
+	unarchiver.macResourceForkStyle = style;
+	subunarchiver.macResourceForkStyle = style;
 }
 
--(NSString *)enclosingDirectoryName { return enclosingdir; }
--(void)setEnclosingDirectoryName:(NSString *)dirname
+-(BOOL)preservesPermissions { return unarchiver.preservesPermissions; }
+-(void)setPreservesPermissions:(BOOL)preserveflag
 {
-	if(dirname!=enclosingdir)
-	{
-		[enclosingdir release];
-		enclosingdir=[dirname retain];
-	}
+	unarchiver.preservesPermissions = preserveflag;
+	subunarchiver.preservesPermissions = preserveflag;
 }
 
--(BOOL)removesEnclosingDirectoryForSoloItems { return removesolo; }
--(void)setRemovesEnclosingDirectoryForSoloItems:(BOOL)removeflag { removesolo=removeflag; }
-
--(BOOL)alwaysOverwritesFiles { return overwrite; }
--(void)setAlwaysOverwritesFiles:(BOOL)overwriteflag { overwrite=overwriteflag; }
-
--(BOOL)alwaysRenamesFiles { return rename; }
--(void)setAlwaysRenamesFiles:(BOOL)renameflag { rename=renameflag; }
-
--(BOOL)alwaysSkipsFiles { return skip; }
--(void)setAlwaysSkipsFiles:(BOOL)skipflag { skip=skipflag; }
-
--(BOOL)extractsSubArchives { return extractsubarchives; }
--(void)setExtractsSubArchives:(BOOL)extractflag { extractsubarchives=extractflag; }
-
--(BOOL)copiesArchiveModificationTimeToEnclosingDirectory { return copydatetoenclosing; }
--(void)setCopiesArchiveModificationTimeToEnclosingDirectory:(BOOL)copyflag { copydatetoenclosing=copyflag; }
-
--(BOOL)copiesArchiveModificationTimeToSoloItems { return copydatetosolo; }
--(void)setCopiesArchiveModificationTimeToSoloItems:(BOOL)copyflag { copydatetosolo=copyflag; }
-
--(BOOL)resetsDateForSoloItems { return resetsolodate; }
--(void)setResetsDateForSoloItems:(BOOL)resetflag { resetsolodate=resetflag; }
-
--(BOOL)propagatesRelevantMetadata { return propagatemetadata; }
--(void)setPropagatesRelevantMetadata:(BOOL)propagateflag { propagatemetadata=propagateflag; }
-
--(int)macResourceForkStyle { return [unarchiver macResourceForkStyle]; }
--(void)setMacResourceForkStyle:(int)style
+-(void)setPreserevesPermissions:(BOOL)preserve
 {
-	[unarchiver setMacResourceForkStyle:style];
-	[subunarchiver setMacResourceForkStyle:style];
+	self.preservesPermissions = preserve;
 }
 
--(BOOL)preservesPermissions { return [unarchiver preservesPermissions]; }
--(void)setPreserevesPermissions:(BOOL)preserveflag
-{
-	[unarchiver setPreserevesPermissions:preserveflag];
-	[subunarchiver setPreserevesPermissions:preserveflag];
-}
-
--(double)updateInterval { return [unarchiver updateInterval]; }
+-(double)updateInterval { return unarchiver.updateInterval; }
 -(void)setUpdateInterval:(double)interval
 {
-	[unarchiver setUpdateInterval:interval];
-	[subunarchiver setUpdateInterval:interval];
+	unarchiver.updateInterval = interval;
+	subunarchiver.updateInterval = interval;
 }
 
 -(void)addGlobFilter:(NSString *)wildcard
@@ -226,7 +179,7 @@
 	[regexes addObject:regex];
 }
 
--(void)addIndexFilter:(int)index
+-(void)addIndexFilter:(NSInteger)index
 {
 	if(!indices) indices=[NSMutableIndexSet new];
 	[indices addIndex:index];
@@ -252,39 +205,34 @@
 	NSDictionary *dict;
 	while((dict=[enumerator nextObject]))
 	{
-		NSNumber *num=[dict objectForKey:XADFileSizeKey];
-		if(!num)
+		NSNumber *num=dict[XADFileSizeKey];
+		if(num == nil)
 		{
 			if(ignoreunknown) continue;
 			else return -1;
 		}
 
-		total+=[num longLongValue];
+		total+=num.longLongValue;
 	}
 
 	return total;
 }
 
-
-
-
--(int)numberOfItemsExtracted { return numextracted; }
-
--(BOOL)wasSoloItem { return lookslikesolo; }
-
--(NSString *)actualDestination { return finaldestination; }
+@synthesize numberOfItemsExtracted = numextracted;
+@synthesize wasSoloItem = lookslikesolo;
+@synthesize actualDestination = finaldestination;
 
 -(NSString *)soloItem
 {
 	if(lookslikesolo)
 	{
 		if(overridesoloitem) return overridesoloitem;
-
-		NSArray *keys=[renames allKeys];
-		if([keys count]==1)
+		
+		NSArray *keys=renames.allKeys;
+		if(keys.count==1)
 		{
-			NSString *key=[keys objectAtIndex:0];
-			id value=[[renames objectForKey:key] objectForKey:@"."];
+			NSString *key=keys[0];
+			id value=renames[key][@"."];
 			if(value!=[NSNull null]) return value;
 		}
 	}
@@ -294,7 +242,7 @@
 -(NSString *)createdItem
 {
 	if(!enclosingdir) return nil;
-	else if(lookslikesolo && removesolo) return [self soloItem];
+	else if(lookslikesolo && removesolo) return self.soloItem;
 	else return finaldestination;
 }
 
@@ -302,7 +250,7 @@
 {
 	if(lookslikesolo && enclosingdir && removesolo)
 	{
-		NSString *soloitem=[self soloItem];
+		NSString *soloitem=self.soloItem;
 		if(soloitem) return soloitem;
 		else return @".";
 	}
@@ -317,42 +265,42 @@
 
 -(XADError)parse
 {
-	if([entries count]) [NSException raise:NSInternalInconsistencyException format:@"You can not call parseAndUnarchive twice"];
+	if(entries.count) [NSException raise:NSInternalInconsistencyException format:@"You can not call parseAndUnarchive twice"];
 
 	// Run parser to find archive entries.
-	[parser setDelegate:self];
+	parser.delegate = self;
 	XADError error=[parser parseWithoutExceptions];
 	if(error) return error;
 
 	if(extractsubarchives)
 	{
 		// Check if we have a single entry, which is an archive.
-		if([entries count]==1)
+		if(entries.count==1)
 		{
-			NSDictionary *entry=[entries objectAtIndex:0];
-			NSNumber *archnum=[entry objectForKey:XADIsArchiveKey];
-			BOOL isarc=archnum&&[archnum boolValue];
+			NSDictionary *entry=entries[0];
+			NSNumber *archnum=entry[XADIsArchiveKey];
+			BOOL isarc=archnum&&archnum.boolValue;
 			if(isarc) return [self _setupSubArchiveForEntryWithDataFork:entry resourceFork:nil];
 		}
 
 		// Check if we have two entries, which are data and resource forks
 		// of the same archive.
-		if([entries count]==2)
+		if(entries.count==2)
 		{
-			NSDictionary *first=[entries objectAtIndex:0];
-			NSDictionary *second=[entries objectAtIndex:1];
-			XADPath *name1=[first objectForKey:XADFileNameKey];
-			XADPath *name2=[second objectForKey:XADFileNameKey];
-			NSNumber *archnum1=[first objectForKey:XADIsArchiveKey];
-			NSNumber *archnum2=[second objectForKey:XADIsArchiveKey];
-			BOOL isarc1=archnum1&&[archnum1 boolValue];
-			BOOL isarc2=archnum2&&[archnum2 boolValue];
+			NSDictionary *first=entries[0];
+			NSDictionary *second=entries[1];
+			XADPath *name1=first[XADFileNameKey];
+			XADPath *name2=second[XADFileNameKey];
+			NSNumber *archnum1=first[XADIsArchiveKey];
+			NSNumber *archnum2=second[XADIsArchiveKey];
+			BOOL isarc1=archnum1&&archnum1.boolValue;
+			BOOL isarc2=archnum2&&archnum2.boolValue;
 
 			if([name1 isEqual:name2] && (isarc1||isarc2))
 			{
-				NSNumber *resnum=[first objectForKey:XADIsResourceForkKey];
+				NSNumber *resnum=first[XADIsResourceForkKey];
 				NSDictionary *datafork,*resourcefork;
-				if(resnum&&[resnum boolValue])
+				if(resnum&&resnum.boolValue)
 				{
 					datafork=second;
 					resourcefork=first;
@@ -364,27 +312,27 @@
 				}
 
 				// TODO: Handle resource forks for archives that require them.
-				NSNumber *archnum=[datafork objectForKey:XADIsArchiveKey];
-				if(archnum&&[archnum boolValue]) return [self _setupSubArchiveForEntryWithDataFork:datafork resourceFork:resourcefork];
+				NSNumber *archnum=datafork[XADIsArchiveKey];
+				if(archnum&&archnum.boolValue) return [self _setupSubArchiveForEntryWithDataFork:datafork resourceFork:resourcefork];
 			}
 		}
 	}
 
-	return XADNoError;
+	return XADErrorNone;
 }
 
 -(XADError)_setupSubArchiveForEntryWithDataFork:(NSDictionary *)datadict resourceFork:(NSDictionary *)resourcedict
 {
 	// Create unarchiver.
 	XADError error;
-	subunarchiver=[[unarchiver unarchiverForEntryWithDictionary:datadict
-	resourceForkDictionary:resourcedict wantChecksum:YES error:&error] retain];
+	subunarchiver=[unarchiver unarchiverForEntryWithDictionary:datadict
+										resourceForkDictionary:resourcedict wantChecksum:YES error:&error];
 	if(!subunarchiver)
 	{
 		if(error) return error;
-		else return XADSubArchiveError;
+		else return XADErrorSubArchive;
 	}
-	return XADNoError;
+	return XADErrorNone;
 }
 
 
@@ -398,27 +346,23 @@
 
 -(XADError)_unarchiveRegularArchive
 {
-	NSEnumerator *enumerator;
-	NSDictionary *entry;
-
 	// Calculate total size and check if there is a single top-level item.
 	totalsize=0;
 	totalprogress=0;
 
-	enumerator=[entries objectEnumerator];
-	while((entry=[enumerator nextObject]))
+	for(NSDictionary *entry in entries)
 	{
-		NSNumber *dirnum=[entry objectForKey:XADIsDirectoryKey];
-		BOOL isdir=dirnum && [dirnum boolValue];
+		NSNumber *dirnum=entry[XADIsDirectoryKey];
+		BOOL isdir=dirnum && dirnum.boolValue;
 
 		// If we have not given up on calculating a total size, and this
 		// is not a directory, add the size of the current item.
 		if(totalsize>=0 && !isdir)
 		{
-			NSNumber *size=[entry objectForKey:XADFileSizeKey];
+			NSNumber *size=entry[XADFileSizeKey];
 
 			// Disable accurate progress calculation if any sizes are unknown.
-			if(size) totalsize+=[size longLongValue];
+			if(size != nil) totalsize+=size.longLongValue;
 			else totalsize=-1;
 		}
 		
@@ -437,7 +381,7 @@
 
 		// Check for collision.
 		destpath=[self _checkPath:destpath forEntryWithDictionary:nil deferred:NO];
-		if(!destpath) return XADNoError;
+		if(!destpath) return XADErrorNone;
 	}
 	else
 	{
@@ -445,29 +389,28 @@
 		else destpath=@".";
 	}
 
-	unpackdestination=[destpath retain];
-	finaldestination=[destpath retain];
+	unpackdestination=[destpath copy];
+	finaldestination=[destpath copy];
 
 	// Run unarchiver on all entries.
-	[unarchiver setDelegate:self];
+	unarchiver.delegate = self;
 
-	enumerator=[entries objectEnumerator];
-	while((entry=[enumerator nextObject]))
+	for(NSDictionary *entry in entries)
 	{
-		if([self _shouldStop]) return XADBreakError;
+		if(self._shouldStop) return XADErrorBreak;
 
-		if(totalsize>=0) currsize=[[entry objectForKey:XADFileSizeKey] longLongValue];
+		if(totalsize>=0) currsize=[entry[XADFileSizeKey] longLongValue];
 
 		XADError error=[unarchiver extractEntryWithDictionary:entry];
-		if(error==XADBreakError) return XADBreakError;
+		if(error==XADErrorBreak) return XADErrorBreak;
 
 		if(totalsize>=0) totalprogress+=currsize;
 	}
 
-	if([self _shouldStop]) return XADBreakError;
+	if(self._shouldStop) return XADErrorBreak;
 
 	// If we ended up extracting nothing, give up.
-	if(!numextracted) return XADNoError;
+	if(!numextracted) return XADErrorNone;
 
 	return [self _finalizeExtraction];
 }
@@ -498,7 +441,7 @@
 		{
 			// Check for collision.
 			destpath=[self _checkPath:destpath forEntryWithDictionary:nil deferred:NO];
-			if(!destpath) return XADNoError;
+			if(!destpath) return XADErrorNone;
 		}
 	}
 	else
@@ -507,7 +450,7 @@
 		else destpath=@".";
 	}
 
-	unpackdestination=[destpath retain];
+	unpackdestination=[destpath copy];
 
 	// Disable accurate progress calculation.
 	totalsize=-1;
@@ -515,18 +458,18 @@
 	// Parse sub-archive and automatically unarchive its contents.
 	// At this stage, files are guaranteed to be written to unpackdestination
 	// and never outside it.
-	[subunarchiver setDelegate:self];
+	subunarchiver.delegate = self;
 	error=[subunarchiver parseAndUnarchive];
 
 	// Check if the caller wants to give up.
-	if(error==XADBreakError) return XADBreakError;
-	if([self _shouldStop]) return XADBreakError;
+	if(error==XADErrorBreak) return XADErrorBreak;
+	if(self._shouldStop) return XADErrorBreak;
 
 	// If we ended up extracting nothing, give up.
 	if(!numextracted) return error;
 
 	// If we extracted a single item, remember its path.
-	NSString *soloitem=[self soloItem];
+	NSString *soloitem=self.soloItem;
 
 	// If we are removing the enclosing directory for solo items, check
 	// how many items were extracted, and handle collisions and moving files.
@@ -536,7 +479,7 @@
 		{
 			// Only one top-level item was unpacked. Move it to the parent
 			// directory and remove the enclosing directory.
-			NSString *itemname=[soloitem lastPathComponent];
+			NSString *itemname=soloitem.lastPathComponent;
 
 			// To avoid trouble, first rename the enclosing directory
 			// to something unique.
@@ -562,12 +505,12 @@
 
 			// Move the item into place and delete the enclosing directory.
 			if(![self _recursivelyMoveItemAtPath:newitempath toPath:finalitempath overwrite:YES])
-			error=XADFileExistsError; // TODO: Better error handling.
+			error=XADErrorFileExists; // TODO: Better error handling.
 
 			[XADPlatform removeItemAtPath:newenclosingpath];
 
 			// Remember where the item ended up.
-			finaldestination=[[finalitempath stringByDeletingLastPathComponent] retain];
+			finaldestination=finalitempath.stringByDeletingLastPathComponent;
 			soloitem=finalitempath;
 
 		}
@@ -598,27 +541,27 @@
 					// new location selected. This may end up being the original
 					// path that caused the collision.
 					if(![self _recursivelyMoveItemAtPath:enclosingpath toPath:newenclosingpath overwrite:YES])
-					error=XADFileExistsError; // TODO: Better error handling.
+					error=XADErrorFileExists; // TODO: Better error handling.
 				}
 
 				// Remember where the items ended up.
-				finaldestination=[newenclosingpath retain];
+				finaldestination=[newenclosingpath copy];
 			}
 			else
 			{
 				// Remember where the items ended up.
-				finaldestination=[destpath retain];
+				finaldestination=[destpath copy];
 			}
 		}
 	}
 	else
 	{
 		// Remember where the items ended up.
-		finaldestination=[destpath retain];
+		finaldestination=[destpath copy];
 	}
 
 	// Save the final path to the solo item, if any.
-	overridesoloitem=[soloitem retain];
+	overridesoloitem=[soloitem copy];
 
 	if(error) return error;
 
@@ -633,13 +576,13 @@
 	// Update date of the enclosing directory (or single item), if requested.
 	if(enclosingdir)
 	{
-		NSString *archivename=[[unarchiver archiveParser] filename];
+		NSString *archivename=unarchiver.archiveParser.filename;
 		if(archivename)
 		{
 			if(lookslikesolo && removesolo)
 			{
 				// We are dealing with a solo item removed from the enclosing directory.
-				NSString *soloitem=[self soloItem];
+				NSString *soloitem=self.soloItem;
 				if(copydatetosolo) [XADPlatform copyDateFromPath:archivename toPath:soloitem];
 				else if(resetsolodate) [XADPlatform resetDateAtPath:soloitem];
 			}
@@ -651,7 +594,7 @@
 		}
 	}
 
-	return XADNoError;
+	return XADErrorNone;
 }
 
 -(void)_testForSoloItems:(NSDictionary *)entry
@@ -660,16 +603,16 @@
 	// if this one has the same first first path component as the earlier ones.
 	if(lookslikesolo || !toplevelname)
 	{
-		NSString *safepath=[[entry objectForKey:XADFileNameKey] sanitizedPathString];
-		NSArray *components=[safepath pathComponents];
+		NSString *safepath=[entry[XADFileNameKey] sanitizedPathString];
+		NSArray *components=safepath.pathComponents;
 
 		NSString *firstcomp;
-		if([components count]>0) firstcomp=[components objectAtIndex:0];
+		if(components.count>0) firstcomp=components[0];
 		else firstcomp=@"";
 
 		if(!toplevelname)
 		{
-			toplevelname=[firstcomp retain];
+			toplevelname=[firstcomp copy];
 			lookslikesolo=YES;
 		}
 		else
@@ -689,12 +632,14 @@
 
 -(BOOL)archiveParsingShouldStop:(XADArchiveParser *)parser
 {
-	return [self _shouldStop];
+	return self._shouldStop;
 }
 
 -(void)archiveParserNeedsPassword:(XADArchiveParser *)parser
 {
-	[delegate simpleUnarchiverNeedsPassword:self];
+	if ([delegate respondsToSelector:@selector(simpleUnarchiverNeedsPassword:)]) {
+		[delegate simpleUnarchiverNeedsPassword:self];
+	}
 }
 
 -(void)archiveParser:(XADArchiveParser *)parser findsFileInterestingForReason:(NSString *)reason;
@@ -704,7 +649,9 @@
 
 -(void)unarchiverNeedsPassword:(XADUnarchiver *)unarchiver
 {
-	[delegate simpleUnarchiverNeedsPassword:self];
+	if ([delegate respondsToSelector:@selector(simpleUnarchiverNeedsPassword:)]) {
+		[delegate simpleUnarchiverNeedsPassword:self];
+	}
 }
 
 -(BOOL)unarchiver:(XADUnarchiver *)currunarchiver shouldExtractEntryWithDictionary:(NSDictionary *)dict suggestedPath:(NSString **)pathptr
@@ -713,17 +660,21 @@
 	if(currunarchiver==subunarchiver) [self _testForSoloItems:dict];
 
 	// Decode name.
-	XADPath *xadpath=[dict objectForKey:XADFileNameKey];
+	XADPath *xadpath=dict[XADFileNameKey];
 	NSString *encodingname=nil;
-	if(delegate && ![xadpath encodingIsKnown])
+	if(delegate && !xadpath.encodingIsKnown)
 	{
-		encodingname=[delegate simpleUnarchiver:self encodingNameForXADString:xadpath];
+		if ([delegate respondsToSelector:@selector(simpleUnarchiver:encodingNameForXADString:)]) {
+			encodingname=[delegate simpleUnarchiver:self encodingNameForXADString:xadpath];
+		} else {
+			encodingname=xadpath.encodingName;
+		}
 		if(!encodingname) return NO;
 	}
 
 	NSString *safefilename;
 	if(encodingname) safefilename=[xadpath sanitizedPathStringWithEncodingName:encodingname];
-	else safefilename=[xadpath sanitizedPathString];
+	else safefilename=xadpath.sanitizedPathString;
 
 	// Make sure to update path for resource forks.
 	safefilename=[currunarchiver adjustPathString:safefilename forEntryWithDictionary:dict];
@@ -749,8 +700,8 @@
 		// If any index filters have been added, require that one matches.
 		if(indices)
 		{
-			NSNumber *indexnum=[dict objectForKey:XADIndexKey];
-			int index=[indexnum intValue];
+			NSNumber *indexnum=dict[XADIndexKey];
+			int index=indexnum.intValue;
 			if(![indices containsIndex:index]) return NO;
 		}
 	}
@@ -759,12 +710,12 @@
 	// encountered collide, and cache results in the path hierarchy.
 	NSMutableDictionary *parent=renames;
 	NSString *path=unpackdestination;
-	NSArray *components=[safefilename pathComponents];
-	int numcomponents=[components count];
-	for(int i=0;i<numcomponents;i++)
+	NSArray *components=safefilename.pathComponents;
+	NSInteger numcomponents=components.count;
+	for(NSInteger i=0;i<numcomponents;i++)
 	{
-		NSString *component=[components objectAtIndex:i];
-		NSMutableDictionary *pathdict=[parent objectForKey:component];
+		NSString *component=components[i];
+		NSMutableDictionary *pathdict=parent[component];
 		if(!pathdict)
 		{
 			// This path has not been encountered yet. First, build a
@@ -778,20 +729,20 @@
 			{
 				// Store path and dictionary in path hierarchy.
 				pathdict=[NSMutableDictionary dictionaryWithObject:path forKey:@"."];
-				[parent setObject:pathdict forKey:component];
+				parent[component] = pathdict;
 			}
 			else
 			{
 				// If skipping was requested, store a marker in the path hierarchy
 				// for future requests, and skip.
 				pathdict=[NSMutableDictionary dictionaryWithObject:[NSNull null] forKey:@"."];
-				[parent setObject:pathdict forKey:component];
+				parent[component] = pathdict;
 				return NO;
 			}
 		}
 		else
 		{
-			path=[pathdict objectForKey:@"."];
+			path=pathdict[@"."];
 
 			// Check if this path was marked as skipped earlier.
 			if((id)path==[NSNull null]) return NO;
@@ -802,8 +753,24 @@
 
 	*pathptr=path;
 
-	// If we have a delegate, ask it if we should extract.
-	if(delegate) return [delegate simpleUnarchiver:self shouldExtractEntryWithDictionary:dict to:path];
+	if(delegate && [delegate respondsToSelector:@selector(simpleUnarchiver:shouldExtractEntryWithDictionary:to:)])
+	{
+		// If we have a delegate, ask it if we should extract.
+		if(![delegate simpleUnarchiver:self shouldExtractEntryWithDictionary:dict to:path]) return NO;
+
+		// Check if the user wants to extract the entry to his own filehandle.
+		// In such case, call into the lower-level API to run the extraction
+		// and return without doing further work.
+		CSHandle *handle=nil;
+		if ([delegate respondsToSelector:@selector(simpleUnarchiver:outputHandleForEntryWithDictionary:)]) {
+			handle=[delegate simpleUnarchiver:self outputHandleForEntryWithDictionary:dict];
+		}
+		if(handle)
+		{
+			[unarchiver runExtractorWithDictionary:dict outputHandle:handle];
+			return NO;
+		}
+	}
 
 	// Otherwise, just extract.
 	return YES;
@@ -813,23 +780,27 @@
 {
 	// If we are writing OS X or HFV resource forks, keep a list of which resource
 	// forks have been extracted, for the collision tests in checkPath.
-	int style=[unarch macResourceForkStyle];
-	if(style==XADMacOSXForkStyle || style==XADHFVExplorerAppleDoubleForkStyle)
+	int style=unarch.macResourceForkStyle;
+	if(style==XADForkStyleMacOSX || style==XADForkStyleHFVExplorerAppleDouble)
 	{
-		NSNumber *resnum=[dict objectForKey:XADIsResourceForkKey];
-		if(resnum && [resnum boolValue]) [resourceforks addObject:path];
+		NSNumber *resnum=dict[XADIsResourceForkKey];
+		if(resnum && resnum.boolValue) [resourceforks addObject:path];
 	}
 
-	[delegate simpleUnarchiver:self willExtractEntryWithDictionary:dict to:path];
+	if ([delegate respondsToSelector:@selector(simpleUnarchiver:willExtractEntryWithDictionary:to:)]) {
+		[delegate simpleUnarchiver:self willExtractEntryWithDictionary:dict to:path];
+	}
 }
 
 -(void)unarchiver:(XADUnarchiver *)unarchiver didExtractEntryWithDictionary:(NSDictionary *)dict to:(NSString *)path error:(XADError)error
 {
 	numextracted++;
-
+	
 	if(propagatemetadata && metadata) [XADPlatform writeCloneableMetadata:metadata toPath:path];
-
-	[delegate simpleUnarchiver:self didExtractEntryWithDictionary:dict to:path error:error];
+	
+	if ([delegate respondsToSelector:@selector(simpleUnarchiver:didExtractEntryWithDictionary:to:error:)]) {
+		[delegate simpleUnarchiver:self didExtractEntryWithDictionary:dict to:path error:error];
+	}
 }
 
 -(BOOL)unarchiver:(XADUnarchiver *)unarchiver shouldCreateDirectory:(NSString *)directory
@@ -850,7 +821,12 @@
 {
 	if(!delegate) return nil;
 
-	NSString *encodingname=[delegate simpleUnarchiver:self encodingNameForXADString:link];
+	NSString *encodingname;
+	if ([delegate respondsToSelector:@selector(simpleUnarchiver:encodingNameForXADString:)]) {
+		encodingname=[delegate simpleUnarchiver:self encodingNameForXADString:link];
+	} else {
+		encodingname=link.encodingName;
+	}
 	if(!encodingname) return nil;
 
 	return [link stringWithEncodingName:encodingname];
@@ -858,7 +834,7 @@
 
 -(BOOL)extractionShouldStopForUnarchiver:(XADUnarchiver *)unarchiver
 {
-	return [self _shouldStop];
+	return self._shouldStop;
 }
 
 -(void)unarchiver:(XADUnarchiver *)unarchiver extractionProgressForEntryWithDictionary:(NSDictionary *)dict
@@ -874,15 +850,19 @@ fileFraction:(double)fileratio estimatedTotalFraction:(double)totalratio
 	{
 		// If the total size is known, report exact progress.
 		off_t fileprogress=fileratio*currsize;
-		[delegate simpleUnarchiver:self extractionProgressForEntryWithDictionary:dict
-		fileProgress:fileprogress of:currsize
-		totalProgress:totalprogress+fileprogress of:totalsize];
+		if ([delegate respondsToSelector:@selector(simpleUnarchiver:extractionProgressForEntryWithDictionary:fileProgress:of:totalProgress:of:)]) {
+			[delegate simpleUnarchiver:self extractionProgressForEntryWithDictionary:dict
+						  fileProgress:fileprogress of:currsize
+						 totalProgress:totalprogress+fileprogress of:totalsize];
+		}
 	}
 	else
 	{
 		// If the total size is not known, report estimated progress.
-		[delegate simpleUnarchiver:self estimatedExtractionProgressForEntryWithDictionary:dict
-		fileProgress:fileratio totalProgress:totalratio];
+		if ([delegate respondsToSelector:@selector(simpleUnarchiver:estimatedExtractionProgressForEntryWithDictionary:fileProgress:totalProgress:)]) {
+			[delegate simpleUnarchiver:self estimatedExtractionProgressForEntryWithDictionary:dict
+						  fileProgress:fileratio totalProgress:totalratio];
+		}
 	}
 }
 
@@ -893,7 +873,7 @@ fileFraction:(double)fileratio estimatedTotalFraction:(double)totalratio
 
 -(BOOL)_shouldStop
 {
-	if(!delegate) return NO;
+	if(!(delegate && [delegate respondsToSelector:@selector(extractionShouldStopForSimpleUnarchiver:)])) return NO;
 	if(shouldstop) return YES;
 
 	return shouldstop=[delegate extractionShouldStopForSimpleUnarchiver:self];
@@ -913,14 +893,14 @@ fileFraction:(double)fileratio estimatedTotalFraction:(double)totalratio
 		// When writing OS X data forks, some collisions will happen. Try
 		// to handle these.
 		#ifdef __APPLE__
-		if(dict && [self macResourceForkStyle]==XADMacOSXForkStyle)
+		if(dict && self.macResourceForkStyle==XADForkStyleMacOSX)
 		{
-			NSNumber *resnum=[dict objectForKey:XADIsResourceForkKey];
-			if(resnum && [resnum boolValue])
+			NSNumber *resnum=dict[XADIsResourceForkKey];
+			if(resnum && resnum.boolValue)
 			{
 				// If this entry is a resource fork, check if the resource fork
 				// size is 0. If so, do not consider this a collision.
-				const char *cpath=[path fileSystemRepresentation];
+				const char *cpath=path.fileSystemRepresentation;
 				size_t ressize=getxattr(cpath,XATTR_RESOURCEFORK_NAME,NULL,0,0,XATTR_NOFOLLOW);
 
 				if(ressize==0) return path;
@@ -936,13 +916,13 @@ fileFraction:(double)fileratio estimatedTotalFraction:(double)totalratio
 
 		// HFV Explorer style forks always create dummy data forks, which can cause collisions.
 		// Just kludge this by ignoring collisions for data forks if a resource was written earlier.
-		if(dict && [self macResourceForkStyle]==XADHFVExplorerAppleDoubleForkStyle)
+		if(dict && self.macResourceForkStyle==XADForkStyleHFVExplorerAppleDouble)
 		{
-			NSNumber *resnum=[dict objectForKey:XADIsResourceForkKey];
-			if(!resnum || ![resnum boolValue])
+			NSNumber *resnum=dict[XADIsResourceForkKey];
+			if(resnum == nil || !resnum.boolValue)
 			{
-				NSString *forkpath=[[path stringByDeletingLastPathComponent] stringByAppendingPathComponent:
-				[@"%" stringByAppendingString:[path lastPathComponent]]];
+				NSString *forkpath=[path.stringByDeletingLastPathComponent stringByAppendingPathComponent:
+				[@"%" stringByAppendingString:path.lastPathComponent]];
 
 				if([resourceforks containsObject:forkpath]) return path;
 			}
@@ -961,12 +941,17 @@ fileFraction:(double)fileratio estimatedTotalFraction:(double)totalratio
 		else if(delegate)
 		{
 			// If we have a delegate, ask it.
-			if(deferred) return [delegate simpleUnarchiver:self
-			deferredReplacementPathForOriginalPath:path
-			suggestedPath:unique];
-			else return [delegate simpleUnarchiver:self
+			if (deferred && [delegate respondsToSelector:@selector(simpleUnarchiver:deferredReplacementPathForOriginalPath:suggestedPath:)]) {
+				return [delegate simpleUnarchiver:self
+		   deferredReplacementPathForOriginalPath:path
+									suggestedPath:unique];
+			} else if ([delegate respondsToSelector:@selector(simpleUnarchiver:replacementPathForEntryWithDictionary:originalPath:suggestedPath:)]) {
+				return [delegate simpleUnarchiver:self
 			replacementPathForEntryWithDictionary:dict
-			originalPath:path suggestedPath:unique];
+									 originalPath:path suggestedPath:unique];
+			} else {
+				return nil;
+			}
 		}
 		else
 		{
@@ -1030,9 +1015,9 @@ fileFraction:(double)fileratio estimatedTotalFraction:(double)totalratio
 
 +(NSString *)_findUniquePathForOriginalPath:(NSString *)path reservedPaths:(NSSet *)reserved
 {
-	NSString *base=[path stringByDeletingPathExtension];
-	NSString *extension=[path pathExtension];
-	if([extension length]) extension=[@"." stringByAppendingString:extension];
+	NSString *base=path.stringByDeletingPathExtension;
+	NSString *extension=path.pathExtension;
+	if(extension.length) extension=[@"." stringByAppendingString:extension];
 
 	NSString *dest=path;
 	int n=1;
@@ -1042,34 +1027,5 @@ fileFraction:(double)fileratio estimatedTotalFraction:(double)totalratio
 
 	return dest;
 }
-
-@end
-
-
-
-@implementation NSObject (XADSimpleUnarchiverDelegate)
-
--(void)simpleUnarchiverNeedsPassword:(XADSimpleUnarchiver *)unarchiver {}
-
--(NSString *)simpleUnarchiver:(XADSimpleUnarchiver *)unarchiver encodingNameForXADString:(id <XADString>)string; { return [string encodingName]; }
-
--(BOOL)simpleUnarchiver:(XADSimpleUnarchiver *)unarchiver shouldExtractEntryWithDictionary:(NSDictionary *)dict to:(NSString *)path { return YES; }
--(void)simpleUnarchiver:(XADSimpleUnarchiver *)unarchiver willExtractEntryWithDictionary:(NSDictionary *)dict to:(NSString *)path {}
--(void)simpleUnarchiver:(XADSimpleUnarchiver *)unarchiver didExtractEntryWithDictionary:(NSDictionary *)dict to:(NSString *)path error:(XADError)error {}
-
--(NSString *)simpleUnarchiver:(XADSimpleUnarchiver *)unarchiver replacementPathForEntryWithDictionary:(NSDictionary *)dict
-originalPath:(NSString *)path suggestedPath:(NSString *)unique { return nil; }
--(NSString *)simpleUnarchiver:(XADSimpleUnarchiver *)unarchiver deferredReplacementPathForOriginalPath:(NSString *)path
-suggestedPath:(NSString *)unique { return nil; }
-
--(BOOL)extractionShouldStopForSimpleUnarchiver:(XADSimpleUnarchiver *)unarchiver { return NO; }
-
--(void)simpleUnarchiver:(XADSimpleUnarchiver *)unarchiver
-extractionProgressForEntryWithDictionary:(NSDictionary *)dict
-fileProgress:(off_t)fileprogress of:(off_t)filesize
-totalProgress:(off_t)totalprogress of:(off_t)totalsize {}
--(void)simpleUnarchiver:(XADSimpleUnarchiver *)unarchiver
-estimatedExtractionProgressForEntryWithDictionary:(NSDictionary *)dict
-fileProgress:(double)fileprogress totalProgress:(double)totalprogress {}
 
 @end

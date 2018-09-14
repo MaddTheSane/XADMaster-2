@@ -1,5 +1,5 @@
 #import "XADLibXADParser.h"
-#import "CSMultiHandle.h"
+#import "CSSegmentedHandle.h"
 
 
 
@@ -21,27 +21,34 @@ struct xadMasterBaseP *xadOpenLibrary(xadINT32 version);
 	return (int)((struct xadMasterBaseP *)xmb)->xmb_RecogSize;
 }
 
-+(BOOL)recognizeFileWithHandle:(CSHandle *)handle firstBytes:(NSData *)data name:(NSString *)name
++(BOOL)recognizeFileWithHandle:(CSHandle *)handle firstBytes:(NSData *)data
+name:(NSString *)name propertiesToAdd:(NSMutableDictionary *)props
 {
 	if(!xmb) xmb=xadOpenLibrary(12);
 
 	// Kludge to recognize ADF disk images, since the filesystem parsers don't provide recognition functions
-	NSString *ext=[[name pathExtension] lowercaseString];
+	NSString *ext=name.pathExtension.lowercaseString;
 	if([ext isEqual:@"adf"]) return YES;
 
 	struct XADInHookData indata;
 	indata.fh=handle;
-	indata.name=[name UTF8String];
+	indata.name=name.UTF8String;
 
 	struct Hook inhook;
-	inhook.h_Entry=InFunc;
+	inhook.h_Entry=(xadUINT32(*)(struct Hook *,xadPTR,void*))InFunc;
 	inhook.h_Data=(void *)&indata;
 
-	if(xadRecogFile(xmb,[data length],[data bytes],
+	struct xadClient *client=xadRecogFile(xmb,[data length],[data bytes],
 		XAD_INHOOK,&inhook,
-	TAG_DONE)) return YES;
+	TAG_DONE);
 
-	return NO;
+	if(!client) return NO;
+
+	NSString *format=[[[NSString alloc] initWithBytes:client->xc_ArchiverName
+	length:strlen(client->xc_ArchiverName) encoding:NSISOLatin1StringEncoding] autorelease];
+	[props setObject:format forKey:@"LibXADFormatName"];
+
+	return YES;
 }
 
 -(id)init
@@ -66,7 +73,7 @@ struct xadMasterBaseP *xadOpenLibrary(xadINT32 version);
 
 -(void)parse
 {
-	namedata=[[[self name] dataUsingEncoding:NSUTF8StringEncoding] mutableCopy];
+	namedata=[[self.name dataUsingEncoding:NSUTF8StringEncoding] mutableCopy];
 	[namedata increaseLengthBy:1];
 
 	if(!(archive=xadAllocObjectA(xmb,XADOBJ_ARCHIVEINFO,NULL)))
@@ -74,12 +81,12 @@ struct xadMasterBaseP *xadOpenLibrary(xadINT32 version);
 		[XADException raiseOutOfMemoryException];
 	}
 
-	indata.fh=[self handle];
-	indata.name=[namedata bytes];
-	inhook.h_Entry=InFunc;
+	indata.fh=self.handle;
+	indata.name=namedata.bytes;
+	inhook.h_Entry=(xadUINT32(*)(struct Hook *,xadPTR,void*))InFunc;
 	inhook.h_Data=(void *)&indata;
 
-	progresshook.h_Entry=ProgressFunc;
+	progresshook.h_Entry=(xadUINT32(*)(struct Hook *,xadPTR,void*))ProgressFunc;
 	progresshook.h_Data=(void *)self;
 
 	addonbuild=YES;
@@ -119,7 +126,7 @@ struct xadMasterBaseP *xadOpenLibrary(xadINT32 version);
 
 		for(int i=0;i<numfilesadded&&fileinfo;i++) fileinfo=fileinfo->xfi_Next;
 
-		while(fileinfo&&[self shouldKeepParsing])
+		while(fileinfo&&self.shouldKeepParsing)
 		{
 			[self addEntryWithDictionary:[self dictionaryForFileInfo:fileinfo]];
 			fileinfo=fileinfo->xfi_Next;
@@ -129,7 +136,7 @@ struct xadMasterBaseP *xadOpenLibrary(xadINT32 version);
 
 		for(int i=0;i<numdisksadded&&diskinfo;i++) diskinfo=diskinfo->xdi_Next;
 
-		while(diskinfo&&[self shouldKeepParsing])
+		while(diskinfo&&self.shouldKeepParsing)
 		{
 			[self addEntryWithDictionary:[self dictionaryForDiskInfo:diskinfo]];
 			diskinfo=diskinfo->xdi_Next;
@@ -169,65 +176,65 @@ struct xadMasterBaseP *xadOpenLibrary(xadINT32 version);
 			}
 		}
 	}
-	return [self shouldKeepParsing];
+	return self.shouldKeepParsing;
 }
 
 -(NSMutableDictionary *)dictionaryForFileInfo:(struct xadFileInfo *)info
 {
 	NSMutableDictionary *dict=[NSMutableDictionary dictionaryWithObjectsAndKeys:
 		[self XADPathWithCString:(const char *)info->xfi_FileName separators:XADEitherPathSeparator],XADFileNameKey,
-		[NSNumber numberWithUnsignedLongLong:info->xfi_CrunchSize],XADCompressedSizeKey,
+		@(info->xfi_CrunchSize),XADCompressedSizeKey,
 		[NSValue valueWithPointer:info],@"LibXADFileInfo",
 	nil];
 
 	if(!(info->xfi_Flags&XADFIF_NOUNCRUNCHSIZE))
-	[dict setObject:[NSNumber numberWithUnsignedLongLong:info->xfi_Size] forKey:XADFileSizeKey];
+	dict[XADFileSizeKey] = @(info->xfi_Size);
 
 	if(!(info->xfi_Flags&XADFIF_NODATE))
 	{
 		xadUINT32 timestamp;
 		xadConvertDates(xmb,XAD_DATEXADDATE,&info->xfi_Date,XAD_GETDATEUNIX,&timestamp,TAG_DONE);
 
-		[dict setObject:[NSDate dateWithTimeIntervalSince1970:timestamp] forKey:XADLastModificationDateKey];
+		dict[XADLastModificationDateKey] = [NSDate dateWithTimeIntervalSince1970:timestamp];
 	}
 
 	//if(info->xfi_Flags&XADFIF_NOFILENAME)
 	// TODO: set no filename flag
 
 	if(info->xfi_Flags&XADFIF_UNIXPROTECTION)
-	[dict setObject:[NSNumber numberWithInt:info->xfi_UnixProtect] forKey:XADPosixPermissionsKey];
+	dict[XADPosixPermissionsKey] = @(info->xfi_UnixProtect);
 
 	if(info->xfi_Protection)
-	[dict setObject:[NSNumber numberWithUnsignedInt:info->xfi_Protection] forKey:XADAmigaProtectionBitsKey];
+	dict[XADAmigaProtectionBitsKey] = @(info->xfi_Protection);
 
 	if(info->xfi_Flags&XADFIF_DIRECTORY)
-	[dict setObject:[NSNumber numberWithBool:YES] forKey:XADIsDirectoryKey];
+	dict[XADIsDirectoryKey] = @YES;
 
 	if(info->xfi_Flags&XADFIF_LINK)
-	[dict setObject:[self XADStringWithCString:(const char *)info->xfi_LinkName] forKey:XADLinkDestinationKey];
+	dict[XADLinkDestinationKey] = [self XADStringWithCString:(const char *)info->xfi_LinkName];
 
 	if(info->xfi_Flags&XADFIF_CRYPTED)
-	[dict setObject:[NSNumber numberWithBool:YES] forKey:XADIsEncryptedKey];
+	dict[XADIsEncryptedKey] = @YES;
 
 //	if(info->xfi_Flags&XADFIF_PARTIALFILE) // TODO: figure out what this is
 //	[dict setObject:[NSNumber numberWithBool:YES] forKey:XADIsPartialKey];
 
 	if(info->xfi_OwnerUID)
-	[dict setObject:[NSNumber numberWithInt:info->xfi_OwnerUID] forKey:XADPosixUserKey];
+	dict[XADPosixUserKey] = @(info->xfi_OwnerUID);
 
 	if(info->xfi_OwnerGID)
-	[dict setObject:[NSNumber numberWithInt:info->xfi_OwnerGID] forKey:XADPosixGroupKey];
+	dict[XADPosixGroupKey] = @(info->xfi_OwnerGID);
 
 	if(info->xfi_UserName)
-	[dict setObject:[self XADStringWithCString:(const char *)info->xfi_UserName] forKey:XADPosixUserNameKey];
+	dict[XADPosixUserNameKey] = [self XADStringWithCString:(const char *)info->xfi_UserName];
 
 	if(info->xfi_GroupName)
-	[dict setObject:[self XADStringWithCString:(const char *)info->xfi_GroupName] forKey:XADPosixGroupNameKey];
+	dict[XADPosixGroupNameKey] = [self XADStringWithCString:(const char *)info->xfi_GroupName];
 
 	if(info->xfi_Comment)
-	[dict setObject:[self XADStringWithCString:(const char *)info->xfi_Comment] forKey:XADCommentKey];
+	dict[XADCommentKey] = [self XADStringWithCString:(const char *)info->xfi_Comment];
 
-	if(archive->xaip_ArchiveInfo.xai_Flags&XADAIF_FILECORRUPT) [self setObject:[NSNumber numberWithBool:YES] forPropertyKey:XADIsCorruptedKey];
+	if(archive->xaip_ArchiveInfo.xai_Flags&XADAIF_FILECORRUPT) [self setObject:@YES forPropertyKey:XADIsCorruptedKey];
 
 	return dict;
 }
@@ -239,13 +246,13 @@ struct xadMasterBaseP *xadOpenLibrary(xadINT32 version);
 	sectors=(info->xdi_HighCyl-info->xdi_LowCyl+1)*info->xdi_CylSectors;
 	else sectors=info->xdi_TotalSectors;
 
-	NSString *filename=[[self name] stringByDeletingPathExtension];
+	NSString *filename=self.name.stringByDeletingPathExtension;
 	if(numdisksadded>0) filename=[NSString stringWithFormat:@"%@.%d.adf",filename,numdisksadded];
 	else filename=[NSString stringWithFormat:@"%@.adf",filename];
 
 	NSMutableDictionary *dict=[NSMutableDictionary dictionaryWithObjectsAndKeys:
 		[self XADPathWithUnseparatedString:filename],XADFileNameKey,
-		[NSNumber numberWithUnsignedLongLong:sectors*info->xdi_SectorSize],XADFileSizeKey,
+		@(sectors*info->xdi_SectorSize),XADFileSizeKey,
 		[NSValue valueWithPointer:info],@"LibXADDiskInfo",
 	nil];
 
@@ -259,17 +266,17 @@ struct xadMasterBaseP *xadOpenLibrary(xadINT32 version);
 	NSMutableData *data;
 	xadERROR err;
 
-	struct xadFileInfo *info=[[dict objectForKey:@"LibXADFileInfo"] pointerValue];
+	struct xadFileInfo *info=[dict[@"LibXADFileInfo"] pointerValue];
 	if(info)
 	{
 		const char *pass=NULL;
-		if(info->xfi_Flags&XADFIF_CRYPTED) pass=[self encodedCStringPassword];
+		if(info->xfi_Flags&XADFIF_CRYPTED) pass=self.encodedCStringPassword;
 
 		if(info->xfi_Flags&XADFIF_NOUNCRUNCHSIZE) data=[NSMutableData data];
 		else data=[NSMutableData dataWithCapacity:(long)info->xfi_Size];
 
 		struct Hook outhook;
-		outhook.h_Entry=OutFunc;
+		outhook.h_Entry=(xadUINT32(*)(struct Hook *,xadPTR,void*))OutFunc;
 		outhook.h_Data=(void *)data;
 
 		err=xadFileUnArc(xmb,archive,
@@ -280,12 +287,12 @@ struct xadMasterBaseP *xadOpenLibrary(xadINT32 version);
 	}
 	else
 	{
-		struct xadDiskInfo *info=[[dict objectForKey:@"LibXADDiskInfo"] pointerValue];
+		struct xadDiskInfo *info=[dict[@"LibXADDiskInfo"] pointerValue];
 
-		data=[NSMutableData dataWithCapacity:[[dict objectForKey:XADFileSizeKey] unsignedIntValue]];
+		data=[NSMutableData dataWithCapacity:[dict[XADFileSizeKey] unsignedIntValue]];
 
 		struct Hook outhook;
-		outhook.h_Entry=OutFunc;
+		outhook.h_Entry=(xadUINT32(*)(struct Hook *,xadPTR,void*))OutFunc;
 		outhook.h_Data=(void *)data;
 
 		err=xadDiskUnArc(xmb,archive,
@@ -300,11 +307,7 @@ struct xadMasterBaseP *xadOpenLibrary(xadINT32 version);
 
 -(NSString *)formatName
 {
-	if(!archive->xaip_ArchiveInfo.xai_Client) return @"libxad";
-
-	NSString *format=[[[NSString alloc] initWithBytes:archive->xaip_ArchiveInfo.xai_Client->xc_ArchiverName
-	length:strlen(archive->xaip_ArchiveInfo.xai_Client->xc_ArchiverName) encoding:NSISOLatin1StringEncoding] autorelease];
-	return format;
+	return [properties objectForKey:@"LibXADFormatName"];
 }
 
 
@@ -320,18 +323,18 @@ static xadUINT32 InFunc(struct Hook *hook,xadPTR object,struct xadHookParam *par
 	{
 		case XADHC_INIT:
 		{
-			if([fh respondsToSelector:@selector(handles)])
+			if([fh isKindOfClass:[CSSegmentedHandle class]])
 			{
-				NSArray *handles=[(id)fh handles];
-				int count=[handles count];
+				NSArray *sizes=[(CSSegmentedHandle *)fh segmentSizes];
+				NSInteger count=[sizes count];
 
 				archive->xai_MultiVolume=calloc(sizeof(xadSize),count+1);
 
 				off_t total=0;
-				for(int i=0;i<count;i++)
+				for(NSInteger i=0;i<count;i++)
 				{
 					archive->xai_MultiVolume[i]=total;
-					total+=[[handles objectAtIndex:i] fileSize];
+					total+=[[sizes objectAtIndex:i] longLongValue];
 				}
 			}
 
@@ -342,17 +345,17 @@ static xadUINT32 InFunc(struct Hook *hook,xadPTR object,struct xadHookParam *par
 
 		case XADHC_SEEK:
 			[fh skipBytes:param->xhp_CommandData];
-			param->xhp_DataPos=[fh offsetInFile];
+			param->xhp_DataPos=fh.offsetInFile;
 			return XADERR_OK;
 
 		case XADHC_READ:
 			[fh readBytes:(int)param->xhp_BufferSize toBuffer:param->xhp_BufferPtr];
-			param->xhp_DataPos=[fh offsetInFile];
+			param->xhp_DataPos=fh.offsetInFile;
 			return XADERR_OK;
 
 		case XADHC_FULLSIZE:
 		{
-			off_t filesize=[fh fileSize];
+			off_t filesize=fh.fileSize;
 			if(filesize==CSHandleMaxLength) return XADERR_NOTSUPPORTED;
 			param->xhp_CommandData=filesize;
 			return XADERR_OK;
@@ -363,7 +366,7 @@ static xadUINT32 InFunc(struct Hook *hook,xadPTR object,struct xadHookParam *par
 			archive->xai_MultiVolume=NULL;
 			return XADERR_OK;
 
- 		default:
+		 default:
 			return XADERR_NOTSUPPORTED;
 	}
 }
@@ -406,7 +409,7 @@ static xadUINT32 OutFunc(struct Hook *hook,xadPTR object,struct xadHookParam *pa
 			[data appendBytes:param->xhp_BufferPtr length:(long)param->xhp_BufferSize];
 			return XADERR_OK;
 
- 		default:
+		 default:
 			return XADERR_NOTSUPPORTED;
 	}
 }
@@ -417,6 +420,7 @@ static xadUINT32 OutFunc(struct Hook *hook,xadPTR object,struct xadHookParam *pa
 
 
 @implementation XADLibXADMemoryHandle
+@synthesize checksumCorrect = success;
 
 -(id)initWithData:(NSData *)data successfullyExtracted:(BOOL)wassuccess
 {

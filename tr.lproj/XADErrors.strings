@@ -1,0 +1,37 @@
+/* 
+  XADErrors.strings
+  XADMaster
+
+  Created by C.W. Betts on 11/26/17.
+  
+*/
+
+/* Common errors */
+"Attempted to read more data than was available" = "Arşiv dosyası tamamlanmamış";
+"Opening file failed" = "Dosya açılamıyor";
+"Missing or wrong password" = "Girmiş olduğunuz şifre yanlış";
+"Wrong checksum" = "Arşiv dosyası bozulmul";
+"Could not create directory" = "Klasör oluşturulamıyor";
+
+/* Uncommon or unused errors */
+"Unknown error" = "Bilinmeyen hata";
+"Failed to write to file" = "Dosya yazımı başarısız";
+"Function called with illegal parameters" = "İşlem, hatalı parametre ile çağrıldı";
+"Not enough memory available" = "Yeterli hafıza yok";
+"Data is corrupted" = "Veri bozuldu";
+"File is not fully supported" = "Dosya tam desteklenmiyor";
+"Required resource missing" = "Gereken kaynak eksik";
+"Error on decrunching" = "Sıkıştırılan dosya eski haline getirirken hata oluştu";
+"Unknown file type" = "Bilinmeyeb dosya türü";
+"File, disk has been skipped" = "Dosya, disk atlandı";
+"User cancelled extraction" = "Kullanıcı çıkartma işlemini durdurdu";
+"File already exists" = "Bu dosya zaten var";
+"Verify failed (disk hook)" = "Doğrulama başarısız (disk hook)";
+"Wrong drive geometry" = "Yanlış sürücü geometrisi";
+"Unknown data format" = "Bilinmeyen veri biçimi";
+"Source contains no files" = "Kaynak herhangi bir dosya içermiyor";
+"Unknown filesystem" = "Bilinmeyen dosya sistemi";
+"Name of file exists as directory" = "Dosyanın ismi dizin olarak geçiyor";
+"Buffer was too short" = "Ara bellek çok kısaydı";
+"Text encoding was defective" = "Metin kodlaması kusurluydu";
+"Could not create symlink" = "symlink oluşturulamıyor";

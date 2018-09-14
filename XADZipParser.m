@@ -25,8 +25,8 @@
 
 +(BOOL)recognizeFileWithHandle:(CSHandle *)handle firstBytes:(NSData *)data name:(NSString *)name
 {
-	const uint8_t *bytes=[data bytes];
-	int length=[data length];
+	const uint8_t *bytes=data.bytes;
+	NSInteger length=data.length;
 
 	if(length<8) return NO;
 
@@ -48,7 +48,7 @@
 	{
 		return [self scanForVolumesWithFilename:name
 		regex:[XADRegex regexWithPattern:[NSString stringWithFormat:@"^%@\\.(zip|z[0-9]{2})$",
-			[[matches objectAtIndex:1] escapedPattern]] options:REG_ICASE]
+			[matches[1] escapedPattern]] options:REG_ICASE]
 		firstFileExtension:@"z01"];
 	}
 
@@ -59,7 +59,7 @@
 	{
 		return [self scanForVolumesWithFilename:name
 		regex:[XADRegex regexWithPattern:[NSString stringWithFormat:@"^%@\\.[0-9]{3}$",
-			[[matches objectAtIndex:1] escapedPattern]] options:REG_ICASE]
+			[matches[1] escapedPattern]] options:REG_ICASE]
 		firstFileExtension:nil];
 	}
 
@@ -69,7 +69,7 @@
 	{
 		return [self scanForVolumesWithFilename:name
 		regex:[XADRegex regexWithPattern:[NSString stringWithFormat:@"^%@(\\.[0-9]+|())\\.zip$",
-			[[matches objectAtIndex:1] escapedPattern]] options:REG_ICASE]
+			[matches[1] escapedPattern]] options:REG_ICASE]
 		firstFileExtension:nil];
 	}
 
@@ -97,10 +97,10 @@
 
 -(void)parseWithSeparateMacForks
 {
-	CSHandle *fh=[self handle];
+	CSHandle *fh=self.handle;
 
 	[fh seekToEndOfFile];
-	off_t end=[fh offsetInFile];
+	off_t end=fh.offsetInFile;
 
 	int numbytes=0x10011;
 	if(numbytes>end) numbytes=(int)end;
@@ -128,13 +128,13 @@
 	off_t centraloffs=end-numbytes+pos;
 
 	// Find zip64 end of central directory locator
-	while(pos>=0)
+	if(pos>=20 && buf[pos-20]=='P' && buf[pos-19]=='K' && buf[pos-18]==6 && buf[pos-17]==7)
 	{
-		if(buf[pos]=='P'&&buf[pos+1]=='K'&&buf[pos+2]==6&&buf[pos+3]==7) break;
-		pos--;
+		// Found a zip64 end of central directory locator.
+		off_t zip64offs=end-numbytes+pos-20;
+		[self parseWithCentralDirectoryAtOffset:centraloffs zip64Offset:zip64offs];
 	}
-
-	if(pos<0)
+	else
 	{
 		// Could not find a zip64 end of central directory locator.
 		if(end>0x100000000)
@@ -150,12 +150,6 @@
 			[self parseWithCentralDirectoryAtOffset:centraloffs zip64Offset:-1];
 		}
 	}
-	else
-	{
-		// Found a zip64 end of central directory locator.
-		off_t zip64offs=end-numbytes+pos;
-		[self parseWithCentralDirectoryAtOffset:centraloffs zip64Offset:zip64offs];
-	}
 }
 
 
@@ -164,7 +158,7 @@
 
 -(void)parseWithCentralDirectoryAtOffset:(off_t)centraloffs zip64Offset:(off_t)zip64offs
 {
-	CSHandle *fh=[self handle];
+	CSHandle *fh=self.handle;
 
 	[fh seekToFileOffset:centraloffs+4];
 
@@ -212,10 +206,8 @@
 	[fh seekToFileOffset:[self offsetForVolume:centraldirstartdisk offset:centraloffset]];
 
 	for(int i=0;i<numentries;i++)
-	{
-		if(![self shouldKeepParsing]) break;
-
-		NSAutoreleasePool *pool=[NSAutoreleasePool new];
+	@autoreleasepool {
+		if(!self.shouldKeepParsing) break;
 
 		// Read central directory record.
 		uint32_t centralid=[fh readID];
@@ -250,14 +242,18 @@
 
 			if(size>length) break;
 			length-=size;
-			off_t nextextra=[fh offsetInFile]+size;
+			off_t nextextra=fh.offsetInFile+size;
 
 			if(extid==1)
 			{
-				if(uncompsize==0xffffffff) uncompsize=[fh readUInt64LE];
-				if(compsize==0xffffffff) compsize=[fh readUInt64LE];
-				if(locheaderoffset==0xffffffff) locheaderoffset=[fh readUInt64LE];
-				if(startdisk==0xffff) startdisk=[fh readUInt32LE];
+				off_t uncompsize64=[fh readUInt64LE];
+				off_t compsize64=[fh readUInt64LE];
+				off_t locheaderoffset64=[fh readUInt64LE];
+				int startdisk64=[fh readUInt32LE];
+				if(uncompsize==0xffffffff) uncompsize=uncompsize64;
+				if(compsize==0xffffffff) compsize=compsize64;
+				if(locheaderoffset==0xffffffff) locheaderoffset=locheaderoffset64;
+				if(startdisk==0xffff) startdisk=startdisk64;
 				break;
 			}
 
@@ -267,8 +263,8 @@
 
 		NSData *commentdata=nil;
 		if(commentlength) commentdata=[fh readDataOfLength:commentlength];
-        
-		off_t next=[fh offsetInFile];
+
+		off_t next=fh.offsetInFile;
 
 		// Some idiotic compressors write files with more than 65535 files without
 		// using Zip64, so numentries overflows. Try to detect if there is enough space
@@ -297,7 +293,7 @@
 			int localnamelength=[fh readUInt16LE];
 			int localextralength=[fh readUInt16LE];
 
-			off_t dataoffset=[fh offsetInFile]+localnamelength+localextralength;
+			off_t dataoffset=fh.offsetInFile+localnamelength+localextralength;
 
 			NSData *namedata=nil;
 			if(localnamelength) namedata=[fh readDataOfLength:localnamelength];
@@ -307,7 +303,7 @@
 				if(localextralength) extradict=[self parseZipExtraWithLength:localextralength nameData:namedata
 				uncompressedSizePointer:&uncompsize compressedSizePointer:&compsize];
 			} @catch(id e) {
-				[self setObject:[NSNumber numberWithBool:YES] forPropertyKey:XADIsCorruptedKey];
+				[self setObject:@YES forPropertyKey:XADIsCorruptedKey];
 				NSLog(@"Error parsing Zip extra fields: %@",e);
 			}
 
@@ -317,23 +313,32 @@
 			extraDictionary:extradict dataOffset:dataoffset nameData:namedata commentData:commentdata
 			isLastEntry:i==numentries-1];
 		}
-		else [self setObject:[NSNumber numberWithBool:YES] forPropertyKey:XADIsCorruptedKey];
+		else [self setObject:@YES forPropertyKey:XADIsCorruptedKey];
 
 		[fh seekToFileOffset:next];
-
-		[pool release];
 	}
 }
+
+-(off_t)offsetForVolume:(int)disk offset:(off_t)offset
+{
+	NSArray *sizes=[self volumeSizes];
+	NSInteger count=[sizes count];
+
+	for(NSInteger i=0;i<count && i<disk;i++) offset+=[[sizes objectAtIndex:i] longLongValue];
+
+	return offset;
+}
+
 
 
 
 -(void)parseWithoutCentralDirectory
 {
-	CSHandle *fh=[self handle];
+	CSHandle *fh=self.handle;
 
 	[fh seekToFileOffset:0];
 
-	while([self shouldKeepParsing])
+	while(self.shouldKeepParsing)
 	{
 		NSAutoreleasePool *pool=[NSAutoreleasePool new];
 
@@ -356,7 +361,7 @@
 				int namelength=[fh readUInt16LE];
 				int extralength=[fh readUInt16LE];
 
-				off_t dataoffset=[fh offsetInFile]+namelength+extralength;
+				off_t dataoffset=fh.offsetInFile+namelength+extralength;
 
 				NSData *namedata=nil;
 				if(namelength) namedata=[fh readDataOfLength:namelength];
@@ -366,20 +371,20 @@
 					if(extralength) extradict=[self parseZipExtraWithLength:extralength nameData:namedata
 					uncompressedSizePointer:&uncompsize compressedSizePointer:&compsize];
 				} @catch(id e) {
-					[self setObject:[NSNumber numberWithBool:YES] forPropertyKey:XADIsCorruptedKey];
+					[self setObject:@YES forPropertyKey:XADIsCorruptedKey];
 					NSLog(@"Error parsing Zip extra fields: %@",e);
 				}
 
 				off_t next;
 				if(flags&0x08) // No size or CRC recorded
 				{
-					NSNumber *zip64num=[extradict objectForKey:@"Zip64"];
+					NSNumber *zip64num=extradict[@"Zip64"];
 
-					[self findEndOfStreamMarkerWithZip64Flag:zip64num&&[zip64num boolValue]
+					[self findEndOfStreamMarkerWithZip64Flag:zip64num&&zip64num.boolValue
 					uncompressedSizePointer:&uncompsize compressedSizePointer:&compsize
 					CRCPointer:&crc];
 
-					next=[fh offsetInFile];
+					next=fh.offsetInFile;
 				}
 				else
 				{
@@ -390,7 +395,7 @@
 				compressionMethod:compressionmethod date:date crc:crc localDate:date
 				compressedSize:compsize uncompressedSize:uncompsize extendedFileAttributes:0xffffffff
 				extraDictionary:extradict dataOffset:dataoffset nameData:namedata commentData:nil
-				isLastEntry:NO];
+isLastEntry:NO];
 
 				[fh seekToFileOffset:next];
 			}
@@ -409,7 +414,7 @@
 
 			default:
 				// When encountering unknown data, mark as corrupt and try to recover
-				[self setObject:[NSNumber numberWithBool:YES] forPropertyKey:XADIsCorruptedKey];
+				[self setObject:@YES forPropertyKey:XADIsCorruptedKey];
 				[self findNextEntry];
 			break;
 		}
@@ -497,7 +502,7 @@ static int MatchZip64DataDescriptor(const uint8_t *bytes,int available,off_t off
 -(void)findEndOfStreamMarkerWithZip64Flag:(BOOL)zip64 uncompressedSizePointer:(off_t *)uncompsizeptr
 compressedSizePointer:(off_t *)compsizeptr CRCPointer:(uint32_t *)crcptr
 {
-	CSHandle *fh=[self handle];
+	CSHandle *fh=self.handle;
 
 	if(zip64)
 	{
@@ -538,19 +543,19 @@ static int MatchZipEntry(const uint8_t *bytes,int available,off_t offset,void *s
 
 -(void)findNextEntry
 {
-	[[self handle] scanUsingMatchingFunction:MatchZipEntry maximumLength:4];
+	[self.handle scanUsingMatchingFunction:MatchZipEntry maximumLength:4];
 }
 
 
 
 
--(NSDictionary *)parseZipExtraWithLength:(int)length nameData:(NSData *)namedata
+-(NSDictionary<XADArchiveKeys,id> *)parseZipExtraWithLength:(int)length nameData:(NSData *)namedata
 uncompressedSizePointer:(off_t *)uncompsizeptr compressedSizePointer:(off_t *)compsizeptr
 {
-	CSHandle *fh=[self handle];
-	NSMutableDictionary *dict=[NSMutableDictionary dictionary];
+	CSHandle *fh=self.handle;
+	NSMutableDictionary<XADArchiveKeys,id> *dict=[NSMutableDictionary dictionary];
 
-	off_t end=[fh offsetInFile]+length;
+	off_t end=fh.offsetInFile+length;
 
 	while(length>9)
 	{
@@ -560,32 +565,32 @@ uncompressedSizePointer:(off_t *)uncompsizeptr compressedSizePointer:(off_t *)co
 
 		if(size>length) break;
 		length-=size;
-		off_t next=[fh offsetInFile]+size;
+		off_t next=fh.offsetInFile+size;
 
 		if(extid==1&&compsizeptr&&uncompsizeptr) // Zip64 extended information extra field
 		{
-			[dict setObject:[NSNumber numberWithBool:YES] forKey:@"Zip64"];
+			dict[@"Zip64"] = @YES;
 			if(*uncompsizeptr==0xffffffff) *uncompsizeptr=[fh readUInt64LE];
 			if(*compsizeptr==0xffffffff) *compsizeptr=[fh readUInt64LE];
 		}
 		else if(extid==0x5455&&size>=5) // Extended Timestamp Extra Field
 		{
 			int flags=[fh readUInt8];
-			if(flags&1) [dict setObject:[NSDate dateWithTimeIntervalSince1970:[fh readUInt32LE]] forKey:XADLastModificationDateKey];
-			if(flags&2) [dict setObject:[NSDate dateWithTimeIntervalSince1970:[fh readUInt32LE]] forKey:XADLastAccessDateKey];
-			if(flags&4) [dict setObject:[NSDate dateWithTimeIntervalSince1970:[fh readUInt32LE]] forKey:XADCreationDateKey];
+			if(flags&1) dict[XADLastModificationDateKey] = [NSDate dateWithTimeIntervalSince1970:[fh readUInt32LE]];
+			if(flags&2) dict[XADLastAccessDateKey] = [NSDate dateWithTimeIntervalSince1970:[fh readUInt32LE]];
+			if(flags&4) dict[XADCreationDateKey] = [NSDate dateWithTimeIntervalSince1970:[fh readUInt32LE]];
 		}
 		else if(extid==0x5855&&size>=8) // Info-ZIP Unix Extra Field (type 1)
 		{
-			[dict setObject:[NSDate dateWithTimeIntervalSince1970:[fh readUInt32LE]] forKey:XADLastAccessDateKey];
-			[dict setObject:[NSDate dateWithTimeIntervalSince1970:[fh readUInt32LE]] forKey:XADLastModificationDateKey];
-			if(size>=10) [dict setObject:[NSNumber numberWithInt:[fh readUInt16LE]] forKey:XADPosixUserKey];
-			if(size>=12) [dict setObject:[NSNumber numberWithInt:[fh readUInt16LE]] forKey:XADPosixGroupKey];
+			dict[XADLastAccessDateKey] = [NSDate dateWithTimeIntervalSince1970:[fh readUInt32LE]];
+			dict[XADLastModificationDateKey] = [NSDate dateWithTimeIntervalSince1970:[fh readUInt32LE]];
+			if(size>=10) dict[XADPosixUserKey] = @([fh readUInt16LE]);
+			if(size>=12) dict[XADPosixGroupKey] = @([fh readUInt16LE]);
 		}
 		else if(extid==0x7855&&size>=8) // Info-ZIP Unix Extra Field (type 2)
 		{
-			[dict setObject:[NSNumber numberWithInt:[fh readUInt16LE]] forKey:XADPosixUserKey];
-			[dict setObject:[NSNumber numberWithInt:[fh readUInt16LE]] forKey:XADPosixGroupKey];
+			dict[XADPosixUserKey] = @([fh readUInt16LE]);
+			dict[XADPosixGroupKey] = @([fh readUInt16LE]);
 		}
 		else if(extid==0x7875&&size>=8) // Info-ZIP New Unix Extra Field (type 3)
 		{
@@ -593,15 +598,15 @@ uncompressedSizePointer:(off_t *)uncompsizeptr compressedSizePointer:(off_t *)co
 			if(version==1)
 			{
 				int uidsize=[fh readUInt8];
-				if(uidsize==2) [dict setObject:[NSNumber numberWithInt:[fh readUInt16LE]] forKey:XADPosixUserKey];
-				else if(uidsize==4) [dict setObject:[NSNumber numberWithUnsignedInt:[fh readUInt32LE]] forKey:XADPosixUserKey];
-				else if(uidsize==8) [dict setObject:[NSNumber numberWithUnsignedLongLong:[fh readUInt64LE]] forKey:XADPosixUserKey];
+				if(uidsize==2) dict[XADPosixUserKey] = @([fh readUInt16LE]);
+				else if(uidsize==4) dict[XADPosixUserKey] = @([fh readUInt32LE]);
+				else if(uidsize==8) dict[XADPosixUserKey] = @([fh readUInt64LE]);
 				else [fh skipBytes:uidsize];
 
 				int gidsize=[fh readUInt8];
-				if(gidsize==2) [dict setObject:[NSNumber numberWithInt:[fh readUInt16LE]] forKey:XADPosixGroupKey];
-				else if(gidsize==4) [dict setObject:[NSNumber numberWithUnsignedInt:[fh readUInt32LE]] forKey:XADPosixGroupKey];
-				else if(gidsize==8) [dict setObject:[NSNumber numberWithUnsignedLongLong:[fh readUInt64LE]] forKey:XADPosixGroupKey];
+				if(gidsize==2) dict[XADPosixGroupKey] = @([fh readUInt16LE]);
+				else if(gidsize==4) dict[XADPosixGroupKey] = @([fh readUInt32LE]);
+				else if(gidsize==8) dict[XADPosixGroupKey] = @([fh readUInt64LE]);
 				else [fh skipBytes:gidsize];
 			}
 		}
@@ -609,8 +614,8 @@ uncompressedSizePointer:(off_t *)uncompsizeptr compressedSizePointer:(off_t *)co
 		{
 			int len=[fh readUInt32LE];
 			int flags=[fh readUInt16LE];
-			[dict setObject:[NSNumber numberWithUnsignedInt:[fh readID]] forKey:XADFileTypeKey];
-			[dict setObject:[NSNumber numberWithUnsignedInt:[fh readID]] forKey:XADFileCreatorKey];
+			dict[XADFileTypeKey] = @([fh readID]);
+			dict[XADFileCreatorKey] = @([fh readID]);
 
 			CSHandle *mh=nil;
 			if(flags&0x04) mh=fh; // uncompressed
@@ -622,7 +627,7 @@ uncompressedSizePointer:(off_t *)uncompsizeptr compressedSizePointer:(off_t *)co
 			}
 			if(mh&&len>=26)
 			{
-				[dict setObject:[NSNumber numberWithUnsignedInt:[mh readUInt16LE]] forKey:XADFinderFlagsKey];
+				dict[XADFinderFlagsKey] = @([mh readUInt16LE]);
 				[mh skipBytes:24];
 
 				off_t create,modify,backup;
@@ -647,9 +652,9 @@ uncompressedSizePointer:(off_t *)uncompsizeptr compressedSizePointer:(off_t *)co
 					backup+=[mh readInt32LE];
 				}
 
-				if(create>=86400) [dict setObject:[NSDate XADDateWithTimeIntervalSince1904:create] forKey:XADCreationDateKey];
-				if(modify>=86400) [dict setObject:[NSDate XADDateWithTimeIntervalSince1904:modify] forKey:XADLastModificationDateKey];
-				if(backup>=86400) [dict setObject:[NSDate XADDateWithTimeIntervalSince1904:backup] forKey:@"MacOSBackupDate"];
+				if(create>=86400) dict[XADCreationDateKey] = [NSDate XADDateWithTimeIntervalSince1904:create];
+				if(modify>=86400) dict[XADLastModificationDateKey] = [NSDate XADDateWithTimeIntervalSince1904:modify];
+				if(backup>=86400) dict[@"MacOSBackupDate"] = [NSDate XADDateWithTimeIntervalSince1904:backup];
 			}
 		}
 		else if(extid==0x2605&&size>=13) // ZipIt Macintosh Extra Field (long)
@@ -657,25 +662,25 @@ uncompressedSizePointer:(off_t *)uncompsizeptr compressedSizePointer:(off_t *)co
 			// ZipIt structure - the presence of it indicates the file is MacBinary encoded,
 			// IF it is a file and not directory. Ignore information in this and rely on the
 			// data stored in the MacBinary file instead, and mark the file.
-			if(!([dict objectForKey:XADIsDirectoryKey]&&[[dict objectForKey:XADIsDirectoryKey] boolValue]))
+			if(!(dict[XADIsDirectoryKey]&&[dict[XADIsDirectoryKey] boolValue]))
 			{
-				if([fh readID]=='ZPIT') [dict setObject:[NSNumber numberWithBool:YES] forKey:XADIsMacBinaryKey];
+				if([fh readID]=='ZPIT') dict[XADIsMacBinaryKey] = @YES;
 			}
 		}
 		else if(extid==0x2705&&size>=12) // ZipIt Macintosh Extra Field (short, for files)
 		{
 			if([fh readID]=='ZPIT')
 			{
-				[dict setObject:[NSNumber numberWithUnsignedInt:[fh readID]] forKey:XADFileTypeKey];
-				[dict setObject:[NSNumber numberWithUnsignedInt:[fh readID]] forKey:XADFileCreatorKey];
-				if(size>=14) [dict setObject:[NSNumber numberWithUnsignedInt:[fh readUInt16BE]] forKey:XADFinderFlagsKey];
+				dict[XADFileTypeKey] = @([fh readID]);
+				dict[XADFileCreatorKey] = @([fh readID]);
+				if(size>=14) dict[XADFinderFlagsKey] = @([fh readUInt16BE]);
 			}
 		}
 		else if(extid==0x2805&&size>=6) // ZipIt Macintosh Extra Field (short, for directories)
 		{
 			if([fh readID]=='ZPIT')
 			{
-				[dict setObject:[NSNumber numberWithUnsignedInt:[fh readUInt16BE]] forKey:XADFinderFlagsKey];
+				dict[XADFinderFlagsKey] = @([fh readUInt16BE]);
 			}
 		}
 		else if(extid==0x7075&&size>=6) // Unicode Path Extra Field
@@ -688,7 +693,7 @@ uncompressedSizePointer:(off_t *)uncompsizeptr compressedSizePointer:(off_t *)co
 
 				// Some archivers append garbage zero bytes to the end of the name.
 				// Remove them if necessary.
-				const uint8_t *bytes=[unicodedata bytes];
+				const uint8_t *bytes=unicodedata.bytes;
 				int length=size-5;
 				if(length && bytes[length-1]==0)
 				{
@@ -696,13 +701,13 @@ uncompressedSizePointer:(off_t *)uncompsizeptr compressedSizePointer:(off_t *)co
 					unicodedata=[unicodedata subdataWithRange:NSMakeRange(0,length)];
 				}
 
-				if((XADCalculateCRC(0xffffffff,[namedata bytes],[namedata length],
+				if((XADCalculateCRC(0xffffffff,namedata.bytes,namedata.length,
 				XADCRCTable_edb88320)^0xffffffff)==crc)
 				{
-					XADPath *oldname=[dict objectForKey:XADFileNameKey];
+					XADPath *oldname=dict[XADFileNameKey];
 					XADPath *newname=[self XADPathWithData:unicodedata encodingName:XADUTF8StringEncodingName separators:XADEitherPathSeparator];
-					if(oldname) [dict setObject:oldname forKey:@"ZipRegularFilename"];
-					[dict setObject:newname forKey:XADFileNameKey];
+					if(oldname) dict[@"ZipRegularFilename"] = oldname;
+					dict[XADFileNameKey] = newname;
 					// Apparently at least some files use Windows path separators instead of the
 					// usual Unix. Not sure what to expect here, so using both.
 				}
@@ -711,10 +716,10 @@ uncompressedSizePointer:(off_t *)uncompsizeptr compressedSizePointer:(off_t *)co
 		else if(extid==0x9901&&size>=7)
 		{
 			int version;
-			[dict setObject:[NSNumber numberWithInt:version=[fh readUInt16LE]] forKey:@"WinZipAESVersion"];
-			[dict setObject:[NSNumber numberWithInt:[fh readUInt16LE]] forKey:@"WinZipAESVendor"];
-			[dict setObject:[NSNumber numberWithInt:[fh readUInt8]] forKey:@"WinZipAESKeySize"];
-			[dict setObject:[NSNumber numberWithInt:[fh readUInt16LE]] forKey:@"WinZipAESCompressionMethod"];
+			dict[@"WinZipAESVersion"] = @(version=[fh readUInt16LE]);
+			dict[@"WinZipAESVendor"] = @([fh readUInt16LE]);
+			dict[@"WinZipAESKeySize"] = @([fh readUInt8]);
+			dict[@"WinZipAESCompressionMethod"] = @([fh readUInt16LE]);
 		}
 		else
 		{
@@ -749,21 +754,21 @@ commentData:(NSData *)commentdata
 isLastEntry:(BOOL)islastentry
 {
 	NSMutableDictionary *dict=[NSMutableDictionary dictionaryWithObjectsAndKeys:
-		[NSNumber numberWithInt:extractversion],@"ZipExtractVersion",
-		[NSNumber numberWithInt:flags],@"ZipFlags",
-		[NSNumber numberWithInt:compressionmethod],@"ZipCompressionMethod",
+		@(extractversion),@"ZipExtractVersion",
+		@(flags),@"ZipFlags",
+		@(compressionmethod),@"ZipCompressionMethod",
 		[NSDate XADDateWithMSDOSDateTime:date],XADLastModificationDateKey,
-		[NSNumber numberWithUnsignedInt:crc],@"ZipCRC32",
-		[NSNumber numberWithUnsignedInt:localdate],@"ZipLocalDate",
-		[NSNumber numberWithInt:extfileattrib],@"ZipFileAttributes",
-		[NSNumber numberWithUnsignedLongLong:compsize],XADCompressedSizeKey,
-		[NSNumber numberWithUnsignedLongLong:uncompsize],XADFileSizeKey,
-		[NSNumber numberWithLongLong:dataoffset],XADDataOffsetKey,
-		[NSNumber numberWithUnsignedLongLong:compsize],XADDataLengthKey,
+		@(crc),@"ZipCRC32",
+		@(localdate),@"ZipLocalDate",
+		@(extfileattrib),@"ZipFileAttributes",
+		@(compsize),XADCompressedSizeKey,
+		@(uncompsize),XADFileSizeKey,
+		@(dataoffset),XADDataOffsetKey,
+		@(compsize),XADDataLengthKey,
 	nil];
-	if(flags&0x01) [dict setObject:[NSNumber numberWithBool:YES] forKey:XADIsEncryptedKey];
+	if(flags&0x01) dict[XADIsEncryptedKey] = @YES;
 
-	if(system!=-1) [dict setObject:[NSNumber numberWithInt:system] forKey:@"ZipOS"];
+	if(system!=-1) dict[@"ZipOS"] = @(system);
 
 	NSString *systemname=nil;
 	switch(system)
@@ -789,7 +794,7 @@ isLastEntry:(BOOL)islastentry
 		case 18: systemname=@"OS/400"; break;
 		case 19: systemname=@"OS X (Darwin)"; break;
 	}
-	if(systemname) [dict setObject:[self XADStringWithString:systemname] forKey:@"ZipOSName"];
+	if(systemname) dict[@"ZipOSName"] = [self XADStringWithString:systemname];
 
 	NSString *compressionname=nil;
 	switch(compressionmethod)
@@ -809,17 +814,17 @@ isLastEntry:(BOOL)islastentry
 		case 97: compressionname=@"WavPack"; break;
 		case 98: compressionname=@"PPMd"; break;
 	}
-	if(compressionname) [dict setObject:[self XADStringWithString:compressionname] forKey:XADCompressionNameKey];
+	if(compressionname) dict[XADCompressionNameKey] = [self XADStringWithString:compressionname];
 
 	if(compressionmethod==2||compressionmethod==3||compressionmethod==4||compressionmethod==5)
 	[self reportInterestingFileWithReason:@"Reduce %d compression",compressionmethod-1];
 
 	if(namedata)
 	{
-		const uint8_t *namebytes=[namedata bytes];
-		int namelength=[namedata length];
+		const uint8_t *namebytes=namedata.bytes;
+		NSInteger namelength=namedata.length;
 
-		char *separators;
+		XADPathSeparator separators;
 		if(system==0)
 		{
 			// Kludge: IZArc claims to be MS-DOS, and uses DOS path separators.
@@ -833,25 +838,25 @@ isLastEntry:(BOOL)islastentry
 		}
 
 		if(flags&0x800)
-		[dict setObject:[self XADPathWithData:namedata encodingName:XADUTF8StringEncodingName separators:separators] forKey:XADFileNameKey];
+		dict[XADFileNameKey] = [self XADPathWithData:namedata encodingName:XADUTF8StringEncodingName separators:separators];
 		else
-		[dict setObject:[self XADPathWithData:namedata separators:separators] forKey:XADFileNameKey];
+		dict[XADFileNameKey] = [self XADPathWithData:namedata separators:separators];
 
 		if(namebytes[namelength-1]=='/'&&uncompsize==0)
-		[dict setObject:[NSNumber numberWithBool:YES] forKey:XADIsDirectoryKey];
+		dict[XADIsDirectoryKey] = @YES;
 
 		// If the previous entry was suspected of being a directory, check if the new
 		// entry is a file inside it and set the directory flag for the previous one.
 		if(prevdict)
 		{
-			const char *prevbytes=[prevname bytes];
-			int prevlength=[prevname length];
+			const char *prevbytes=prevname.bytes;
+			NSInteger prevlength=prevname.length;
 			if(prevlength<namelength)
 			{
 				int i=0;
 				while(namebytes[i]&&prevbytes[i]==namebytes[i]) i++;
 				if(!prevbytes[i]&&namebytes[i]=='/')
-				[prevdict setObject:[NSNumber numberWithBool:YES] forKey:XADIsDirectoryKey];
+				prevdict[XADIsDirectoryKey] = @YES;
 			}
 		}
 
@@ -859,39 +864,39 @@ isLastEntry:(BOOL)islastentry
 		if(namelength>4)
 		{
 			if(memcmp(namebytes+namelength-4,".bin",4)==0)
-			[dict setObject:[NSNumber numberWithBool:YES] forKey:XADMightBeMacBinaryKey];
+			dict[XADMightBeMacBinaryKey] = @YES;
 		}
 	}
 	else
 	{
-		[dict setObject:[self XADPathWithUnseparatedString:[[self name] stringByDeletingPathExtension]] forKey:XADFileNameKey];
+		dict[XADFileNameKey] = [self XADPathWithUnseparatedString:self.name.stringByDeletingPathExtension];
 		// TODO: set no filename flag
 	}
 
 	if(commentdata)
 	{
 		if(flags&0x800)
-		[dict setObject:[self XADStringWithData:commentdata encodingName:XADUTF8StringEncodingName] forKey:XADCommentKey];
+		dict[XADCommentKey] = [self XADStringWithData:commentdata encodingName:XADUTF8StringEncodingName];
 		else
-		[dict setObject:[self XADStringWithData:commentdata] forKey:XADCommentKey];
+		dict[XADCommentKey] = [self XADStringWithData:commentdata];
 	}
 
 	if(extfileattrib!=0xffffffff)
 	{
 		if(system==0) // MS-DOS
 		{
-			if(extfileattrib&0x10 && compsize==0 && uncompsize==0) [dict setObject:[NSNumber numberWithBool:YES] forKey:XADIsDirectoryKey];
-			[dict setObject:[NSNumber numberWithUnsignedInt:extfileattrib] forKey:XADDOSFileAttributesKey];
+			if(extfileattrib&0x10 && compsize==0 && uncompsize==0) dict[XADIsDirectoryKey] = @YES;
+			dict[XADDOSFileAttributesKey] = @(extfileattrib);
 		}
 		else if(system==1) // Amiga
 		{
-			[dict setObject:[NSNumber numberWithUnsignedInt:extfileattrib] forKey:XADAmigaProtectionBitsKey];
+			dict[XADAmigaProtectionBitsKey] = @(extfileattrib);
 		}
 		else if(system==3) // Unix
 		{
 			int perm=extfileattrib>>16;
 			// Ignore permissions set to 0, as these are most likely writte by buggy archivers.
-			if(perm!=0) [dict setObject:[NSNumber numberWithInt:perm] forKey:XADPosixPermissionsKey];
+			if(perm!=0) dict[XADPosixPermissionsKey] = @(perm);
 		}
 	}
 
@@ -902,10 +907,10 @@ isLastEntry:(BOOL)islastentry
 	// all files executable. Therefore, for files lacking permissions entries,
 	// make up permissions based on the default mask.
 	// This is only done on OS X.
-	if(![dict objectForKey:XADPosixPermissionsKey])
+	if(!dict[XADPosixPermissionsKey])
 	{
 		mode_t mask=umask(0); umask(mask);
-		[dict setObject:[NSNumber numberWithUnsignedShort:0777&~mask] forKey:XADPosixPermissionsKey];
+		dict[XADPosixPermissionsKey] = [NSNumber numberWithUnsignedShort:0777&~mask];
 	}
 	#endif
 
@@ -916,7 +921,7 @@ isLastEntry:(BOOL)islastentry
 		[self addRemeberedEntryAndForget];
 	}
 
-	if(uncompsize==0&&!islastentry&&![dict objectForKey:XADIsDirectoryKey]&&namedata)
+	if(uncompsize==0&&!islastentry&&!dict[XADIsDirectoryKey]&&namedata)
 	{
 		// this entry could be a directory, save it for testing against the next entry
 		[self rememberEntry:dict withName:namedata];
@@ -952,29 +957,29 @@ isLastEntry:(BOOL)islastentry
 -(CSHandle *)rawHandleForEntryWithDictionary:(NSDictionary *)dict wantChecksum:(BOOL)checksum
 {
 	CSHandle *fh=[self handleAtDataOffsetForDictionary:dict];
-
-	int compressionmethod=[[dict objectForKey:@"ZipCompressionMethod"] intValue];
-	int flags=[[dict objectForKey:@"ZipFlags"] intValue];
-	off_t size=[[dict objectForKey:XADFileSizeKey] longLongValue];
+	
+	int compressionmethod=[dict[@"ZipCompressionMethod"] intValue];
+	int flags=[dict[@"ZipFlags"] intValue];
+	off_t size=[dict[XADFileSizeKey] longLongValue];
 	BOOL wrapchecksum=NO;
 
-	NSNumber *enc=[dict objectForKey:XADIsEncryptedKey];
-	if(enc && [enc boolValue])
+	NSNumber *enc=dict[XADIsEncryptedKey];
+	if(enc && enc.boolValue)
 	{
-		off_t compsize=[[dict objectForKey:XADCompressedSizeKey] longLongValue];
+		off_t compsize=[dict[XADCompressedSizeKey] longLongValue];
 
 		if(compressionmethod==99)
 		{
-			compressionmethod=[[dict objectForKey:@"WinZipAESCompressionMethod"] intValue];
+			compressionmethod=[dict[@"WinZipAESCompressionMethod"] intValue];
 
-			int version=[[dict objectForKey:@"WinZipAESVersion"] intValue];
-			int vendor=[[dict objectForKey:@"WinZipAESVendor"] intValue];
-			int keysize=[[dict objectForKey:@"WinZipAESKeySize"] intValue];
+			int version=[dict[@"WinZipAESVersion"] intValue];
+			int vendor=[dict[@"WinZipAESVendor"] intValue];
+			int keysize=[dict[@"WinZipAESKeySize"] intValue];
 			if(version!=1&&version!=2) [XADException raiseNotSupportedException];
 			if(vendor!=0x4541) [XADException raiseNotSupportedException];
 			if(keysize<1||keysize>3) [XADException raiseNotSupportedException];
 
-			int keybytes;
+			int keybytes = 0;
 			switch(keysize)
 			{
 				case 1: keybytes=16; break;
@@ -985,18 +990,18 @@ isLastEntry:(BOOL)islastentry
 			if(version==2) wrapchecksum=YES;
 
 			fh=[[[XADWinZipAESHandle alloc] initWithHandle:fh length:compsize
-			password:[self encodedPassword] keyLength:keybytes] autorelease];
+			password:self.encodedPassword keyLength:keybytes] autorelease];
 		}
 		else
 		{
 			if(flags&0x40) [XADException raiseNotSupportedException];
 
 			uint8_t test;
-			if(flags&0x08) test=[[dict objectForKey:@"ZipLocalDate"] intValue]>>8;
-			else test=[[dict objectForKey:@"ZipCRC32"] unsignedIntValue]>>24;
+			if(flags&0x08) test=[dict[@"ZipLocalDate"] intValue]>>8;
+			else test=[dict[@"ZipCRC32"] unsignedIntValue]>>24;
 
 			fh=[[[XADZipCryptHandle alloc] initWithHandle:fh length:compsize
-			password:[self encodedPassword] testByte:test] autorelease];
+			password:self.encodedPassword testByte:test] autorelease];
 		}
 	}
 
@@ -1011,9 +1016,9 @@ isLastEntry:(BOOL)islastentry
 		}
 		else
 		{
-			NSNumber *crc=[dict objectForKey:@"ZipCRC32"];
+			NSNumber *crc=dict[@"ZipCRC32"];
 			return [XADCRCHandle IEEECRC32HandleWithHandle:handle
-			length:[handle fileSize] correctCRC:[crc unsignedIntValue] conditioned:YES];
+			length:handle.fileSize correctCRC:crc.unsignedIntValue conditioned:YES];
 		}
 	}
 

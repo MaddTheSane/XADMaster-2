@@ -16,10 +16,8 @@ static void WordAlign(uint8_t *start,uint8_t **curr);
 
 -(id)initWithHandle:(CSHandle *)handle files:(NSMutableArray *)filesarray
 {
-	if((self=[super initWithName:[handle name]]))
+	if(self=[super initWithParentHandle:handle])
 	{
-		parent=[handle retain];
-
 		files=[filesarray retain];
 
 		blocks=NULL;
@@ -31,7 +29,6 @@ static void WordAlign(uint8_t *start,uint8_t **curr);
 -(void)dealloc
 {
 	free(blocks);
-	[parent release];
 	[super dealloc];
 }
 
@@ -120,9 +117,9 @@ firstOffset:(uint32_t)firstoffset delta:(int32_t)delta
 
 -(BOOL)readNextFileHeader
 {
-	if(nextfile>=[files count]) return NO;
+	if(nextfile>=files.count) return NO;
 
-	uint32_t headeroffset=[[files objectAtIndex:nextfile] unsignedIntValue];
+	uint32_t headeroffset=[files[nextfile] unsignedIntValue];
 	[parent seekToFileOffset:headeroffset];
 
 	uint32_t firstoffset=[parent readUInt32BE];
@@ -145,7 +142,7 @@ firstOffset:(uint32_t)firstoffset delta:(int32_t)delta
 	else
 	{
 		// Try the easy way. Calculate the number of entries that fit in the
-		// header, and try parsing. If the checksum does not match or an 
+		// header, and try parsing. If the checksum does not match or an
 		// exception is thrown, try estimating instead.
 		BOOL success;
 		@try {
@@ -266,9 +263,9 @@ uint8_t *destinationstart,uint8_t *destinationend,int numvalues)
 
 		WordAlign(sourcestart,&source);
 
-		buf=CSInputBufferAllocWithBuffer(source,sourceend-source,0);
+		buf=CSInputBufferAllocWithBuffer(source,(int)(sourceend-source),0);
 
-		int numbits=(sourceend-source)*8;
+		int numbits=(int)((sourceend-source)*8);
 		if(endbits) numbits-=16-endbits;
 
 		while(CSInputBufferBitOffset(buf)<numbits)
@@ -289,7 +286,7 @@ uint8_t *destinationstart,uint8_t *destinationend,int numvalues)
 	[code release];
 	CSInputBufferFree(buf);
 
-	return destination-destinationstart;
+	return (int)(destination-destinationstart);
 }
 
 static int UnpackLZSS(uint8_t *sourcestart,uint8_t *sourceend,
@@ -298,7 +295,7 @@ uint8_t *destinationstart,uint8_t *destinationend)
 	uint8_t *source=sourcestart+2;
 	uint8_t *destination=destinationstart;
 
-	int bits,numbits=0;
+	int bits = 0,numbits=0;
 	while(source<sourceend)
 	{
 		if(!numbits)
@@ -344,7 +341,7 @@ uint8_t *destinationstart,uint8_t *destinationend)
 		numbits--;
 	}
 
-	return destination-destinationstart;
+	return (int)(destination-destinationstart);
 }
 
 static int UnpackNewLZSS(uint8_t *sourcestart,uint8_t *sourceend,
@@ -415,9 +412,9 @@ uint8_t *destinationbase,uint8_t *destinationstart,uint8_t *destinationend)
 		offsetcode=[[XADPrefixCode alloc] initWithLengths:lengths numberOfSymbols:0x38
 		maximumLength:20 shortestCodeIsZeros:YES];
 
-		buf=CSInputBufferAllocWithBuffer(source,sourceend-source,0);
+		buf=CSInputBufferAllocWithBuffer(source,(int)(sourceend-source),0);
 
-		int numbits=(sourceend-source)*8;
+		int numbits=(int)(sourceend-source)*8;
 		if(endbits) numbits-=16-endbits;
 
 		while(CSInputBufferBitOffset(buf)<numbits)
@@ -462,7 +459,7 @@ uint8_t *destinationbase,uint8_t *destinationstart,uint8_t *destinationend)
 	[maincode release];
 	[offsetcode release];
 
-	return destination-destinationstart;
+	return (int)(destination-destinationstart);
 }
 
 static XADPrefixCode *AllocAndReadCode(uint8_t *sourcestart,uint8_t *sourceend,int numentries,uint8_t **newsource)

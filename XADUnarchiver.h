@@ -2,123 +2,139 @@
 
 #import "XADArchiveParser.h"
 
-#define XADIgnoredForkStyle 0
-#define XADMacOSXForkStyle 1
-#define XADHiddenAppleDoubleForkStyle 2
-#define XADVisibleAppleDoubleForkStyle 3
-#define XADHFVExplorerAppleDoubleForkStyle 4
-
-#ifdef __APPLE__
-#define XADDefaultForkStyle XADMacOSXForkStyle
+typedef NS_ENUM(int, XADForkStyle) {
+	XADForkStyleIgnored = 0,
+	XADForkStyleMacOSX = 1,
+	XADForkStyleHiddenAppleDouble = 2,
+	XADForkStyleVisibleAppleDouble = 3,
+	XADForkStyleHFVExplorerAppleDouble = 4,
+	
+#if defined(__APPLE__) && TARGET_OS_OSX
+	XADForkStyleDefault = XADForkStyleMacOSX,
 #else
-#define XADDefaultForkStyle XADVisibleAppleDoubleForkStyle
+	XADForkStyleDefault = XADForkStyleVisibleAppleDouble,
 #endif
+};
 
-@interface XADUnarchiver:NSObject
+NS_ASSUME_NONNULL_BEGIN
+
+@protocol XADUnarchiverDelegate;
+
+@interface XADUnarchiver:NSObject <XADArchiveParserDelegate>
 {
 	XADArchiveParser *parser;
-	NSString *destination;
-	int forkstyle;
 	BOOL preservepermissions;
-	double updateinterval;
 
-	id delegate;
 	BOOL shouldstop;
 
 	NSMutableArray *deferreddirectories,*deferredlinks;
 }
 
-+(XADUnarchiver *)unarchiverForArchiveParser:(XADArchiveParser *)archiveparser;
-+(XADUnarchiver *)unarchiverForPath:(NSString *)path;
-+(XADUnarchiver *)unarchiverForPath:(NSString *)path error:(XADError *)errorptr;
++(nullable instancetype)unarchiverForArchiveParser:(XADArchiveParser *)archiveparser;
++(nullable instancetype)unarchiverForPath:(NSString *)path NS_SWIFT_UNAVAILABLE("Call may throw exceptions, use `init(forPath:) throws` instead");
++(nullable instancetype)unarchiverForPath:(NSString *)path error:(nullable XADError *)errorptr;
++(nullable instancetype)unarchiverForPath:(NSString *)path nserror:(NSError *_Nullable __autoreleasing *_Nullable)errorptr;
 
--(id)initWithArchiveParser:(XADArchiveParser *)archiveparser;
--(void)dealloc;
+-(instancetype)init UNAVAILABLE_ATTRIBUTE;
+-(instancetype)initWithArchiveParser:(XADArchiveParser *)archiveparser NS_DESIGNATED_INITIALIZER;
 
--(XADArchiveParser *)archiveParser;
+@property (NS_NONATOMIC_IOSONLY, readonly, strong) XADArchiveParser *archiveParser;
 
--(id)delegate;
--(void)setDelegate:(id)newdelegate;
+@property (NS_NONATOMIC_IOSONLY, weak, nullable) id<XADUnarchiverDelegate> delegate;
 
--(NSString *)destination;
--(void)setDestination:(NSString *)destpath;
+@property (NS_NONATOMIC_IOSONLY, copy, nullable) NSString *destination;
 
--(int)macResourceForkStyle;
--(void)setMacResourceForkStyle:(int)style;
+@property (NS_NONATOMIC_IOSONLY) XADForkStyle macResourceForkStyle;
 
--(BOOL)preservesPermissions;
--(void)setPreserevesPermissions:(BOOL)preserveflag;
+@property (NS_NONATOMIC_IOSONLY, setter=setPreserevesPermissions:) BOOL preservesPermissions;
 
--(double)updateInterval;
--(void)setUpdateInterval:(double)interval;
+@property (NS_NONATOMIC_IOSONLY) double updateInterval;
 
--(XADError)parseAndUnarchive;
+-(XADError)parseAndUnarchive NS_REFINED_FOR_SWIFT;
 
--(XADError)extractEntryWithDictionary:(NSDictionary *)dict;
--(XADError)extractEntryWithDictionary:(NSDictionary *)dict forceDirectories:(BOOL)force;
--(XADError)extractEntryWithDictionary:(NSDictionary *)dict as:(NSString *)path;
--(XADError)extractEntryWithDictionary:(NSDictionary *)dict as:(NSString *)path forceDirectories:(BOOL)force;
+-(XADError)extractEntryWithDictionary:(NSDictionary<XADArchiveKeys,id> *)dict;
+-(XADError)extractEntryWithDictionary:(NSDictionary<XADArchiveKeys,id> *)dict forceDirectories:(BOOL)force;
+-(XADError)extractEntryWithDictionary:(NSDictionary<XADArchiveKeys,id> *)dict as:(nullable NSString *)path;
+-(XADError)extractEntryWithDictionary:(NSDictionary<XADArchiveKeys,id> *)dict as:(nullable NSString *)path forceDirectories:(BOOL)force;
 
 -(XADError)finishExtractions;
 -(XADError)_fixDeferredLinks;
 -(XADError)_fixDeferredDirectories;
 
--(XADUnarchiver *)unarchiverForEntryWithDictionary:(NSDictionary *)dict
-wantChecksum:(BOOL)checksum error:(XADError *)errorptr;
--(XADUnarchiver *)unarchiverForEntryWithDictionary:(NSDictionary *)dict
-resourceForkDictionary:(NSDictionary *)forkdict wantChecksum:(BOOL)checksum error:(XADError *)errorptr;
+-(nullable XADUnarchiver *)unarchiverForEntryWithDictionary:(NSDictionary<XADArchiveKeys,id> *)dict
+wantChecksum:(BOOL)checksum error:(nullable XADError *)errorptr NS_REFINED_FOR_SWIFT;
+-(nullable XADUnarchiver *)unarchiverForEntryWithDictionary:(NSDictionary<XADArchiveKeys,id> *)dict
+resourceForkDictionary:(nullable NSDictionary<XADArchiveKeys,id> *)forkdict wantChecksum:(BOOL)checksum error:(nullable XADError *)errorptr NS_REFINED_FOR_SWIFT;
 
--(XADError)_extractFileEntryWithDictionary:(NSDictionary *)dict as:(NSString *)destpath;
--(XADError)_extractDirectoryEntryWithDictionary:(NSDictionary *)dict as:(NSString *)destpath;
--(XADError)_extractLinkEntryWithDictionary:(NSDictionary *)dict as:(NSString *)destpath;
--(XADError)_extractArchiveEntryWithDictionary:(NSDictionary *)dict to:(NSString *)destpath name:(NSString *)filename;
--(XADError)_extractResourceForkEntryWithDictionary:(NSDictionary *)dict asAppleDoubleFile:(NSString *)destpath;
+-(nullable XADUnarchiver *)unarchiverForEntryWithDictionary:(NSDictionary<XADArchiveKeys,id> *)dict
+											   wantChecksum:(BOOL)checksum nserror:(NSError *_Nullable __autoreleasing *_Nullable)errorptr;
+-(nullable XADUnarchiver *)unarchiverForEntryWithDictionary:(NSDictionary<XADArchiveKeys,id> *)dict
+									 resourceForkDictionary:(nullable NSDictionary<XADArchiveKeys,id> *)forkdict wantChecksum:(BOOL)checksum nserror:(NSError *_Nullable __autoreleasing *_Nullable)errorptr;
 
--(XADError)_updateFileAttributesAtPath:(NSString *)path forEntryWithDictionary:(NSDictionary *)dict
+-(XADError)_extractFileEntryWithDictionary:(NSDictionary<XADArchiveKeys,id> *)dict as:(NSString *)destpath;
+-(XADError)_extractDirectoryEntryWithDictionary:(NSDictionary<XADArchiveKeys,id> *)dict as:(NSString *)destpath;
+-(XADError)_extractLinkEntryWithDictionary:(NSDictionary<XADArchiveKeys,id> *)dict as:(NSString *)destpath;
+-(XADError)_extractArchiveEntryWithDictionary:(NSDictionary<XADArchiveKeys,id> *)dict to:(NSString *)destpath name:(NSString *)filename;
+-(XADError)_extractResourceForkEntryWithDictionary:(NSDictionary<XADArchiveKeys,id> *)dict asAppleDoubleFile:(NSString *)destpath;
+
+-(XADError)_updateFileAttributesAtPath:(NSString *)path forEntryWithDictionary:(NSDictionary<XADArchiveKeys,id> *)dict
 deferDirectories:(BOOL)defer;
 -(XADError)_ensureDirectoryExists:(NSString *)path;
 
--(XADError)runExtractorWithDictionary:(NSDictionary *)dict outputHandle:(CSHandle *)handle;
--(XADError)runExtractorWithDictionary:(NSDictionary *)dict
+-(XADError)runExtractorWithDictionary:(NSDictionary<XADArchiveKeys,id> *)dict outputHandle:(CSHandle *)handle;
+-(XADError)runExtractorWithDictionary:(NSDictionary<XADArchiveKeys,id> *)dict
 outputTarget:(id)target selector:(SEL)sel argument:(id)arg;
 
--(NSString *)adjustPathString:(NSString *)path forEntryWithDictionary:(NSDictionary *)dict;
+-(NSString *)adjustPathString:(NSString *)path forEntryWithDictionary:(NSDictionary<XADArchiveKeys,id> *)dict;
 
--(BOOL)_shouldStop;
+@property (NS_NONATOMIC_IOSONLY, readonly) BOOL _shouldStop;
 
 @end
 
 
+@protocol XADUnarchiverDelegate <NSObject>
 
-
-@interface NSObject (XADUnarchiverDelegate)
-
+@optional
 -(void)unarchiverNeedsPassword:(XADUnarchiver *)unarchiver;
 
--(BOOL)unarchiver:(XADUnarchiver *)unarchiver shouldExtractEntryWithDictionary:(NSDictionary *)dict suggestedPath:(NSString **)pathptr;
--(void)unarchiver:(XADUnarchiver *)unarchiver willExtractEntryWithDictionary:(NSDictionary *)dict to:(NSString *)path;
--(void)unarchiver:(XADUnarchiver *)unarchiver didExtractEntryWithDictionary:(NSDictionary *)dict to:(NSString *)path error:(XADError)error;
+-(BOOL)unarchiver:(XADUnarchiver *)unarchiver shouldExtractEntryWithDictionary:(NSDictionary<XADArchiveKeys,id> *)dict suggestedPath:(NSString *__nullable*__nullable)pathptr;
+-(void)unarchiver:(XADUnarchiver *)unarchiver willExtractEntryWithDictionary:(NSDictionary<XADArchiveKeys,id> *)dict to:(NSString *)path;
+-(void)unarchiver:(XADUnarchiver *)unarchiver didExtractEntryWithDictionary:(NSDictionary<XADArchiveKeys,id> *)dict to:(NSString *)path error:(XADError)error;
 
+@required
 -(BOOL)unarchiver:(XADUnarchiver *)unarchiver shouldCreateDirectory:(NSString *)directory;
+@optional
 -(BOOL)unarchiver:(XADUnarchiver *)unarchiver shouldDeleteFileAndCreateDirectory:(NSString *)directory;
 
--(BOOL)unarchiver:(XADUnarchiver *)unarchiver shouldExtractArchiveEntryWithDictionary:(NSDictionary *)dict to:(NSString *)path;
--(void)unarchiver:(XADUnarchiver *)unarchiver willExtractArchiveEntryWithDictionary:(NSDictionary *)dict withUnarchiver:(XADUnarchiver *)subunarchiver to:(NSString *)path;
--(void)unarchiver:(XADUnarchiver *)unarchiver didExtractArchiveEntryWithDictionary:(NSDictionary *)dict withUnarchiver:(XADUnarchiver *)subunarchiver to:(NSString *)path error:(XADError)error;
+@optional
+-(BOOL)unarchiver:(XADUnarchiver *)unarchiver shouldExtractArchiveEntryWithDictionary:(NSDictionary<XADArchiveKeys,id> *)dict to:(NSString *)path;
+-(void)unarchiver:(XADUnarchiver *)unarchiver willExtractArchiveEntryWithDictionary:(NSDictionary<XADArchiveKeys,id> *)dict withUnarchiver:(XADUnarchiver *)subunarchiver to:(NSString *)path;
+-(void)unarchiver:(XADUnarchiver *)unarchiver didExtractArchiveEntryWithDictionary:(NSDictionary<XADArchiveKeys,id> *)dict withUnarchiver:(XADUnarchiver *)subunarchiver to:(NSString *)path error:(XADError)error;
 
--(NSString *)unarchiver:(XADUnarchiver *)unarchiver destinationForLink:(XADString *)link from:(NSString *)path;
+@required
+-(nullable NSString *)unarchiver:(XADUnarchiver *)unarchiver destinationForLink:(XADString *)link from:(NSString *)path;
 
 -(BOOL)extractionShouldStopForUnarchiver:(XADUnarchiver *)unarchiver;
--(void)unarchiver:(XADUnarchiver *)unarchiver extractionProgressForEntryWithDictionary:(NSDictionary *)dict
+-(void)unarchiver:(XADUnarchiver *)unarchiver extractionProgressForEntryWithDictionary:(NSDictionary<XADArchiveKeys,id> *)dict
 fileFraction:(double)fileprogress estimatedTotalFraction:(double)totalprogress;
 
+@optional
 -(void)unarchiver:(XADUnarchiver *)unarchiver findsFileInterestingForReason:(NSString *)reason;
 
+@optional
+// Deprecated.
+-(null_unspecified NSString *)unarchiver:(XADUnarchiver *)unarchiver pathForExtractingEntryWithDictionary:(null_unspecified NSDictionary *)dict DEPRECATED_ATTRIBUTE;
+-(BOOL)unarchiver:(XADUnarchiver *)unarchiver shouldExtractEntryWithDictionary:(null_unspecified NSDictionary *)dict to:(null_unspecified NSString *)path DEPRECATED_ATTRIBUTE;
+-(null_unspecified NSString *)unarchiver:(XADUnarchiver *)unarchiver linkDestinationForEntryWithDictionary:(null_unspecified NSDictionary *)dict from:(null_unspecified NSString *)path DEPRECATED_ATTRIBUTE;
 @end
 
-@interface NSObject (XADUnarchiverDelegateDeprecated)
-// Deprecated.
--(NSString *)unarchiver:(XADUnarchiver *)unarchiver pathForExtractingEntryWithDictionary:(NSDictionary *)dict;
--(BOOL)unarchiver:(XADUnarchiver *)unarchiver shouldExtractEntryWithDictionary:(NSDictionary *)dict to:(NSString *)path;
--(NSString *)unarchiver:(XADUnarchiver *)unarchiver linkDestinationForEntryWithDictionary:(NSDictionary *)dict from:(NSString *)path;
-@end
+
+static const XADForkStyle XADIgnoredForkStyle API_DEPRECATED_WITH_REPLACEMENT("XADForkStyleIgnored", macosx(10.0, 10.8), ios(3.0, 8.0)) = XADForkStyleIgnored;
+static const XADForkStyle XADMacOSXForkStyle API_DEPRECATED_WITH_REPLACEMENT("XADForkStyleMacOSX", macosx(10.0, 10.8), ios(3.0, 8.0)) = XADForkStyleMacOSX;
+static const XADForkStyle XADHiddenAppleDoubleForkStyle API_DEPRECATED_WITH_REPLACEMENT("XADForkStyleHiddenAppleDouble", macosx(10.0, 10.8), ios(3.0, 8.0)) = XADForkStyleHiddenAppleDouble;
+static const XADForkStyle XADVisibleAppleDoubleForkStyle API_DEPRECATED_WITH_REPLACEMENT("XADForkStyleVisibleAppleDouble", macosx(10.0, 10.8), ios(3.0, 8.0)) = XADForkStyleVisibleAppleDouble;
+static const XADForkStyle XADHFVExplorerAppleDoubleForkStyle API_DEPRECATED_WITH_REPLACEMENT("XADForkStyleHFVExplorerAppleDouble", macosx(10.0, 10.8), ios(3.0, 8.0)) = XADForkStyleHFVExplorerAppleDouble;
+static const XADForkStyle XADDefaultForkStyle API_DEPRECATED_WITH_REPLACEMENT("XADForkStyleDefault", macosx(10.0, 10.8), ios(3.0, 8.0)) = XADForkStyleDefault;
+
+NS_ASSUME_NONNULL_END
+

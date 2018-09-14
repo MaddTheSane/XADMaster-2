@@ -5,22 +5,14 @@
 -(id)initWithHandle:(CSHandle *)handle startOffset:(off_t)start
 logicalBlockSize:(int)logical physicalBlockSize:(int)physical;
 {
-	if((self=[super initWithName:[handle name]]))
+	if((self=[super initWithParentHandle:handle]))
 	{
-		parent=[handle retain];
 		startoffset=start;
 		logicalsize=logical;
 		physicalsize=physical;
 	}
 	return self;
 }
-
--(void)dealloc
-{
-	[parent release];
-	[super dealloc];
-}
-
 
 static inline off_t PhysicalToLogical(XADPaddedBlockHandle *self,off_t physical)
 {
@@ -38,19 +30,19 @@ static inline off_t LogicalToPhysical(XADPaddedBlockHandle *self,off_t logical)
 
 -(off_t)fileSize
 {
-	off_t size=[parent fileSize];
+	off_t size=parent.fileSize;
 	if(size==CSHandleMaxLength) return CSHandleMaxLength;
 	return PhysicalToLogical(self,size);
 }
 
 -(off_t)offsetInFile
 {
-	return PhysicalToLogical(self,[parent offsetInFile]);
+	return PhysicalToLogical(self,parent.offsetInFile);
 }
 
 -(BOOL)atEndOfFile
 {
-	return [parent atEndOfFile];
+	return parent.atEndOfFile;
 }
 
 -(void)seekToFileOffset:(off_t)offs
@@ -70,7 +62,7 @@ static inline off_t LogicalToPhysical(XADPaddedBlockHandle *self,off_t logical)
 	if(!num) return 0;
 
 	uint8_t *bytebuffer=(uint8_t *)buffer;
-	off_t pos=[parent offsetInFile];
+	off_t pos=parent.offsetInFile;
 	int total=0;
 
 	while(total<num)

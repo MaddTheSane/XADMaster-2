@@ -14,7 +14,7 @@ struct ResourceOutputArguments
 	int fd,offset;
 };
 
-@interface XADPlatform (Private)
+@interface XADPlatform ()
 
 +(void)setComment:(NSString *)comment forPath:(NSString *)path;
 
@@ -25,6 +25,18 @@ struct ResourceOutputArguments
 
 @implementation XADPlatform
 
++(void)load
+{
+	if (@available(macOS 10.11, *)) {
+		[NSError setUserInfoValueProviderForDomain:XADErrorDomain provider:^id _Nullable(NSError * _Nonnull err, NSErrorUserInfoKey  _Nonnull userInfoKey) {
+			if ([userInfoKey isEqualToString:NSLocalizedDescriptionKey]) {
+				return [XADException localizedDescribeXADError:(XADError)err.code];
+			}
+			return nil;
+		}];
+	}
+}
+
 //
 // Archive entry extraction.
 //
@@ -32,13 +44,13 @@ struct ResourceOutputArguments
 +(XADError)extractResourceForkEntryWithDictionary:(NSDictionary *)dict
 unarchiver:(XADUnarchiver *)unarchiver toPath:(NSString *)destpath
 {
-	const char *cpath=[destpath fileSystemRepresentation];
+	const char *cpath=destpath.fileSystemRepresentation;
 	int originalpermissions=-1;
 
 	// Open the file for writing, creating it if it doesn't exist.
 	// TODO: Does it need to be opened for writing or is read enough?
 	int fd=open(cpath,O_WRONLY|O_CREAT|O_NOFOLLOW,0666);
-	if(fd==-1) 
+	if(fd==-1)
 	{
 		// If opening the file failed, check if it is a link and skip if it is.
 		struct stat st;
@@ -46,9 +58,9 @@ unarchiver:(XADUnarchiver *)unarchiver toPath:(NSString *)destpath
 
 		if(S_ISLNK(st.st_mode))
 		{
-			NSNumber *sizenum=[dict objectForKey:XADFileSizeKey];
-			if(!sizenum) return XADNoError;
-			else if([sizenum longLongValue]==0) return XADNoError;
+			NSNumber *sizenum=dict[XADFileSizeKey];
+			if(sizenum == nil) return XADErrorNone;
+			else if(sizenum.longLongValue==0) return XADErrorNone;
 		}
 
 		// Otherwise, try changing permissions.
@@ -57,7 +69,7 @@ unarchiver:(XADUnarchiver *)unarchiver toPath:(NSString *)destpath
 		chmod(cpath,0700);
 
 		fd=open(cpath,O_WRONLY|O_CREAT|O_NOFOLLOW,0666);
-		if(fd==-1) return XADOpenFileError; // TODO: Better error.
+		if(fd==-1) return XADErrorOpenFile; // TODO: Better error.
 	}
 
 	struct ResourceOutputArguments args={ .fd=fd, .offset=0 };
@@ -75,13 +87,13 @@ unarchiver:(XADUnarchiver *)unarchiver toPath:(NSString *)destpath
 
 +(XADError)outputToResourceFork:(NSValue *)pointerval bytes:(uint8_t *)bytes length:(int)length
 {
-	struct ResourceOutputArguments *args=[pointerval pointerValue];
+	struct ResourceOutputArguments *args=pointerval.pointerValue;
 	if(fsetxattr(args->fd,XATTR_RESOURCEFORK_NAME,bytes,length,
-	args->offset,0)) return XADOutputError;
+	args->offset,0)) return XADErrorOutput;
 
 	args->offset+=length;
 
-	return XADNoError;
+	return XADErrorNone;
 }
 
 
@@ -91,11 +103,11 @@ unarchiver:(XADUnarchiver *)unarchiver toPath:(NSString *)destpath
 forEntryWithDictionary:(NSDictionary *)dict parser:(XADArchiveParser *)parser
 preservePermissions:(BOOL)preservepermissions
 {
-	const char *cpath=[path fileSystemRepresentation];
+	const char *cpath=path.fileSystemRepresentation;
 
 	// Read file permissions.
 	struct stat st;
-	if(lstat(cpath,&st)!=0) return XADOpenFileError; // TODO: better error
+	if(lstat(cpath,&st)!=0) return XADErrorOpenFile; // TODO: better error
 
 	// If the file does not have write permissions, change this temporarily.
 	if(!(st.st_mode&S_IWUSR)) chmod(cpath,0700);
@@ -108,19 +120,19 @@ preservePermissions:(BOOL)preservepermissions
 		NSString *key;
 		while((key=[enumerator nextObject]))
 		{
-			NSData *data=[extattrs objectForKey:key];
+			NSData *data=extattrs[key];
 
-			int namelen=[key lengthOfBytesUsingEncoding:NSUTF8StringEncoding];
+			NSInteger namelen=[key lengthOfBytesUsingEncoding:NSUTF8StringEncoding];
 			char namebytes[namelen+1];
 			[key getCString:namebytes maxLength:sizeof(namebytes) encoding:NSUTF8StringEncoding];
 
-			setxattr(cpath,namebytes,[data bytes],[data length],0,XATTR_NOFOLLOW);
+			setxattr(cpath,namebytes,data.bytes,data.length,0,XATTR_NOFOLLOW);
 		}
 	}
 
 	// Set comment.
-	XADString *comment=[dict objectForKey:XADCommentKey];
-	if(comment) [self setComment:[comment string] forPath:path];
+	XADString *comment=dict[XADCommentKey];
+	if(comment) [self setComment:comment.string forPath:path];
 
 	// Attrlist structures.
 	struct attrlist list={ ATTR_BIT_MAP_COUNT };
@@ -128,35 +140,35 @@ preservePermissions:(BOOL)preservepermissions
 	uint8_t *attrptr=attrdata;
 
 	// Handle timestamps.
-	NSDate *creation=[dict objectForKey:XADCreationDateKey];
-	NSDate *modification=[dict objectForKey:XADLastModificationDateKey];
-	NSDate *access=[dict objectForKey:XADLastAccessDateKey];
+	NSDate *creation=dict[XADCreationDateKey];
+	NSDate *modification=dict[XADLastModificationDateKey];
+	NSDate *access=dict[XADLastAccessDateKey];
 
 	if(creation)
 	{
 		list.commonattr|=ATTR_CMN_CRTIME;
-		*((struct timespec *)attrptr)=[creation timespecStruct];
+		*((struct timespec *)attrptr)=creation.timespecStruct;
 		attrptr+=sizeof(struct timeval);
 	}
 	if(modification)
 	{
 		list.commonattr|=ATTR_CMN_MODTIME;
-		*((struct timespec *)attrptr)=[modification timespecStruct];
+		*((struct timespec *)attrptr)=modification.timespecStruct;
 		attrptr+=sizeof(struct timeval);
 	}
 	if(access)
 	{
 		list.commonattr|=ATTR_CMN_ACCTIME;
-		*((struct timespec *)attrptr)=[access timespecStruct];
+		*((struct timespec *)attrptr)=access.timespecStruct;
 		attrptr+=sizeof(struct timeval);
 	}
 
 	// Figure out permissions, or reuse the earlier value.
 	mode_t mode=st.st_mode;
-	NSNumber *permissions=[dict objectForKey:XADPosixPermissionsKey];
-	if(permissions)
+	NSNumber *permissions=dict[XADPosixPermissionsKey];
+	if(permissions != nil)
 	{
-		mode=[permissions unsignedShortValue];
+		mode=permissions.unsignedShortValue;
 		if(!preservepermissions)
 		{
 			mode_t mask=umask(022);
@@ -177,12 +189,12 @@ preservePermissions:(BOOL)preservepermissions
 	// Finally, set all attributes.
 	setattrlist(cpath,&list,attrdata,attrptr-attrdata,FSOPT_NOFOLLOW);
 
-	return XADNoError;
+	return XADErrorNone;
 }
 
 +(void)setComment:(NSString *)comment forPath:(NSString *)path;
 {
-	if(!comment||![comment length]) return;
+	if(!comment||!comment.length) return;
 
 	// Don't bother if we're sandboxed, as Apple refuses to allow
 	// entitlements for this.
@@ -204,24 +216,25 @@ preservePermissions:(BOOL)preservepermissions
 
 	NSAppleEventDescriptor *commentdesc=[NSAppleEventDescriptor descriptorWithString:comment];
 
-	FSRef ref;
-	bzero(&ref,sizeof(ref));
-	if(FSPathMakeRef((UInt8 *)[path fileSystemRepresentation],&ref,NULL)!=noErr) return;
+	NSURL *fileURL = [NSURL fileURLWithPath:path];
+	NSString *fileString = [fileURL.absoluteString retain];
+	const char *fileCStr = fileString.fileSystemRepresentation;
 
 	AEDesc filedesc;
 	AEInitializeDesc(&filedesc);
-	if(AECoercePtr(typeFSRef,&ref,sizeof(ref),typeAlias,&filedesc)!=noErr) return;
+	if(AECoercePtr(typeFileURL,fileCStr,strlen(fileCStr),typeAlias,&filedesc)!=noErr) {[fileString release]; return;}
 
 	AEDesc builtevent,replyevent;
 	AEInitializeDesc(&builtevent);
 	AEInitializeDesc(&replyevent);
+	[fileString release];
 
 	static OSType findersignature='MACS';
 
 	OSErr err=AEBuildAppleEvent(kAECoreSuite,kAESetData,
 	typeApplSignature,&findersignature,sizeof(findersignature),
 	kAutoGenerateReturnID,kAnyTransactionID,
-	&builtevent,NULL,eventformat,&filedesc,[commentdesc aeDesc]);
+	&builtevent,NULL,eventformat,&filedesc,commentdesc.aeDesc);
 
 	AEDisposeDesc(&filedesc);
 
@@ -239,11 +252,11 @@ preservePermissions:(BOOL)preservepermissions
 +(XADError)createLinkAtPath:(NSString *)path withDestinationPath:(NSString *)link
 {
 	struct stat st;
-	const char *destcstr=[path fileSystemRepresentation];
+	const char *destcstr=path.fileSystemRepresentation;
 	if(lstat(destcstr,&st)==0) unlink(destcstr);
-	if(symlink([link fileSystemRepresentation],destcstr)!=0) return XADLinkError;
+	if(symlink(link.fileSystemRepresentation,destcstr)!=0) return XADErrorLink;
 
-	return XADNoError;
+	return XADErrorNone;
 }
 
 
@@ -289,14 +302,10 @@ preservePermissions:(BOOL)preservepermissions
 
 #else
 
-// NSURLQuarantinePropertiesKey only exists on 10.10, so don't dereference it,
-// but use it as a string. This code will not work on older versions, but is
-// not really important at all so we'll let it slide.
-
 +(id)readCloneableMetadataFromPath:(NSString *)path
 {
 	NSDictionary *value;
-    if([[NSURL fileURLWithPath:path] getResourceValue:&value forKey:@"NSURLQuarantinePropertiesKey" error:NULL])
+	if([[NSURL fileURLWithPath:path] getResourceValue:&value forKey:NSURLQuarantinePropertiesKey error:NULL])
 	{
 		return value;
 	}
@@ -305,7 +314,7 @@ preservePermissions:(BOOL)preservepermissions
 
 +(void)writeCloneableMetadata:(id)metadata toPath:(NSString *)path
 {
-	[[NSURL fileURLWithPath:path] setResourceValue:metadata forKey:@"NSURLQuarantinePropertiesKey" error:NULL];
+	[[NSURL fileURLWithPath:path] setResourceValue:metadata forKey:NSURLQuarantinePropertiesKey error:NULL];
 }
 
 #endif
@@ -313,15 +322,15 @@ preservePermissions:(BOOL)preservepermissions
 +(BOOL)copyDateFromPath:(NSString *)src toPath:(NSString *)dest
 {
 	struct stat st;
-	const char *csrc=[src fileSystemRepresentation];
+	const char *csrc=src.fileSystemRepresentation;
 	if(stat(csrc,&st)!=0) return NO;
 
 	struct timeval times[2]={
-		{st.st_atimespec.tv_sec,st.st_atimespec.tv_nsec/1000},
-		{st.st_mtimespec.tv_sec,st.st_mtimespec.tv_nsec/1000},
+		{st.st_atimespec.tv_sec,(int)(st.st_atimespec.tv_nsec/1000)},
+		{st.st_mtimespec.tv_sec,(int)(st.st_mtimespec.tv_nsec/1000)},
 	};
 
-	const char *cdest=[dest fileSystemRepresentation];
+	const char *cdest=dest.fileSystemRepresentation;
 	if(utimes(cdest,times)!=0) return NO;
 
 	return YES;
@@ -329,7 +338,7 @@ preservePermissions:(BOOL)preservepermissions
 
 +(BOOL)resetDateAtPath:(NSString *)path
 {
-	const char *cpath=[path fileSystemRepresentation];
+	const char *cpath=path.fileSystemRepresentation;
 	if(utimes(cpath,NULL)!=0) return NO;
 
 	return YES;
@@ -349,7 +358,7 @@ preservePermissions:(BOOL)preservepermissions
 	// for some symbolic links. We need to implement our own.
 
 	struct stat st;
-	if(lstat([path fileSystemRepresentation],&st)!=0) return NO;
+	if(lstat(path.fileSystemRepresentation,&st)!=0) return NO;
 
 	if(isdirptr)
 	{
@@ -364,7 +373,7 @@ preservePermissions:(BOOL)preservepermissions
 {
 	// TODO: ensure this path is actually unique.
 	NSDate *now=[NSDate date];
-	int64_t t=[now timeIntervalSinceReferenceDate]*1000000000;
+	int64_t t=now.timeIntervalSinceReferenceDate*1000000000;
 	pid_t pid=getpid();
 
 	NSString *dirname=[NSString stringWithFormat:@"XADTemp%qd%d",t,pid];
@@ -379,8 +388,8 @@ preservePermissions:(BOOL)preservepermissions
 	[component rangeOfString:@"\000"].location==NSNotFound) return component;
 
 	NSMutableString *newstring=[NSMutableString stringWithString:component];
-	[newstring replaceOccurrencesOfString:@"/" withString:@":" options:0 range:NSMakeRange(0,[newstring length])];
-	[newstring replaceOccurrencesOfString:@"\000" withString:@"_" options:0 range:NSMakeRange(0,[newstring length])];
+	[newstring replaceOccurrencesOfString:@"/" withString:@":" options:0 range:NSMakeRange(0,newstring.length)];
+	[newstring replaceOccurrencesOfString:@"\000" withString:@"_" options:0 range:NSMakeRange(0,newstring.length)];
 	return newstring;
 }
 
@@ -422,7 +431,7 @@ preservePermissions:(BOOL)preservepermissions
 	// TODO: Make an actual CSHandle subclass? Possible but sort of useless.
 	NSMutableData *data=[NSMutableData data];
 
-	const char *cpath=[path fileSystemRepresentation];
+	const char *cpath=path.fileSystemRepresentation;
 	int fd=open(cpath,O_RDONLY);
 	if(fd==-1) return nil;
 
@@ -444,6 +453,32 @@ preservePermissions:(BOOL)preservepermissions
 	return [CSMemoryHandle memoryHandleForReadingData:data];
 }
 
++(CSHandle *)handleForReadingResourceForkAtFileURL:(NSURL *)path
+{
+	// TODO: Make an actual CSHandle subclass? Possible but sort of useless.
+	NSMutableData *data=[NSMutableData data];
+	
+	const char *cpath=path.fileSystemRepresentation;
+	int fd=open(cpath,O_RDONLY);
+	if(fd==-1) return nil;
+	
+	uint32_t pos=0;
+	for(;;)
+	{
+		uint8_t buffer[16384];
+		
+		ssize_t actual=fgetxattr(fd,XATTR_RESOURCEFORK_NAME,buffer,sizeof(buffer),pos,0);
+		if(actual<0) { close(fd); return nil; }
+		if(actual==0) break;
+		
+		[data appendBytes:buffer length:actual];
+		pos+=actual;
+	}
+	
+	close(fd);
+	
+	return [CSMemoryHandle memoryHandleForReadingData:data];
+}
 
 
 //

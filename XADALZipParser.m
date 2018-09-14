@@ -41,8 +41,8 @@ static void CalculateSillyTable(int *table,int param)
 
 +(BOOL)recognizeFileWithHandle:(CSHandle *)handle firstBytes:(NSData *)data name:(NSString *)name
 {
-	const uint8_t *bytes=[data bytes];
-	int length=[data length];
+	const uint8_t *bytes=data.bytes;
+	NSInteger length=data.length;
 
 	return length>=8&&bytes[0]=='A'&&bytes[1]=='L'&&bytes[2]=='Z'&&bytes[3]==1&&bytes[7]==0;
 }
@@ -55,7 +55,7 @@ static void CalculateSillyTable(int *table,int param)
 	{
 		return [self scanForVolumesWithFilename:name
 		regex:[XADRegex regexWithPattern:[NSString stringWithFormat:@"^%@\\.(alz|a[0-9]{2}|b[0-9]{2})$",
-			[[matches objectAtIndex:1] escapedPattern]] options:REG_ICASE]
+			[matches[1] escapedPattern]] options:REG_ICASE]
 		firstFileExtension:@"alz"];
 	}
 
@@ -64,23 +64,23 @@ static void CalculateSillyTable(int *table,int param)
 
 -(void)parse
 {
-	XADSkipHandle *fh=[self skipHandle];
+	XADSkipHandle *fh=self.skipHandle;
 
-	NSArray *volumes=[self volumes];
-	if(volumes)
+	NSArray *volumesizes=[self volumeSizes];
+	if([volumesizes count]>1)
 	{
-		int count=[volumes count];
+		NSInteger count=[volumesizes count];
 		off_t offs=0;
-		for(int i=0;i<count-1;i++)
+		for(NSInteger i=0;i<count-1;i++)
 		{
-			offs+=[(CSHandle *)[volumes objectAtIndex:i] fileSize];
+			offs+=[[volumesizes objectAtIndex:i] longLongValue];
 			[fh addSkipFrom:offs-16 to:offs+8];
 		}
 	}
 
 	[fh skipBytes:8];
 
-	while([self shouldKeepParsing])
+	while(self.shouldKeepParsing)
 	{
 		uint32_t signature=[fh readID];
 
@@ -94,12 +94,12 @@ static void CalculateSillyTable(int *table,int param)
 
 			NSMutableDictionary *dict=[NSMutableDictionary dictionaryWithObjectsAndKeys:
 				[NSDate XADDateWithMSDOSDateTime:dostime],XADLastModificationDateKey,
-				[NSNumber numberWithInt:attrs],@"ALZipAttributes",
-				[NSNumber numberWithInt:flags],@"ALZipFlags",
+				@(attrs),@"ALZipAttributes",
+				@(flags),@"ALZipFlags",
 			nil];
 
-			if(attrs&0x10) [dict setObject:[NSNumber numberWithBool:YES] forKey:XADIsDirectoryKey];
-			if(flags&0x01) [dict setObject:[NSNumber numberWithBool:YES] forKey:XADIsEncryptedKey];
+			if(attrs&0x10) dict[XADIsDirectoryKey] = @YES;
+			if(flags&0x01) dict[XADIsEncryptedKey] = @YES;
 
 			off_t compsize=0;
 
@@ -107,7 +107,7 @@ static void CalculateSillyTable(int *table,int param)
 			if(sizebytes)
 			{
 				int method=[fh readUInt8];
-				[dict setObject:[NSNumber numberWithInt:method] forKey:@"ALZipCompressionMethod"];
+				dict[@"ALZipCompressionMethod"] = @(method);
 
 				NSString *compname=nil;
 				switch(method)
@@ -117,26 +117,26 @@ static void CalculateSillyTable(int *table,int param)
 					case 2: compname=@"Deflate"; break;
 					case 3: compname=@"Obfuscated deflate"; break;
 				}
-				if(compname) [dict setObject:[self XADStringWithString:compname] forKey:XADCompressionNameKey];
+				if(compname) dict[XADCompressionNameKey] = [self XADStringWithString:compname];
 
 				[fh skipBytes:1];
-				[dict setObject:[NSNumber numberWithUnsignedInt:[fh readUInt32LE]] forKey:@"ALZipCRC32"];
+				dict[@"ALZipCRC32"] = @([fh readUInt32LE]);
 
 				compsize=ParseNumber(fh,sizebytes);
 				off_t size=ParseNumber(fh,sizebytes);
 
-				[dict setObject:[NSNumber numberWithLongLong:compsize] forKey:XADCompressedSizeKey];
-				[dict setObject:[NSNumber numberWithLongLong:compsize] forKey:XADSkipLengthKey];
-				[dict setObject:[NSNumber numberWithLongLong:size] forKey:XADFileSizeKey];
+				dict[XADCompressedSizeKey] = @(compsize);
+				dict[XADSkipLengthKey] = @(compsize);
+				dict[XADFileSizeKey] = @(size);
 			}
 
 			// TODO: force korean encoding?
 			NSData *namedata=[fh readDataOfLength:namelen];
-			[dict setObject:[self XADPathWithData:namedata separators:XADEitherPathSeparator] forKey:XADFileNameKey];
+			dict[XADFileNameKey] = [self XADPathWithData:namedata separators:XADEitherPathSeparator];
 
-			[dict setObject:[NSNumber numberWithLongLong:[fh offsetInFile]] forKey:XADSkipOffsetKey];
+			dict[XADSkipOffsetKey] = @(fh.offsetInFile);
 
-			off_t pos=[fh offsetInFile];
+			off_t pos=fh.offsetInFile;
 			[self addEntryWithDictionary:dict];
 			[fh seekToFileOffset:pos+compsize];
 		}
@@ -149,11 +149,11 @@ static void CalculateSillyTable(int *table,int param)
 -(CSHandle *)handleForEntryWithDictionary:(NSDictionary *)dict wantChecksum:(BOOL)checksum
 {
 	CSHandle *handle=[self handleAtDataOffsetForDictionary:dict];
-	off_t size=[[dict objectForKey:XADFileSizeKey] longLongValue];
+	off_t size=[dict[XADFileSizeKey] longLongValue];
 	//off_t compsize=[[dict objectForKey:XADCompressedSizeKey] longLongValue];
-	uint32_t crc=[[dict objectForKey:@"ALZipCRC32"] unsignedIntValue];
+	uint32_t crc=[dict[@"ALZipCRC32"] unsignedIntValue];
 
-	if([dict objectForKey:XADIsEncryptedKey])
+	if(dict[XADIsEncryptedKey])
 	{
 		// TODO: encryption
 		[XADException raiseNotSupportedException];
@@ -161,7 +161,7 @@ static void CalculateSillyTable(int *table,int param)
 		password:[self encodedPassword] testByte:crc>>24] autorelease];*/
 	}
 
-	int method=[[dict objectForKey:@"ALZipCompressionMethod"] intValue];
+	int method=[dict[@"ALZipCompressionMethod"] intValue];
 	switch(method)
 	{
 		case 0: break; // No compression
@@ -172,7 +172,7 @@ static void CalculateSillyTable(int *table,int param)
 			handle=[[[XADDeflateHandle alloc] initWithHandle:handle length:size] autorelease];
 
 			int order[19];
-			CalculateSillyTable(order,[[dict objectForKey:XADFileSizeKey] intValue]%16);
+			CalculateSillyTable(order,[dict[XADFileSizeKey] intValue]%16);
 			[(XADDeflateHandle *)handle setMetaTableOrder:order];
 		}
 		break;

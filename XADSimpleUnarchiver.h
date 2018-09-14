@@ -8,12 +8,15 @@
 #define XADAlwaysCreateEnclosingDirectory 1
 #define XADCreateEnclosingDirectoryWhenNeeded 2
 
-@interface XADSimpleUnarchiver:NSObject
+NS_ASSUME_NONNULL_BEGIN
+
+@protocol XADSimpleUnarchiverDelegate;
+
+@interface XADSimpleUnarchiver:NSObject<XADArchiveParserDelegate, XADUnarchiverDelegate>
 {
 	XADArchiveParser *parser;
 	XADUnarchiver *unarchiver,*subunarchiver;
 
-	id delegate;
 	BOOL shouldstop;
 
 	NSString *destination,*enclosingdir;
@@ -22,15 +25,16 @@
 	BOOL copydatetoenclosing,copydatetosolo,resetsolodate;
 	BOOL propagatemetadata;
 
-	NSMutableArray *regexes;
+	NSMutableArray<XADRegex*> *regexes;
 	NSMutableIndexSet *indices;
 
-	NSMutableArray *entries,*reasonsforinterest;
+	NSMutableArray<NSDictionary<XADArchiveKeys,id>*> *entries;
+	NSMutableArray<NSString*> *reasonsforinterest;
 	NSMutableDictionary *renames;
 	NSMutableSet *resourceforks;
 	id metadata;
 	NSString *unpackdestination,*finaldestination,*overridesoloitem;
-	int numextracted;
+	NSInteger numextracted;
 
 	NSString *toplevelname;
 	BOOL lookslikesolo;
@@ -38,131 +42,122 @@
 	off_t totalsize,currsize,totalprogress;
 }
 
-+(XADSimpleUnarchiver *)simpleUnarchiverForPath:(NSString *)path;
-+(XADSimpleUnarchiver *)simpleUnarchiverForPath:(NSString *)path error:(XADError *)errorptr;
++(nullable instancetype)simpleUnarchiverForPath:(NSString *)path NS_SWIFT_UNAVAILABLE("Call may throw exceptions, use init(for:error:) instead");
++(nullable instancetype)simpleUnarchiverForPath:(NSString *)path error:(nullable XADError *)errorptr;
++(nullable instancetype)simpleUnarchiverForPath:(NSString *)path nserror:(NSError *__autoreleasing _Nullable*_Nullable)errorptr;
 
--(id)initWithArchiveParser:(XADArchiveParser *)archiveparser;
--(id)initWithArchiveParser:(XADArchiveParser *)archiveparser entries:(NSArray *)entryarray;
--(void)dealloc;
+-(instancetype)init UNAVAILABLE_ATTRIBUTE;
+-(instancetype)initWithArchiveParser:(XADArchiveParser *)archiveparser;
+-(instancetype)initWithArchiveParser:(XADArchiveParser *)archiveparser entries:(nullable NSArray<NSDictionary<XADArchiveKeys,id> *> *)entryarray NS_DESIGNATED_INITIALIZER;
 
--(XADArchiveParser *)archiveParser;
--(XADArchiveParser *)outerArchiveParser;
--(XADArchiveParser *)innerArchiveParser;
--(NSArray *)reasonsForInterest;
+@property (NS_NONATOMIC_IOSONLY, readonly, strong) XADArchiveParser *archiveParser;
+@property (NS_NONATOMIC_IOSONLY, readonly, strong) XADArchiveParser *outerArchiveParser;
+@property (NS_NONATOMIC_IOSONLY, readonly, strong) XADArchiveParser *innerArchiveParser;
+@property (NS_NONATOMIC_IOSONLY, readonly, copy) NSArray<NSString*> *reasonsForInterest;
 
--(id)delegate;
--(void)setDelegate:(id)newdelegate;
+@property (NS_NONATOMIC_IOSONLY, weak, nullable) id<XADSimpleUnarchiverDelegate> delegate;
 
 // TODO: Encoding wrappers?
 
--(NSString *)password;
--(void)setPassword:(NSString *)password;
+@property (NS_NONATOMIC_IOSONLY, copy, nullable) NSString *password;
 
--(NSString *)destination;
--(void)setDestination:(NSString *)destpath;
+@property (NS_NONATOMIC_IOSONLY, copy, nullable) NSString *destination;
 
--(NSString *)enclosingDirectoryName;
--(void)setEnclosingDirectoryName:(NSString *)dirname;
+@property (NS_NONATOMIC_IOSONLY, copy, nullable) NSString *enclosingDirectoryName;
 
--(BOOL)removesEnclosingDirectoryForSoloItems;
--(void)setRemovesEnclosingDirectoryForSoloItems:(BOOL)removeflag;
+@property (NS_NONATOMIC_IOSONLY) BOOL removesEnclosingDirectoryForSoloItems;
 
--(BOOL)alwaysOverwritesFiles;
--(void)setAlwaysOverwritesFiles:(BOOL)overwriteflag;
+@property (NS_NONATOMIC_IOSONLY) BOOL alwaysOverwritesFiles;
 
--(BOOL)alwaysRenamesFiles;
--(void)setAlwaysRenamesFiles:(BOOL)renameflag;
+@property (NS_NONATOMIC_IOSONLY) BOOL alwaysRenamesFiles;
 
--(BOOL)alwaysSkipsFiles;
--(void)setAlwaysSkipsFiles:(BOOL)skipflag;
+@property (NS_NONATOMIC_IOSONLY) BOOL alwaysSkipsFiles;
 
--(BOOL)extractsSubArchives;
--(void)setExtractsSubArchives:(BOOL)extractflag;
+@property (NS_NONATOMIC_IOSONLY) BOOL extractsSubArchives;
 
--(BOOL)copiesArchiveModificationTimeToEnclosingDirectory;
--(void)setCopiesArchiveModificationTimeToEnclosingDirectory:(BOOL)copyflag;
+@property (NS_NONATOMIC_IOSONLY) BOOL copiesArchiveModificationTimeToEnclosingDirectory;
 
--(BOOL)copiesArchiveModificationTimeToSoloItems;
--(void)setCopiesArchiveModificationTimeToSoloItems:(BOOL)copyflag;
+@property (NS_NONATOMIC_IOSONLY) BOOL copiesArchiveModificationTimeToSoloItems;
 
--(BOOL)resetsDateForSoloItems;
--(void)setResetsDateForSoloItems:(BOOL)resetflag;
+@property (NS_NONATOMIC_IOSONLY) BOOL resetsDateForSoloItems;
 
--(BOOL)propagatesRelevantMetadata;
--(void)setPropagatesRelevantMetadata:(BOOL)propagateflag;
+@property (NS_NONATOMIC_IOSONLY) BOOL propagatesRelevantMetadata;
 
--(int)macResourceForkStyle;
--(void)setMacResourceForkStyle:(int)style;
+@property (NS_NONATOMIC_IOSONLY) XADForkStyle macResourceForkStyle;
 
--(BOOL)preservesPermissions;
--(void)setPreserevesPermissions:(BOOL)preserveflag;
+@property (NS_NONATOMIC_IOSONLY) BOOL preservesPermissions;
+-(void)setPreserevesPermissions:(BOOL)preserve API_DEPRECATED_WITH_REPLACEMENT("setPreservesPermissions", macosx(10.0, 10.8), ios(3.0, 8.0));
 
--(double)updateInterval;
--(void)setUpdateInterval:(double)interval;
+@property (NS_NONATOMIC_IOSONLY) double updateInterval;
 
 -(void)addGlobFilter:(NSString *)wildcard;
 -(void)addRegexFilter:(XADRegex *)regex;
--(void)addIndexFilter:(int)index;
+-(void)addIndexFilter:(NSInteger)index;
 -(void)setIndices:(NSIndexSet *)indices;
 
--(off_t)predictedTotalSize;
+@property (NS_NONATOMIC_IOSONLY, readonly) off_t predictedTotalSize;
 -(off_t)predictedTotalSizeIgnoringUnknownFiles:(BOOL)ignoreunknown;
 
--(int)numberOfItemsExtracted;
--(BOOL)wasSoloItem;
--(NSString *)actualDestination;
--(NSString *)soloItem;
--(NSString *)createdItem;
--(NSString *)createdItemOrActualDestination;
+@property (NS_NONATOMIC_IOSONLY, readonly) NSInteger numberOfItemsExtracted;
+@property (NS_NONATOMIC_IOSONLY, readonly) BOOL wasSoloItem;
+@property (NS_NONATOMIC_IOSONLY, readonly, copy) NSString *actualDestination;
+@property (NS_NONATOMIC_IOSONLY, readonly, copy, nullable) NSString *soloItem;
+@property (NS_NONATOMIC_IOSONLY, readonly, copy, nullable) NSString *createdItem;
+@property (NS_NONATOMIC_IOSONLY, readonly, copy) NSString *createdItemOrActualDestination;
 
 
 
--(XADError)parse;
--(XADError)_setupSubArchiveForEntryWithDataFork:(NSDictionary *)datadict resourceFork:(NSDictionary *)resourcedict;
+-(XADError)parse NS_REFINED_FOR_SWIFT;
+-(XADError)_setupSubArchiveForEntryWithDataFork:(NSDictionary<XADArchiveKeys,id> *)datadict resourceFork:(nullable NSDictionary<XADArchiveKeys,id> *)resourcedict;
 
--(XADError)unarchive;
+-(XADError)unarchive NS_REFINED_FOR_SWIFT;
 -(XADError)_unarchiveRegularArchive;
 -(XADError)_unarchiveSubArchive;
 
 -(XADError)_finalizeExtraction;
 
--(void)_testForSoloItems:(NSDictionary *)entry;
+-(void)_testForSoloItems:(NSDictionary<XADArchiveKeys,id> *)entry;
 
--(BOOL)_shouldStop;
+@property (NS_NONATOMIC_IOSONLY, readonly) BOOL _shouldStop;
 
--(NSString *)_checkPath:(NSString *)path forEntryWithDictionary:(NSDictionary *)dict deferred:(BOOL)deferred;
+-(nullable NSString *)_checkPath:(NSString *)path forEntryWithDictionary:(nullable NSDictionary<XADArchiveKeys,id> *)dict deferred:(BOOL)deferred;
 -(BOOL)_recursivelyMoveItemAtPath:(NSString *)src toPath:(NSString *)dest overwrite:(BOOL)overwritethislevel;
 
 +(NSString *)_findUniquePathForOriginalPath:(NSString *)path;
-+(NSString *)_findUniquePathForOriginalPath:(NSString *)path reservedPaths:(NSSet *)reserved;
++(NSString *)_findUniquePathForOriginalPath:(NSString *)path reservedPaths:(nullable NSSet<NSString*> *)reserved;
 
 @end
 
 
 
-@interface NSObject (XADSimpleUnarchiverDelegate)
-
+@protocol XADSimpleUnarchiverDelegate <NSObject>
+@optional
 -(void)simpleUnarchiverNeedsPassword:(XADSimpleUnarchiver *)unarchiver;
 
--(NSString *)simpleUnarchiver:(XADSimpleUnarchiver *)unarchiver encodingNameForXADString:(id <XADString>)string;
+-(CSHandle *)simpleUnarchiver:(XADSimpleUnarchiver *)unarchiver outputHandleForEntryWithDictionary:(NSDictionary<XADArchiveKeys,id> *)dict;
 
--(BOOL)simpleUnarchiver:(XADSimpleUnarchiver *)unarchiver shouldExtractEntryWithDictionary:(NSDictionary *)dict to:(NSString *)path;
--(void)simpleUnarchiver:(XADSimpleUnarchiver *)unarchiver willExtractEntryWithDictionary:(NSDictionary *)dict to:(NSString *)path;
--(void)simpleUnarchiver:(XADSimpleUnarchiver *)unarchiver didExtractEntryWithDictionary:(NSDictionary *)dict to:(NSString *)path error:(XADError)error;
+-(nullable XADStringEncodingName)simpleUnarchiver:(XADSimpleUnarchiver *)unarchiver encodingNameForXADString:(id <XADString>)string;
 
--(NSString *)simpleUnarchiver:(XADSimpleUnarchiver *)unarchiver replacementPathForEntryWithDictionary:(NSDictionary *)dict
+-(BOOL)simpleUnarchiver:(XADSimpleUnarchiver *)unarchiver shouldExtractEntryWithDictionary:(NSDictionary<XADArchiveKeys,id> *)dict to:(NSString *)path;
+-(void)simpleUnarchiver:(XADSimpleUnarchiver *)unarchiver willExtractEntryWithDictionary:(NSDictionary<XADArchiveKeys,id> *)dict to:(NSString *)path;
+-(void)simpleUnarchiver:(XADSimpleUnarchiver *)unarchiver didExtractEntryWithDictionary:(NSDictionary<XADArchiveKeys,id> *)dict to:(NSString *)path error:(XADError)error;
+
+-(nullable NSString *)simpleUnarchiver:(XADSimpleUnarchiver *)unarchiver replacementPathForEntryWithDictionary:(NSDictionary<XADArchiveKeys,id> *)dict
 originalPath:(NSString *)path suggestedPath:(NSString *)unique;
--(NSString *)simpleUnarchiver:(XADSimpleUnarchiver *)unarchiver deferredReplacementPathForOriginalPath:(NSString *)path
+-(nullable NSString *)simpleUnarchiver:(XADSimpleUnarchiver *)unarchiver deferredReplacementPathForOriginalPath:(NSString *)path
 suggestedPath:(NSString *)unique;
 
 -(BOOL)extractionShouldStopForSimpleUnarchiver:(XADSimpleUnarchiver *)unarchiver;
 
 -(void)simpleUnarchiver:(XADSimpleUnarchiver *)unarchiver
-extractionProgressForEntryWithDictionary:(NSDictionary *)dict
+extractionProgressForEntryWithDictionary:(NSDictionary<XADArchiveKeys,id> *)dict
 fileProgress:(off_t)fileprogress of:(off_t)filesize
 totalProgress:(off_t)totalprogress of:(off_t)totalsize;
 -(void)simpleUnarchiver:(XADSimpleUnarchiver *)unarchiver
-estimatedExtractionProgressForEntryWithDictionary:(NSDictionary *)dict
+estimatedExtractionProgressForEntryWithDictionary:(NSDictionary<XADArchiveKeys,id> *)dict
 fileProgress:(double)fileprogress totalProgress:(double)totalprogress;
 
 @end
+
+NS_ASSUME_NONNULL_END
+

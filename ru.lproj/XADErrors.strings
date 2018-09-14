@@ -1,0 +1,37 @@
+/* 
+  XADErrors.strings
+  XADMaster
+
+  Created by C.W. Betts on 11/26/17.
+  
+*/
+
+/* Common errors */
+"Attempted to read more data than was available" = "Отсутствует часть файла архива";
+"Opening file failed" = "Не удалось открыть файл";
+"Missing or wrong password" = "Пароль указан неправильно";
+"Wrong checksum" = "Файл архива поврежден";
+"Could not create directory" = "Невозможно создать папку";
+
+/* Uncommon or unused errors */
+"Unknown error" = "Неизвестная ошибка";
+"Failed to write to file" = "Не удалось записать файл";
+"Function called with illegal parameters" = "Функция вызвана с недопустимыми параметрами";
+"Not enough memory available" = "Недостаточно памяти";
+"Data is corrupted" = "Данные повреждены";
+"File is not fully supported" = "Файл не поддерживается полностью";
+"Required resource missing" = "Отсутствует необходимый ресурс";
+"Error on decrunching" = "Ошибка декомпрессии";
+"Unknown file type" = "Неизвестный тип файла";
+"File, disk has been skipped" = "Файл, диск пропущен";
+"User cancelled extraction" = "Процесс прерван пользователем";
+"File already exists" = "Файл уже существует";
+"Verify failed (disk hook)" = "Ошибка при проверке (disk hook)";
+"Wrong drive geometry" = "Ошибочные параметры диска";
+"Unknown data format" = "Неизвестный формат даных";
+"Source contains no files" = "Архив не содержит файлов";
+"Unknown filesystem" = "Неизвестная файловая система";
+"Name of file exists as directory" = "Имя файла совпадает с именем существующей папки";
+"Buffer was too short" = "Буфер слишком мал";
+"Text encoding was defective" = "Кодировка текста ошибочна";
+"Could not create symlink" = "Не удалось создать символическую ссылку";

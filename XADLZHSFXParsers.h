@@ -8,15 +8,12 @@
 +(int)requiredHeaderSize;
 +(BOOL)recognizeFileWithHandle:(CSHandle *)handle firstBytes:(NSData *)data name:(NSString *)name;
 -(void)parse;
--(CSHandle *)handleAtDataOffsetForDictionary:(NSDictionary *)dict;
+-(CSHandle *)handleAtDataOffsetForDictionary:(NSDictionary<XADArchiveKeys,id> *)dict;
 -(NSString *)formatName;
 
 @end
 
 @interface XADLZHCommodore64SFXParser:XADLZHParser
-{
-}
-
 +(int)requiredHeaderSize;
 +(BOOL)recognizeFileWithHandle:(CSHandle *)handle firstBytes:(NSData *)data name:(NSString *)name;
 -(void)parse;
@@ -25,9 +22,6 @@
 @end
 
 @interface XADLZHSFXParser:XADLZHParser
-{
-}
-
 +(int)requiredHeaderSize;
 +(BOOL)recognizeFileWithHandle:(CSHandle *)handle firstBytes:(NSData *)data name:(NSString *)name;
 -(void)parse;

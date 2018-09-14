@@ -8,8 +8,8 @@
 
 +(BOOL)recognizeFileWithHandle:(CSHandle *)handle firstBytes:(NSData *)data name:(NSString *)name;
 {
-	const uint8_t *bytes=[data bytes];
-	int length=[data length];
+	const uint8_t *bytes=data.bytes;
+	NSInteger length=data.length;
 
 	if(length<48) return NO;
 
@@ -20,7 +20,7 @@
 {
 	lha150r=NO;
 
-	CSHandle *fh=[self handle];
+	CSHandle *fh=self.handle;
 
 	[fh seekToFileOffset:0x34];
 
@@ -55,19 +55,19 @@
 
 +(BOOL)recognizeFileWithHandle:(CSHandle *)handle firstBytes:(NSData *)data name:(NSString *)name;
 {
-	const uint8_t *bytes=[data bytes];
-	int length=[data length];
+	const uint8_t *bytes=data.bytes;
+	NSInteger length=data.length;
 
 	if(length<0xe90) return NO;
 
 	return bytes[0]==0x01&&bytes[2]==0x28&&bytes[3]==0x1c&&
-	       bytes[0xd30]=='1'&&bytes[0xd44]=='L'&&bytes[0xd45]=='H'&&bytes[0xd46]=='A'&&
+		   bytes[0xd30]=='1'&&bytes[0xd44]=='L'&&bytes[0xd45]=='H'&&bytes[0xd46]=='A'&&
 		   bytes[0xe8b]=='-'&&bytes[0xe8c]=='l'&&bytes[0xe8d]=='h'&&bytes[0xe8f]=='-';
 }
 
 -(void)parse
 {
-	CSHandle *fh=[self handle];
+	CSHandle *fh=self.handle;
 	[fh seekToFileOffset:0xe89];
 	[super parse];
 }
@@ -84,8 +84,8 @@
 
 +(BOOL)recognizeFileWithHandle:(CSHandle *)handle firstBytes:(NSData *)data name:(NSString *)name;
 {
-	const uint8_t *bytes=[data bytes];
-	int length=[data length];
+	const uint8_t *bytes=data.bytes;
+	NSInteger length=data.length;
 
 	if(length>=44&&bytes[9*4]=='L'&&bytes[9*4+1]=='H'&&bytes[9*4+3]==0x27
 	&&CSUInt32BE(bytes+10*4)==0x73205346) return YES;
@@ -109,7 +109,7 @@ static int MatchLZHSignature(const uint8_t *bytes,int available,off_t offset,voi
 
 -(void)parse
 {
-	if(![[self handle] scanUsingMatchingFunction:MatchLZHSignature maximumLength:7])
+	if(![self.handle scanUsingMatchingFunction:MatchLZHSignature maximumLength:7])
 	[XADException raiseUnknownException];
 
 	[super parse];

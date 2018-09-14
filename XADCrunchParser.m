@@ -18,13 +18,13 @@
 	uint8_t byte;
 	while((byte=[fh readUInt8])) [data appendBytes:&byte length:1];
 
-	const char *bytes=[data bytes];
-	int length=[data length];
+	const char *bytes=data.bytes;
+	NSInteger length=data.length;
 
 	NSData *namepart=data;
 	NSData *comment=nil;
-	int namelength;
-	for(int i=0;i<length;i++)
+	NSInteger namelength;
+	for(NSInteger i=0;i<length;i++)
 	{
 		if(bytes[i]=='.')
 		{
@@ -60,30 +60,30 @@
 		else compname=@"LZHUF 2.0";
 	}
 
-	off_t dataoffset=[fh offsetInFile];
+	off_t dataoffset=fh.offsetInFile;
 
 	NSMutableDictionary *dict=[NSMutableDictionary dictionaryWithObjectsAndKeys:
 		[parser XADPathWithData:namepart separators:XADNoPathSeparator],XADFileNameKey,
 		[parser XADStringWithString:compname],XADCompressionNameKey,
-		[NSNumber numberWithLongLong:end-dataoffset-2],XADCompressedSizeKey,
-		[NSNumber numberWithUnsignedLongLong:dataoffset],XADDataOffsetKey,
-		[NSNumber numberWithLongLong:end-dataoffset],XADDataLengthKey,
-		[NSNumber numberWithInt:type],@"CrunchType",
-		[NSNumber numberWithInt:version1],@"CrunchReferenceRevision",
-		[NSNumber numberWithInt:version2],@"CrunchSignificantRevision",
-		[NSNumber numberWithInt:errordetection],@"CrunchErrorDetection",
+		@(end-dataoffset-2),XADCompressedSizeKey,
+		@(dataoffset),XADDataOffsetKey,
+		@(end-dataoffset),XADDataLengthKey,
+		@(type),@"CrunchType",
+		@(version1),@"CrunchReferenceRevision",
+		@(version2),@"CrunchSignificantRevision",
+		@(errordetection),@"CrunchErrorDetection",
 	nil];
 
-	if(comment) [dict setObject:[parser XADStringWithData:comment] forKey:XADCommentKey];
+	if(comment) dict[XADCommentKey] = [parser XADStringWithData:comment];
 
 	return dict;
 }
 
 +(CSHandle *)handleForEntryWithDictionary:(NSDictionary *)dict wantChecksum:(BOOL)checksum handle:(CSHandle *)handle
 {
-	int type=[[dict objectForKey:@"CrunchType"] intValue];
-	int version2=[[dict objectForKey:@"CrunchSignificantRevision"] intValue];
-	int errordetection=[[dict objectForKey:@"CrunchErrorDetection"] intValue];
+	int type=[dict[@"CrunchType"] intValue];
+	int version2=[dict[@"CrunchSignificantRevision"] intValue];
+	int errordetection=[dict[@"CrunchErrorDetection"] intValue];
 	BOOL old=(version2&0xf0)==0x10;
 	BOOL haschecksum=errordetection==0;
 
@@ -100,15 +100,15 @@
 
 +(BOOL)recognizeFileWithHandle:(CSHandle *)handle firstBytes:(NSData *)data name:(NSString *)name
 {
-	const uint8_t *bytes=[data bytes];
-	int length=[data length];
+	const uint8_t *bytes=data.bytes;
+	NSInteger length=data.length;
 
 	if(length<9) return NO;
 
 	if(bytes[0]!=0x76 || (bytes[1]!=0xfe && bytes[1]!=0xfd)) return NO;
 
 	if(bytes[2]==0) return NO;
-	for(int i=2;i<length;i++)
+	for(NSInteger i=2;i<length;i++)
 	{
 		if(bytes[i]==0)
 		{
@@ -125,15 +125,15 @@
 
 -(void)parse
 {
-	CSHandle *fh=[self handle];
+	CSHandle *fh=self.handle;
 
 	NSMutableDictionary *dict=[XADCrunchParser parseWithHandle:fh
-	endOffset:[fh fileSize] parser:self];
+	endOffset:fh.fileSize parser:self];
 
-	XADPath *filename=[dict objectForKey:XADFileNameKey];
-	NSData *namedata=[filename data];
-	const char *bytes=[namedata bytes];
-	int length=[namedata length];
+	XADPath *filename=dict[XADFileNameKey];
+	NSData *namedata=filename.data;
+	const char *bytes=namedata.bytes;
+	NSInteger length=namedata.length;
 
 	if(length>4)
 	if(bytes[length-4]=='.')
@@ -141,7 +141,7 @@
 	if(tolower(bytes[length-2])=='b')
 	if(tolower(bytes[length-1])=='r')
 	{
-		[dict setObject:[NSNumber numberWithBool:YES] forKey:XADIsArchiveKey];
+		dict[XADIsArchiveKey] = @YES;
 	}
 
 	[self addEntryWithDictionary:dict];

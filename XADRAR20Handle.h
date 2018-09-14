@@ -5,7 +5,7 @@
 
 @interface XADRAR20Handle:XADFastLZSSHandle
 {
-	XADRARParser *parser;
+	__unsafe_unretained XADRARParser *parser;
 
 	NSArray *files;
 	int file;
@@ -24,8 +24,7 @@
 	int lengthtable[1028];
 }
 
--(id)initWithRARParser:(XADRARParser *)parent files:(NSArray *)filearray;
--(void)dealloc;
+-(id)initWithRARParser:(XADRARParser *)parentparser files:(NSArray *)filearray;
 
 -(void)resetLZSSHandle;
 -(void)startNextFile;

@@ -11,22 +11,22 @@
 
 +(BOOL)recognizeFileWithHandle:(CSHandle *)handle firstBytes:(NSData *)data name:(NSString *)name
 {
-	const uint8_t *bytes=[data bytes];
-	int length=[data length];
+	const uint8_t *bytes=data.bytes;
+	NSInteger length=data.length;
 
 	return length>=10&&bytes[0]=='L'&&bytes[1]=='Z'&&bytes[2]=='X';
 }
 
 -(void)parse
 {
-	CSHandle *fh=[self handle];
+	CSHandle *fh=self.handle;
 
 	[fh skipBytes:10];
 
 	NSMutableArray *solidfiles=[NSMutableArray array];
 	off_t solidsize=0;
 
-	while([self shouldKeepParsing])
+	while(self.shouldKeepParsing)
 	{
 		int attributes;
 		@try { attributes=[fh readUInt16LE]; }
@@ -49,7 +49,7 @@
 		NSData *commentdata=nil;
 		if(commentlen) commentdata=[fh readDataOfLength:commentlen];
 
-		off_t dataoffs=[fh offsetInFile];
+		off_t dataoffs=fh.offsetInFile;
 
 		int day=(date>>27)&31;
 		int month=((date>>23)&15)+1;
@@ -70,16 +70,16 @@
 
 		NSMutableDictionary *dict=[NSMutableDictionary dictionaryWithObjectsAndKeys:
 			[self XADPathWithData:namedata separators:XADUnixPathSeparator],XADFileNameKey,
-			[NSNumber numberWithUnsignedLong:filesize],XADFileSizeKey,
-			[NSNumber numberWithUnsignedLong:filesize],XADSolidLengthKey,
-			[NSNumber numberWithLongLong:solidsize],XADSolidOffsetKey,
+			@(filesize),XADFileSizeKey,
+			@(filesize),XADSolidLengthKey,
+			@(solidsize),XADSolidOffsetKey,
 			//[NSNumber numberWithUnsignedLong:compsize],XADCompressedSizeKey,
 			dateobj,XADLastModificationDateKey,
-			[NSNumber numberWithInt:os],@"LZXOS",
-			[NSNumber numberWithInt:method],@"LZXMethod",
-			[NSNumber numberWithInt:flags],@"LZXFlags",
-			[NSNumber numberWithInt:version],@"LZXVersion",
-			[NSNumber numberWithInt:datacrc],@"LZXCRC32",
+			@(os),@"LZXOS",
+			@(method),@"LZXMethod",
+			@(flags),@"LZXFlags",
+			@(version),@"LZXVersion",
+			@(datacrc),@"LZXCRC32",
 		nil];
 
 		NSString *methodname=nil;
@@ -88,7 +88,7 @@
 			case 0: methodname=@"None"; break;
 			case 2: methodname=@"LZX"; break;
 		}
-		if(methodname) [dict setObject:[self XADStringWithString:methodname] forKey:XADCompressionNameKey];
+		if(methodname) dict[XADCompressionNameKey] = [self XADStringWithString:methodname];
 
 		NSString *osname=nil;
 		switch(os)
@@ -99,7 +99,7 @@
 			case 10: osname=@"Amiga"; break;
 			case 20: osname=@"Unix"; break;
 		}
-		if(osname) [dict setObject:[self XADStringWithString:osname] forKey:@"LZXOSName"];
+		if(osname) dict[@"LZXOSName"] = [self XADStringWithString:osname];
 
 		if(os==10)
 		{
@@ -114,7 +114,7 @@
 			if(attributes&0x40) prot|=0x40; // Script
 			if(attributes&0x80) prot|=0x20; // Pure
 			
-			[dict setObject:[NSNumber numberWithInt:prot] forKey:XADAmigaProtectionBitsKey];
+			dict[XADAmigaProtectionBitsKey] = @(prot);
 		}
 
 		[solidfiles addObject:dict];
@@ -123,20 +123,20 @@
 		if(compsize)
 		{
 			NSMutableDictionary *solidobj=[NSMutableDictionary dictionaryWithObjectsAndKeys:
-				[NSNumber numberWithUnsignedInt:compsize],XADDataLengthKey,
-				[NSNumber numberWithLongLong:dataoffs],XADDataOffsetKey,
-				[NSNumber numberWithLongLong:solidsize],@"TotalSize",
-				[NSNumber numberWithInt:method],@"Method",
+				@(compsize),XADDataLengthKey,
+				@(dataoffs),XADDataOffsetKey,
+				@(solidsize),@"TotalSize",
+				@(method),@"Method",
 			nil];
 
 			NSEnumerator *enumerator=[solidfiles objectEnumerator];
 			NSMutableDictionary *dict;
 			while((dict=[enumerator nextObject]))
 			{
+				off_t compsize=0;
+				if(solidsize!=0) compsize=([[dict objectForKey:XADFileSizeKey] longLongValue]*(off_t)compsize)/solidsize;
 				[dict setObject:solidobj forKey:XADSolidObjectKey];
-				[dict setObject:[NSNumber numberWithLongLong:
-				([[dict objectForKey:XADFileSizeKey] longLongValue]*(off_t)compsize)/solidsize]
-				forKey:XADCompressedSizeKey];
+				[dict setObject:[NSNumber numberWithLongLong:compsize] forKey:XADCompressedSizeKey];
 				[self addEntryWithDictionary:dict];
 			}
 
@@ -152,8 +152,8 @@
 {
 	CSHandle *handle=[self subHandleFromSolidStreamForEntryWithDictionary:dict];
 
-	if(checksum) handle=[XADCRCHandle IEEECRC32HandleWithHandle:handle length:[handle fileSize]
-	correctCRC:[[dict objectForKey:@"LZXCRC32"] unsignedIntValue] conditioned:YES];
+	if(checksum) handle=[XADCRCHandle IEEECRC32HandleWithHandle:handle length:handle.fileSize
+	correctCRC:[dict[@"LZXCRC32"] unsignedIntValue] conditioned:YES];
 
 	return handle;
 }
@@ -161,8 +161,8 @@
 -(CSHandle *)handleForSolidStreamWithObject:(id)obj wantChecksum:(BOOL)checksum
 {
 	CSHandle *handle=[self handleAtDataOffsetForDictionary:obj];
-	off_t length=[[obj objectForKey:@"TotalSize"] longLongValue];
-	int method=[[obj objectForKey:@"Method"] intValue];
+	off_t length=[obj[@"TotalSize"] longLongValue];
+	int method=[obj[@"Method"] intValue];
 
 	switch(method)
 	{

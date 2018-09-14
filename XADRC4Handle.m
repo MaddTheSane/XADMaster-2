@@ -4,11 +4,10 @@
 
 @implementation XADRC4Handle
 
--(id)initWithHandle:(CSHandle *)handle key:(NSData *)keydata
+-(instancetype)initWithHandle:(CSHandle *)handle key:(NSData *)keydata
 {
-	if((self=[super initWithName:[handle name] length:[handle fileSize]]))
+	if(self=[super initWithParentHandle:handle length:[handle fileSize]])
 	{
-		parent=[handle retain];
 		startoffs=[parent offsetInFile];
 		key=[keydata retain];
 		rc4=nil;
@@ -18,7 +17,6 @@
 
 -(void)dealloc
 {
-	[parent release];
 	[key release];
 	[rc4 release];
 	[super dealloc];
@@ -51,12 +49,12 @@
 	return [[(XADRC4Engine *)[[self class] alloc] initWithKey:key] autorelease];
 }
 
--(id)initWithKey:(NSData *)key
+-(instancetype)initWithKey:(NSData *)key
 {
 	if((self=[super init]))
 	{
-		const uint8_t *keybytes=[key bytes];
-		int keylength=[key length];
+		const uint8_t *keybytes=key.bytes;
+		NSInteger keylength=key.length;
 
 		for(i=0;i<256;i++) s[i]=i;
 
@@ -75,7 +73,7 @@
 -(NSData *)encryptedData:(NSData *)data
 {
 	NSMutableData *res=[NSMutableData dataWithData:data];
-	[self encryptBytes:[res mutableBytes] length:[res length]];
+	[self encryptBytes:res.mutableBytes length:(int)res.length];
 	return [NSData dataWithData:res];
 }
 

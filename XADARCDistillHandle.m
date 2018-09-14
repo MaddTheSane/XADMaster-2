@@ -30,7 +30,7 @@ static const int offsetcodes[0x40]=
 
 -(id)initWithHandle:(CSHandle *)handle length:(off_t)length
 {
-	if((self=[super initWithHandle:handle length:length windowSize:8192]))
+	if((self=[super initWithInputBufferForHandle:handle length:length windowSize:8192]))
 	{
 		maincode=nil;
 		offsetcode=[XADPrefixCode new];
@@ -47,8 +47,10 @@ static const int offsetcodes[0x40]=
 	[super dealloc];
 }
 
-static void BuildCodeFromTree(XADPrefixCode *code,int *tree,int node,int numnodes)
+static void BuildCodeFromTree(XADPrefixCode *code,int *tree,int node,int numnodes,int depth)
 {
+	if(depth>64) [XADException raiseDecrunchException];
+
 	if(node>=numnodes)
 	{
 		[code makeLeafWithValue:node-numnodes];
@@ -56,9 +58,9 @@ static void BuildCodeFromTree(XADPrefixCode *code,int *tree,int node,int numnode
 	else
 	{
 		[code startZeroBranch];
-		BuildCodeFromTree(code,tree,tree[node],numnodes);
+		BuildCodeFromTree(code,tree,tree[node],numnodes,depth+1);
 		[code startOneBranch];
-		BuildCodeFromTree(code,tree,tree[node+1],numnodes);
+		BuildCodeFromTree(code,tree,tree[node+1],numnodes,depth+1);
 		[code finishBranches];
 	}
 }
@@ -68,16 +70,18 @@ static void BuildCodeFromTree(XADPrefixCode *code,int *tree,int node,int numnode
 	int numnodes=CSInputNextUInt16LE(input);
 	int codelength=CSInputNextByte(input);
 
+	if(numnodes<2) [XADException raiseDecrunchException];
 	if(numnodes>0x274) [XADException raiseDecrunchException];
 
 	int nodes[numnodes];
+	memset(nodes, 0, numnodes * sizeof(int));
 	for(int i=0;i<numnodes;i++) nodes[i]=CSInputNextBitStringLE(input,codelength);
 
 	[maincode release];
 	maincode=[XADPrefixCode new];
 
 	[maincode startBuildingTree];
-	BuildCodeFromTree(maincode,nodes,numnodes-2,numnodes);
+	BuildCodeFromTree(maincode,nodes,numnodes-2,numnodes,0);
 }
 
 -(void)expandFromPosition:(off_t)pos

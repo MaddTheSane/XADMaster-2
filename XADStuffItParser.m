@@ -20,8 +20,8 @@
 
 +(BOOL)recognizeFileWithHandle:(CSHandle *)handle firstBytes:(NSData *)data name:(NSString *)name;
 {
-	const uint8_t *bytes=[data bytes];
-	int length=[data length];
+	const uint8_t *bytes=data.bytes;
+	NSInteger length=data.length;
 
 	if(length<14) return NO;
 
@@ -89,8 +89,8 @@
 {
 	[self setIsMacArchive:YES];
 
-	CSHandle *fh=[self handle];
-	off_t base=[fh offsetInFile];
+	CSHandle *fh=self.handle;
+	off_t base=fh.offsetInFile;
 
 	/*uint32_t signature=*/[fh readID];
 	/*int numfiles=*/[fh readUInt16BE];
@@ -103,13 +103,13 @@
 	//int crc=[fh readUInt16BE];
 	[fh skipBytes:12];
 
-	XADResourceFork *fork=[self resourceFork];
+	XADResourceFork *fork=self.resourceFork;
 	NSData *comment=[fork resourceDataForType:'SitC' identifier:0];
 	if(comment) [self setObject:[self XADStringWithData:comment] forPropertyKey:XADCommentKey];
 
-	XADPath *currdir=[self XADPath];
+	XADPath *currdir=self.XADPath;
 
-	while([fh offsetInFile]+SIT_FILEHDRSIZE<=totalsize+base && [self shouldKeepParsing])
+	while(fh.offsetInFile+SIT_FILEHDRSIZE<=totalsize+base && self.shouldKeepParsing)
 	{
 		uint8_t header[SIT_FILEHDRSIZE];
 		[fh readBytes:112 toBuffer:header];
@@ -131,7 +131,7 @@
 			XADString *name=[self XADStringWithBytes:header+SITFH_FNAME length:namelen];
 			XADPath *path=[currdir pathByAppendingXADStringComponent:name];
 
-			off_t start=[fh offsetInFile];
+			off_t start=fh.offsetInFile;
 
 			if((datamethod&StuffItFolderMask)==StuffItStartFolder||
 			(resourcemethod&StuffItFolderMask)==StuffItStartFolder)
@@ -140,14 +140,14 @@
 					path,XADFileNameKey,
 					[NSDate XADDateWithTimeIntervalSince1904:CSUInt32BE(header+SITFH_MODDATE)],XADLastModificationDateKey,
 					[NSDate XADDateWithTimeIntervalSince1904:CSUInt32BE(header+SITFH_CREATIONDATE)],XADCreationDateKey,
-					[NSNumber numberWithInt:CSUInt16BE(header+SITFH_FNDRFLAGS)],XADFinderFlagsKey,
-					[NSNumber numberWithBool:YES],XADIsDirectoryKey,
+					@(CSUInt16BE(header+SITFH_FNDRFLAGS)),XADFinderFlagsKey,
+					@YES,XADIsDirectoryKey,
 				nil];
 
 				if((datamethod&StuffItFolderContainsEncrypted)!=0||
 				(resourcemethod&StuffItFolderContainsEncrypted)!=0)
 				{
-					[dict setObject:[NSNumber numberWithBool:YES] forKey:XADIsEncryptedKey];
+					dict[XADIsEncryptedKey] = @YES;
 				}
 
 				[self addEntryWithDictionary:dict];
@@ -159,7 +159,7 @@
 			else if((datamethod&StuffItFolderMask)==StuffItEndFolder||
 			(resourcemethod&StuffItFolderMask)==StuffItEndFolder)
 			{
-				currdir=[currdir pathByDeletingLastPathComponent];
+				currdir=currdir.pathByDeletingLastPathComponent;
 			}
 			else
 			{
@@ -168,35 +168,35 @@
 				{
 					NSMutableDictionary *dict=[NSMutableDictionary dictionaryWithObjectsAndKeys:
 						path,XADFileNameKey,
-						[NSNumber numberWithUnsignedInt:resourcelength],XADFileSizeKey,
-						[NSNumber numberWithUnsignedInt:resourcecomplen],XADCompressedSizeKey,
+						@(resourcelength),XADFileSizeKey,
+						@(resourcecomplen),XADCompressedSizeKey,
 						[NSDate XADDateWithTimeIntervalSince1904:CSUInt32BE(header+SITFH_MODDATE)],XADLastModificationDateKey,
 						[NSDate XADDateWithTimeIntervalSince1904:CSUInt32BE(header+SITFH_CREATIONDATE)],XADCreationDateKey,
-						[NSNumber numberWithUnsignedInt:CSUInt32BE(header+SITFH_FTYPE)],XADFileTypeKey,
-						[NSNumber numberWithUnsignedInt:CSUInt32BE(header+SITFH_CREATOR)],XADFileCreatorKey,
-						[NSNumber numberWithInt:CSUInt16BE(header+SITFH_FNDRFLAGS)],XADFinderFlagsKey,
+						@(CSUInt32BE(header+SITFH_FTYPE)),XADFileTypeKey,
+						@(CSUInt32BE(header+SITFH_CREATOR)),XADFileCreatorKey,
+						@(CSUInt16BE(header+SITFH_FNDRFLAGS)),XADFinderFlagsKey,
 
-						[NSNumber numberWithBool:YES],XADIsResourceForkKey,
-						[NSNumber numberWithLongLong:start],XADDataOffsetKey,
-						[NSNumber numberWithUnsignedInt:resourcecomplen],XADDataLengthKey,
-						[NSNumber numberWithInt:resourcemethod&StuffItMethodMask],@"StuffItCompressionMethod",
-						[NSNumber numberWithInt:CSUInt16BE(header+SITFH_RSRCCRC)],@"StuffItCRC16",
+						@YES,XADIsResourceForkKey,
+						@(start),XADDataOffsetKey,
+						@(resourcecomplen),XADDataLengthKey,
+						@(resourcemethod&StuffItMethodMask),@"StuffItCompressionMethod",
+						@(CSUInt16BE(header+SITFH_RSRCCRC)),@"StuffItCRC16",
 					nil];
 
 					XADString *compressionname=[self nameOfCompressionMethod:resourcemethod];
-					if(compressionname) [dict setObject:compressionname forKey:XADCompressionNameKey];
+					if(compressionname) dict[XADCompressionNameKey] = compressionname;
 
 					if(resourcemethod&StuffItEncryptedFlag)
 					{
-						[dict setObject:[NSNumber numberWithBool:YES] forKey:XADIsEncryptedKey];
+						dict[XADIsEncryptedKey] = @YES;
 						if(resourcecomplen<16) [XADException raiseIllegalDataException];
-						[dict setObject:[NSNumber numberWithUnsignedInt:resourcecomplen-16] forKey:XADDataLengthKey];
+						dict[XADDataLengthKey] = @(resourcecomplen-16);
 						// This sucks, as it causes resets in BinHex files.
 						// There seems to be no way around it, though.
 						[fh seekToFileOffset:start+resourcecomplen-16];
 						entrykey=[fh readDataOfLength:16];
-						[dict setObject:entrykey forKey:@"StuffItEntryKey"];
-						[dict setObject:[NSNumber numberWithInt:resourcepadding] forKey:@"StuffItBlockPadding"];
+						dict[@"StuffItEntryKey"] = entrykey;
+						dict[@"StuffItBlockPadding"] = @(resourcepadding);
 					}
 
 					// TODO: deal with this? if(!datalen&&datamethod==0) size=crunchsize
@@ -208,18 +208,18 @@
 				{
 					NSMutableDictionary *dict=[NSMutableDictionary dictionaryWithObjectsAndKeys:
 						path,XADFileNameKey,
-						[NSNumber numberWithUnsignedInt:datalength],XADFileSizeKey,
-						[NSNumber numberWithUnsignedInt:datacomplen],XADCompressedSizeKey,
+						@(datalength),XADFileSizeKey,
+						@(datacomplen),XADCompressedSizeKey,
 						[NSDate XADDateWithTimeIntervalSince1904:CSUInt32BE(header+SITFH_MODDATE)],XADLastModificationDateKey,
 						[NSDate XADDateWithTimeIntervalSince1904:CSUInt32BE(header+SITFH_CREATIONDATE)],XADCreationDateKey,
-						[NSNumber numberWithUnsignedInt:CSUInt32BE(header+SITFH_FTYPE)],XADFileTypeKey,
-						[NSNumber numberWithUnsignedInt:CSUInt32BE(header+SITFH_CREATOR)],XADFileCreatorKey,
-						[NSNumber numberWithInt:CSUInt16BE(header+SITFH_FNDRFLAGS)],XADFinderFlagsKey,
+						@(CSUInt32BE(header+SITFH_FTYPE)),XADFileTypeKey,
+						@(CSUInt32BE(header+SITFH_CREATOR)),XADFileCreatorKey,
+						@((int)(CSUInt16BE(header+SITFH_FNDRFLAGS))),XADFinderFlagsKey,
 
-						[NSNumber numberWithLongLong:start+resourcecomplen],XADDataOffsetKey,
-						[NSNumber numberWithUnsignedInt:datacomplen],XADDataLengthKey,
-						[NSNumber numberWithInt:datamethod&StuffItMethodMask],@"StuffItCompressionMethod",
-						[NSNumber numberWithInt:CSUInt16BE(header+SITFH_DATACRC)],@"StuffItCRC16",
+						@(start+resourcecomplen),XADDataOffsetKey,
+						@(datacomplen),XADDataLengthKey,
+						@(datamethod&StuffItMethodMask),@"StuffItCompressionMethod",
+						@(CSUInt16BE(header+SITFH_DATACRC)),@"StuffItCRC16",
 					nil];
 
 					// TODO: figure out best way to link forks
@@ -227,19 +227,19 @@
 					// TODO: deal with this? if(!datalen&&datamethod==0) size=crunchsize
 
 					XADString *compressionname=[self nameOfCompressionMethod:datamethod];
-					if(compressionname) [dict setObject:compressionname forKey:XADCompressionNameKey];
+					if(compressionname) dict[XADCompressionNameKey] = compressionname;
 
 					if(datamethod&StuffItEncryptedFlag)
 					{
-						[dict setObject:[NSNumber numberWithBool:YES] forKey:XADIsEncryptedKey];
+						dict[XADIsEncryptedKey] = @YES;
 						if(datacomplen<16) [XADException raiseIllegalDataException];
-						[dict setObject:[NSNumber numberWithUnsignedInt:datacomplen-16] forKey:XADDataLengthKey];
+						dict[XADDataLengthKey] = @(datacomplen-16);
 						// This sucks, as it causes resets in BinHex files.
 						// There seems to be no way around it, though.
 						[fh seekToFileOffset:start+resourcecomplen+datacomplen-16];
 						entrykey=[fh readDataOfLength:16];
-						[dict setObject:entrykey forKey:@"StuffItEntryKey"];
-						[dict setObject:[NSNumber numberWithInt:datapadding] forKey:@"StuffItBlockPadding"];
+						dict[@"StuffItEntryKey"] = entrykey;
+						dict[@"StuffItBlockPadding"] = @(datapadding);
 					}
 
 					[self addEntryWithDictionary:dict];
@@ -273,20 +273,20 @@
 
 -(CSHandle *)handleForEntryWithDictionary:(NSDictionary *)dict wantChecksum:(BOOL)checksum
 {
-	NSNumber *isdir=[dict objectForKey:XADIsDirectoryKey];
-	if(isdir && [isdir boolValue]) return [self zeroLengthHandleWithChecksum:checksum];
+	NSNumber *isdir=dict[XADIsDirectoryKey];
+	if(isdir && isdir.boolValue) return [self zeroLengthHandleWithChecksum:checksum];
 
 	CSHandle *handle=[self handleAtDataOffsetForDictionary:dict];
 
-	int compressionmethod=[[dict objectForKey:@"StuffItCompressionMethod"] intValue];
-	off_t size=[[dict objectForKey:XADFileSizeKey] longLongValue];
+	int compressionmethod=[dict[@"StuffItCompressionMethod"] intValue];
+	off_t size=[dict[XADFileSizeKey] longLongValue];
 
-	NSNumber *enc=[dict objectForKey:XADIsEncryptedKey];
-	if(enc && [enc boolValue])
+	NSNumber *enc=dict[XADIsEncryptedKey];
+	if(enc && enc.boolValue)
 	{
 		handle=[self decryptHandleForEntryWithDictionary:dict handle:handle];
 	}
-	
+
 	switch(compressionmethod&0x0f)
 	{
 		case 0: break;
@@ -320,7 +320,7 @@
 		// TODO: handle arsenic
 		if((compressionmethod&0x0f)==15) return handle;
 		else return [XADCRCHandle IBMCRC16HandleWithHandle:handle length:size
-		correctCRC:[[dict objectForKey:@"StuffItCRC16"] intValue] conditioned:NO];
+		correctCRC:[dict[@"StuffItCRC16"] intValue] conditioned:NO];
 	}
 
 	return handle;
@@ -328,23 +328,23 @@
 
 -(CSHandle *)decryptHandleForEntryWithDictionary:(NSDictionary *)dict handle:(CSHandle *)fh
 {
-	NSData *passworddata=[self encodedPassword];
+	NSData *passworddata=self.encodedPassword;
 
-	NSData *entrykey=[dict objectForKey:@"StuffItEntryKey"];
+	NSData *entrykey=dict[@"StuffItEntryKey"];
 	if(!entrykey) [XADException raiseIllegalDataException];
 
-	XADResourceFork *fork=[self resourceFork];
+	XADResourceFork *fork=self.resourceFork;
 	NSData *mkey=[fork resourceDataForType:'MKey' identifier:0];
 	if(!mkey) [XADException raiseNotSupportedException];
 
 	NSData *key=[XADStuffItDESHandle keyForPasswordData:passworddata entryKey:entrykey MKey:mkey];
 	if(!key) [XADException raisePasswordException];
 
-	NSNumber *padding=[dict objectForKey:@"StuffItBlockPadding"];
-	off_t inlength=[[dict objectForKey:XADDataLengthKey] longLongValue];
+	NSNumber *padding=dict[@"StuffItBlockPadding"];
+	off_t inlength=[dict[XADDataLengthKey] longLongValue];
 	if(inlength%8) [XADException raiseIllegalDataException];
 
-	off_t outlength=inlength-[padding longLongValue];
+	off_t outlength=inlength-padding.longLongValue;
 
 	return [[[XADStuffItDESHandle alloc] initWithHandle:fh length:outlength key:key] autorelease];
 }

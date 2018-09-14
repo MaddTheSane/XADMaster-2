@@ -2,7 +2,15 @@
 #import "XADException.h"
 #import "NSDateXAD.h"
 #import "XADRC4Handle.h"
+#if defined(USE_COMMON_CRYPTO) && USE_COMMON_CRYPTO
+#include <CommonCrypto/CommonDigest.h>
+typedef CC_MD5_CTX MD5_CTX;
+#define MD5_Init CC_MD5_Init
+#define MD5_Update CC_MD5_Update
+#define MD5_Final CC_MD5_Final
+#else
 #import "Crypto/md5.h"
+#endif
 
 static NSData *StuffItMD5(NSData *data);
 
@@ -12,8 +20,8 @@ static NSData *StuffItMD5(NSData *data);
 
 +(BOOL)recognizeFileWithHandle:(CSHandle *)handle firstBytes:(NSData *)data name:(NSString *)name;
 {
-	const char *bytes=[data bytes];
-	int length=[data length];
+	const char *bytes=data.bytes;
+	NSInteger length=data.length;
 
 	if(length<100) return NO;
 
@@ -112,9 +120,9 @@ static NSData *StuffItMD5(NSData *data);
 {
 	[self setIsMacArchive:YES];
 
-	CSHandle *fh=[self handle];
+	CSHandle *fh=self.handle;
 
-	off_t base=[fh offsetInFile];
+	off_t base=fh.offsetInFile;
 
 	[fh skipBytes:82];
 	int version=[fh readUInt8];
@@ -144,7 +152,7 @@ static NSData *StuffItMD5(NSData *data);
 		
 		NSData *hash=[fh readDataOfLength:hashsize];
 
-		[self setObject:[NSNumber numberWithBool:YES] forPropertyKey:XADIsEncryptedKey];
+		[self setObject:@YES forPropertyKey:XADIsEncryptedKey];
 		[self setObject:hash forPropertyKey:@"StuffItPasswordHash"];
 	}
 
@@ -183,14 +191,14 @@ static NSData *StuffItMD5(NSData *data);
 
 -(void)parseWithNumberOfTopLevelEntries:(int)numentries
 {
-	CSHandle *fh=[self handle];
+	CSHandle *fh=self.handle;
 	NSMutableDictionary *dirs=[NSMutableDictionary dictionary];
 
 	for(int i=0;i<numentries;i++)
 	{
-		if(![self shouldKeepParsing]) return;
+		if(!self.shouldKeepParsing) return;
 
-		off_t offs=[fh offsetInFile];
+		off_t offs=fh.offsetInFile;
 
 		uint32_t headid=[fh readID];
 		if(headid!=SIT5_ID) [XADException raiseDataFormatException];
@@ -213,7 +221,7 @@ static NSData *StuffItMD5(NSData *data);
 		int datacrc=[fh readUInt16BE];
 		[fh skipBytes:2];
 
-		int datamethod,numfiles;
+		int datamethod = 0,numfiles = 0;
 		NSData *datakey=nil,*rsrckey=nil;
 		if(flags&SIT5FLAGS_DIRECTORY)
 		{
@@ -239,7 +247,7 @@ static NSData *StuffItMD5(NSData *data);
 		NSData *namedata=[fh readDataOfLength:namelength];
 
 		XADString *comment=nil;
-		if([fh offsetInFile]<headerend)
+		if(fh.offsetInFile<headerend)
 		{
 			int commentsize=[fh readUInt16BE];
 			[fh skipBytes:2];
@@ -256,7 +264,7 @@ static NSData *StuffItMD5(NSData *data);
 		else [fh skipBytes:18];
 
 		uint32_t resourcelength=0,resourcecomplen=0;
-		int resourcecrc,resourcemethod;
+		int resourcecrc = 0,resourcemethod = 0;
 		BOOL hasresource=something&0x01;
 		if(hasresource)
 		{
@@ -275,22 +283,22 @@ static NSData *StuffItMD5(NSData *data);
 			else if(passlen) [XADException raiseNotSupportedException];
 		}
 
-		off_t datastart=[fh offsetInFile];
+		off_t datastart=fh.offsetInFile;
 
-		XADPath *parent=[dirs objectForKey:[NSNumber numberWithInt:diroffs]];
-		if(!parent) parent=[self XADPath];
+		XADPath *parent=dirs[@((int)diroffs)];
+		if(!parent) parent=self.XADPath;
 		XADPath *path=[parent pathByAppendingXADStringComponent:[self XADStringWithData:namedata]];
 
 		if(flags&SIT5FLAGS_DIRECTORY)
 		{
-			[dirs setObject:path forKey:[NSNumber numberWithInt:(int)offs]];
+			dirs[@((int)offs)] = path;
 			NSMutableDictionary *dict=[NSMutableDictionary dictionaryWithObjectsAndKeys:
 				path,XADFileNameKey,
 				[NSDate XADDateWithTimeIntervalSince1904:modificationdate],XADLastModificationDateKey,
 				[NSDate XADDateWithTimeIntervalSince1904:creationdate],XADCreationDateKey,
-				[NSNumber numberWithInt:finderflags],XADFinderFlagsKey,
-				[NSNumber numberWithBool:YES],XADIsDirectoryKey,
-				[NSNumber numberWithInt:flags],@"StuffItFlags",
+				@(finderflags),XADFinderFlagsKey,
+				@YES,XADIsDirectoryKey,
+				@(flags),@"StuffItFlags",
 				comment,XADCommentKey,
 			nil];
 
@@ -304,30 +312,30 @@ static NSData *StuffItMD5(NSData *data);
 			{
 				NSMutableDictionary *dict=[NSMutableDictionary dictionaryWithObjectsAndKeys:
 					path,XADFileNameKey,
-					[NSNumber numberWithUnsignedInt:resourcelength],XADFileSizeKey,
-					[NSNumber numberWithUnsignedInt:resourcecomplen],XADCompressedSizeKey,
+					@(resourcelength),XADFileSizeKey,
+					@(resourcecomplen),XADCompressedSizeKey,
 					[NSDate XADDateWithTimeIntervalSince1904:modificationdate],XADLastModificationDateKey,
 					[NSDate XADDateWithTimeIntervalSince1904:creationdate],XADCreationDateKey,
-					[NSNumber numberWithUnsignedInt:filetype],XADFileTypeKey,
-					[NSNumber numberWithUnsignedInt:filecreator],XADFileCreatorKey,
-					[NSNumber numberWithInt:finderflags],XADFinderFlagsKey,
-					[NSNumber numberWithBool:YES],XADIsResourceForkKey,
+					@(filetype),XADFileTypeKey,
+					@(filecreator),XADFileCreatorKey,
+					@(finderflags),XADFinderFlagsKey,
+					@YES,XADIsResourceForkKey,
 
-					[NSNumber numberWithLongLong:datastart],XADDataOffsetKey,
-					[NSNumber numberWithUnsignedInt:resourcecomplen],XADDataLengthKey,
-					[NSNumber numberWithInt:resourcemethod],@"StuffItCompressionMethod",
-					[NSNumber numberWithInt:resourcecrc],@"StuffItCRC16",
-					[NSNumber numberWithInt:flags],@"StuffItFlags",
+					@(datastart),XADDataOffsetKey,
+					@(resourcecomplen),XADDataLengthKey,
+					@(resourcemethod),@"StuffItCompressionMethod",
+					@(resourcecrc),@"StuffItCRC16",
+					@(flags),@"StuffItFlags",
 					comment,XADCommentKey,
 				nil];
 
 				XADString *compressionname=[self nameOfCompressionMethod:resourcemethod];
-				if(compressionname) [dict setObject:compressionname forKey:XADCompressionNameKey];
+				if(compressionname) dict[XADCompressionNameKey] = compressionname;
 
 				if(rsrckey)
 				{
-					[dict setObject:[NSNumber numberWithBool:YES] forKey:XADIsEncryptedKey];
-					[dict setObject:rsrckey forKey:@"StuffItEntryKey"];
+					dict[XADIsEncryptedKey] = @YES;
+					dict[@"StuffItEntryKey"] = rsrckey;
 				}
 
 				[self addEntryWithDictionary:dict];
@@ -337,29 +345,29 @@ static NSData *StuffItMD5(NSData *data);
 			{
 				NSMutableDictionary *dict=[NSMutableDictionary dictionaryWithObjectsAndKeys:
 					path,XADFileNameKey,
-					[NSNumber numberWithUnsignedInt:datalength],XADFileSizeKey,
-					[NSNumber numberWithUnsignedInt:datacomplen],XADCompressedSizeKey,
+					@(datalength),XADFileSizeKey,
+					@(datacomplen),XADCompressedSizeKey,
 					[NSDate XADDateWithTimeIntervalSince1904:modificationdate],XADLastModificationDateKey,
 					[NSDate XADDateWithTimeIntervalSince1904:creationdate],XADCreationDateKey,
-					[NSNumber numberWithUnsignedInt:filetype],XADFileTypeKey,
-					[NSNumber numberWithUnsignedInt:filecreator],XADFileCreatorKey,
-					[NSNumber numberWithInt:finderflags],XADFinderFlagsKey,
+					@(filetype),XADFileTypeKey,
+					@(filecreator),XADFileCreatorKey,
+					@(finderflags),XADFinderFlagsKey,
 
-					[NSNumber numberWithLongLong:datastart+resourcecomplen],XADDataOffsetKey,
-					[NSNumber numberWithUnsignedInt:datacomplen],XADDataLengthKey,
-					[NSNumber numberWithInt:datamethod],@"StuffItCompressionMethod",
-					[NSNumber numberWithInt:datacrc],@"StuffItCRC16",
-					[NSNumber numberWithInt:flags],@"StuffItFlags",
+					@(datastart+resourcecomplen),XADDataOffsetKey,
+					@(datacomplen),XADDataLengthKey,
+					@(datamethod),@"StuffItCompressionMethod",
+					@(datacrc),@"StuffItCRC16",
+					@(flags),@"StuffItFlags",
 					comment,XADCommentKey,
 				nil];
 
 				XADString *compressionname=[self nameOfCompressionMethod:datamethod];
-				if(compressionname) [dict setObject:compressionname forKey:XADCompressionNameKey];
+				if(compressionname) dict[XADCompressionNameKey] = compressionname;
 
 				if(datakey)
 				{
-					[dict setObject:[NSNumber numberWithBool:YES] forKey:XADIsEncryptedKey];
-					[dict setObject:datakey forKey:@"StuffItEntryKey"];
+					dict[XADIsEncryptedKey] = @YES;
+					dict[@"StuffItEntryKey"] = datakey;
 				}
 
 				[self addEntryWithDictionary:dict];
@@ -373,11 +381,11 @@ static NSData *StuffItMD5(NSData *data);
 
 -(NSData *)keyForEntryWithDictionary:(NSDictionary *)dict
 {
-	NSData *entrykey=[dict objectForKey:@"StuffItEntryKey"];
-	NSData *archivekey=StuffItMD5([self encodedPassword]);
+	NSData *entrykey=dict[@"StuffItEntryKey"];
+	NSData *archivekey=StuffItMD5(self.encodedPassword);
 
 	// Verify the encryption key
-	NSData *archivehash=[properties objectForKey:@"StuffItPasswordHash"];
+	NSData *archivehash=properties[@"StuffItPasswordHash"];
 	if(!archivehash) [XADException raiseIllegalDataException];
 
 	NSData *hash=StuffItMD5(archivekey);
@@ -413,8 +421,8 @@ static NSData *StuffItMD5(NSData *data);
 
 +(BOOL)recognizeFileWithHandle:(CSHandle *)handle firstBytes:(NSData *)data name:(NSString *)name
 {
-	const uint8_t *bytes=[data bytes];
-	int length=[data length];
+	const uint8_t *bytes=data.bytes;
+	NSInteger length=data.length;
 
 	if(length<4104) return NO;
 
@@ -424,7 +432,7 @@ static NSData *StuffItMD5(NSData *data);
 
 -(void)parse
 {
-	[[self handle] skipBytes:0x1a000];
+	[self.handle skipBytes:0x1a000];
 	[super parse];
 }
 
@@ -438,8 +446,8 @@ static NSData *StuffItMD5(NSData *data)
 
 	MD5_CTX ctx;
 	MD5_Init(&ctx);
-	MD5_Update(&ctx,[data bytes],[data length]);
+	MD5_Update(&ctx,data.bytes,(int)data.length);
 	MD5_Final(buf,&ctx);
-	
+
 	return [NSData dataWithBytes:buf length:SIT5_KEY_LENGTH];
 }
