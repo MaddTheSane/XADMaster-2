@@ -389,7 +389,7 @@ inputParts:(NSArray *)parts isCorrupted:(BOOL)iscorrupted
 			{
 				case 0x01: // File encryption
 				{
-					[dict setObject:[NSNumber numberWithBool:YES] forKey:XADIsEncryptedKey];
+					dict[XADIsEncryptedKey] = @YES;
 
 					uint64_t version=ReadRAR5VInt(handle);
 					if(version!=0) [XADException raiseNotSupportedException];
@@ -417,7 +417,7 @@ inputParts:(NSArray *)parts isCorrupted:(BOOL)iscorrupted
 
 					if(flags&0x0002)
 					{
-						[dict setObject:[NSNumber numberWithBool:YES] forKey:@"RAR5ChecksumsAreEncrypted"];
+						dict[@"RAR5ChecksumsAreEncrypted"] = @YES;
 					}
 				}
 				break;
