@@ -154,9 +154,4 @@
 	return [NSString stringWithFormat:@"%@ at %p",[backingdata class],backingdata];
 }
 
--(NSString *)name
-{
-	return [NSString stringWithFormat:@"%@ at %p",[backingdata class],backingdata];
-}
-
 @end

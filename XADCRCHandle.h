@@ -47,8 +47,6 @@ correctCRC:(uint32_t)correctcrc CRCTable:(const uint32_t *)crctable;
 
 -(void)setCRCTransformationFunction:(XADCRCTransformationFunction *)function context:(id)context;
 
--(void)setCRCTransformationFunction:(XADCRCTransformationFunction *)function context:(id)context;
-
 -(void)resetStream;
 -(int)streamAtMost:(int)num toBuffer:(void *)buffer;
 
