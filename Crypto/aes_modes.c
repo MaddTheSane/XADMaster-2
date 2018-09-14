@@ -893,7 +893,9 @@ int aes_ctr_crypt(const unsigned char *ibuf, unsigned char *obuf,
         }
 
         if(blen & (AES_BLOCK_SIZE - 1))
-            memcpy(ip, cbuf, AES_BLOCK_SIZE), i++;
+        {
+            memcpy(ip, cbuf, AES_BLOCK_SIZE); i++;
+        }
 
 #if defined( USE_VIA_ACE_IF_PRESENT )
         if(ctx->inf.b[1] == 0xff)
