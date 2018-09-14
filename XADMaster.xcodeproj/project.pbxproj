@@ -29,6 +29,7 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
+		1737C872BD5877C5DFDA3D99 /* XADRAR5ParserTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 1737CCA9B444F0AF0C3A4456 /* XADRAR5ParserTests.m */; };
 		1B06CD13145CFF2A003907F9 /* XADCrunchParser.h in Headers */ = {isa = PBXBuildFile; fileRef = 1B06CD11145CFF2A003907F9 /* XADCrunchParser.h */; };
 		1B06CD14145CFF2A003907F9 /* XADCrunchParser.h in Headers */ = {isa = PBXBuildFile; fileRef = 1B06CD11145CFF2A003907F9 /* XADCrunchParser.h */; };
 		1B06CD15145CFF2A003907F9 /* XADCrunchParser.h in Headers */ = {isa = PBXBuildFile; fileRef = 1B06CD11145CFF2A003907F9 /* XADCrunchParser.h */; };
@@ -2153,6 +2154,8 @@
 		55A2D4AB1FBFB2D000939897 /* ClangAnalyser.h in Headers */ = {isa = PBXBuildFile; fileRef = 1B4B51DD1C061E3100C1074D /* ClangAnalyser.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		55B3B2541DBCC51400ECC61D /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 55B3B2531DBCC51400ECC61D /* Security.framework */; };
 		55B3B2551DBCC51C00ECC61D /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 55B3B2531DBCC51400ECC61D /* Security.framework */; };
+		73DA3468206B6BF1006ADB42 /* XADPlatformOSXTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 73DA3467206B6BF1006ADB42 /* XADPlatformOSXTests.m */; };
+		73DA346A206B6BF1006ADB42 /* XADMaster.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8DC2EF5B0486A6940098B216 /* XADMaster.framework */; };
 		C99DC7321E4B31E500F54201 /* XADTestUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = C99DC7301E4B31E500F54201 /* XADTestUtilities.m */; };
 		C99DC7331E4B31E500F54201 /* XADTestUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = C99DC7301E4B31E500F54201 /* XADTestUtilities.m */; };
 		C99DC7341E4B31E500F54201 /* XADTestUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = C99DC7301E4B31E500F54201 /* XADTestUtilities.m */; };
@@ -2321,9 +2324,17 @@
 			remoteGlobalIDString = 8DC2EF4F0486A6940098B216;
 			remoteInfo = XADMaster;
 		};
+		73DA346B206B6BF1006ADB42 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0867D690FE84028FC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 8DC2EF4F0486A6940098B216;
+			remoteInfo = XADMaster;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		1737CCA9B444F0AF0C3A4456 /* XADRAR5ParserTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XADRAR5ParserTests.m; sourceTree = "<group>"; };
 		1B06CD11145CFF2A003907F9 /* XADCrunchParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XADCrunchParser.h; sourceTree = "<group>"; };
 		1B06CD12145CFF2A003907F9 /* XADCrunchParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XADCrunchParser.m; sourceTree = "<group>"; };
 		1B06CD1A145CFF36003907F9 /* XADCrunchHandles.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XADCrunchHandles.h; sourceTree = "<group>"; };
@@ -2906,6 +2917,9 @@
 		55B3B2531DBCC51400ECC61D /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
 		55D93FE91DB9E6AC00F01BBC /* XAD-whole.modulemap */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.module-map"; path = "XAD-whole.modulemap"; sourceTree = "<group>"; };
 		56FBC92B0A57541300BE98CF /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = SOURCE_ROOT; };
+		73DA3465206B6BF1006ADB42 /* XADMasterTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = XADMasterTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		73DA3467206B6BF1006ADB42 /* XADPlatformOSXTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = XADPlatformOSXTests.m; sourceTree = "<group>"; };
+		73DA3469206B6BF1006ADB42 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		8DC2EF5B0486A6940098B216 /* XADMaster.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = XADMaster.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		C99DC72F1E4B31E500F54201 /* XADTestUtilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XADTestUtilities.h; sourceTree = "<group>"; };
 		C99DC7301E4B31E500F54201 /* XADTestUtilities.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XADTestUtilities.m; sourceTree = "<group>"; };
@@ -3066,6 +3080,14 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		73DA3462206B6BF1006ADB42 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				73DA346A206B6BF1006ADB42 /* XADMaster.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		8DC2EF560486A6940098B216 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -3101,6 +3123,7 @@
 				1B467B0115CD9A73001AB1DD /* libXADMaster.ios.a */,
 				5500A60F1D776ADB00321300 /* XADMaster.framework */,
 				551BADD11EB032B500EAF64E /* XADMaster.framework */,
+				73DA3465206B6BF1006ADB42 /* XADMasterTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -3123,6 +3146,7 @@
 				089C1665FE841158C02AAC07 /* Resources */,
 				0867D69AFE84028FC02AAC07 /* Frameworks */,
 				1BDDC79413DE3D2800A8C079 /* Man Pages */,
+				73DA3466206B6BF1006ADB42 /* XADMasterTests */,
 				034768DFFF38A50411DB9C8B /* Products */,
 			);
 			name = XADMaster;
@@ -4064,6 +4088,16 @@
 				559B9CCF1A13F443006BDB74 /* XADMaster-umbrella.h */,
 			);
 			name = "Other Sources";
+			sourceTree = "<group>";
+		};
+		73DA3466206B6BF1006ADB42 /* XADMasterTests */ = {
+			isa = PBXGroup;
+			children = (
+				73DA3467206B6BF1006ADB42 /* XADPlatformOSXTests.m */,
+				73DA3469206B6BF1006ADB42 /* Info.plist */,
+				1737CCA9B444F0AF0C3A4456 /* XADRAR5ParserTests.m */,
+			);
+			path = XADMasterTests;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -5165,6 +5199,24 @@
 			productReference = 551BADD11EB032B500EAF64E /* XADMaster.framework */;
 			productType = "com.apple.product-type.framework";
 		};
+		73DA3464206B6BF1006ADB42 /* XADMasterTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 73DA3471206B6BF1006ADB42 /* Build configuration list for PBXNativeTarget "XADMasterTests" */;
+			buildPhases = (
+				73DA3461206B6BF1006ADB42 /* Sources */,
+				73DA3462206B6BF1006ADB42 /* Frameworks */,
+				73DA3463206B6BF1006ADB42 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				73DA346C206B6BF1006ADB42 /* PBXTargetDependency */,
+			);
+			name = XADMasterTests;
+			productName = XADMasterTests;
+			productReference = 73DA3465206B6BF1006ADB42 /* XADMasterTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 		8DC2EF4F0486A6940098B216 /* XADMaster */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 1DEB91AD08733DA50010E9CD /* Build configuration list for PBXNativeTarget "XADMaster" */;
@@ -5191,6 +5243,13 @@
 			isa = PBXProject;
 			attributes = {
 				LastUpgradeCheck = 0930;
+				TargetAttributes = {
+					73DA3464206B6BF1006ADB42 = {
+						CreatedOnToolsVersion = 9.2;
+						DevelopmentTeam = S8EX82NJP6;
+						ProvisioningStyle = Automatic;
+					};
+				};
 			};
 			buildConfigurationList = 1DEB91B108733DA50010E9CD /* Build configuration list for PBXProject "XADMaster" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -5240,6 +5299,7 @@
 				1B91CD9611D981E20081E40A /* unar.exe */,
 				1B91D2D611E694860081E40A /* lsar.exe */,
 				1B433E2611E945D300DA1EFB /* Everything */,
+				73DA3464206B6BF1006ADB42 /* XADMasterTests */,
 			);
 		};
 /* End PBXProject section */
@@ -5258,6 +5318,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				557C6A931FCB597700936524 /* XADErrors.strings in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		73DA3463206B6BF1006ADB42 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -6434,6 +6501,15 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		73DA3461206B6BF1006ADB42 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				73DA3468206B6BF1006ADB42 /* XADPlatformOSXTests.m in Sources */,
+				1737C872BD5877C5DFDA3D99 /* XADRAR5ParserTests.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		8DC2EF540486A6940098B216 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -6763,6 +6839,11 @@
 			isa = PBXTargetDependency;
 			target = 8DC2EF4F0486A6940098B216 /* XADMaster */;
 			targetProxy = 1BC893810ED6F462006B47FE /* PBXContainerItemProxy */;
+		};
+		73DA346C206B6BF1006ADB42 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 8DC2EF4F0486A6940098B216 /* XADMaster */;
+			targetProxy = 73DA346B206B6BF1006ADB42 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -7852,6 +7933,93 @@
 			};
 			name = Release;
 		};
+		73DA346D206B6BF1006ADB42 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = NO;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_IDENTITY = "Mac Developer";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = S8EX82NJP6;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				INFOPLIST_FILE = XADMasterTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.macpaw.XADMasterTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		73DA346E206B6BF1006ADB42 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = NO;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_IDENTITY = "Mac Developer";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = S8EX82NJP6;
+				ENABLE_NS_ASSERTIONS = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				INFOPLIST_FILE = XADMasterTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				PRODUCT_BUNDLE_IDENTIFIER = com.macpaw.XADMasterTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -8016,6 +8184,15 @@
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
+		};
+		73DA3471206B6BF1006ADB42 /* Build configuration list for PBXNativeTarget "XADMasterTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				73DA346D206B6BF1006ADB42 /* Debug */,
+				73DA346E206B6BF1006ADB42 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
 		};
 /* End XCConfigurationList section */
 	};

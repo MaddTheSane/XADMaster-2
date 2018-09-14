@@ -1,3 +1,23 @@
+/*
+ * XADRAR30Handle.m
+ *
+ * Copyright (c) 2017-present, MacPaw Inc. All rights reserved.
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+ * MA 02110-1301  USA
+ */
 #import "XADRAR30Handle.h"
 #import "XADRARFilters.h"
 #import "XADException.h"
@@ -69,6 +89,11 @@
 {
 	if(startnewfile)
 	{
+        // We need to skip empty entries.
+        // This is basically needed because this method won't be called for directories (which has 0 size)
+        // Because of that, we're simply ignoring zero-sized files and directories
+        [self skipEmptyEntries];
+
 		CSInputBuffer *buf=[parser inputBufferForFileWithIndex:file files:files];
 		[self setInputBuffer:buf];
 
@@ -156,6 +181,18 @@
 		// Check if we immediately hit a new filter or file edge, and try again.
 		if(actualend==start) return [self produceBlockAtOffset:pos];
 		else return (int)(actualend-start);
+	}
+}
+
+- (void)skipEmptyEntries {
+	while (file < files.count) {
+		NSDictionary *fileToCheck = files[file];
+		BOOL isEmptyFile = [[fileToCheck objectForKey:@"OutputLength"] longLongValue] == 0;
+		if (isEmptyFile) {
+			file++;
+			continue;
+		}
+		break;
 	}
 }
 

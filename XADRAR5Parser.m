@@ -1,3 +1,23 @@
+/*
+ * XADRAR5Parser.m
+ *
+ * Copyright (c) 2017-present, MacPaw Inc. All rights reserved.
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+ * MA 02110-1301  USA
+ */
 #import "XADRAR5Parser.h"
 #import "XADRARInputHandle.h"
 #import "XADRAR50Handle.h"
@@ -25,7 +45,8 @@ static uint64_t ReadRAR5VInt(CSHandle *handle)
 	{
 		uint8_t byte=[handle readUInt8];
 
-		res|=(byte&0x7f)<<pos;
+		uint64_t meaningfulBits = (uint64_t) (byte & 0x7f);
+		res |= meaningfulBits << pos;
 
 		if(!(byte&0x80)) return res;
 
@@ -128,8 +149,8 @@ static inline BOOL IsZeroBlock(RAR5Block block) { return block.start==0; }
 					BOOL first=!(block.flags&0x0008);
 					BOOL last=!(block.flags&0x0010);
 
-				XADPath *path1=currdict[XADFileNameKey];
-				XADPath *path2=dict[XADFileNameKey];
+					XADPath *path1=currdict[XADFileNameKey];
+					XADPath *path2=dict[XADFileNameKey];
 
 					if(currdict && !first && [path1 isEqual:path2])
 					{
@@ -195,8 +216,8 @@ static inline BOOL IsZeroBlock(RAR5Block block) { return block.start==0; }
 						//uint32_t extracrc=[handle readUInt32LE];
 					}
 
-				headerkey=[[self encryptionKeyForPassword:self.password
-				salt:salt strength:strength passwordCheck:passcheck] retain];
+					headerkey=[[self encryptionKeyForPassword:[self password]
+					salt:salt strength:strength passwordCheck:passcheck] retain];
 
 					[self skipBlock:block];
 				}
@@ -392,6 +413,11 @@ inputParts:(NSArray *)parts isCorrupted:(BOOL)iscorrupted
 
 						uint32_t extracrc=[handle readUInt32LE];
 						dict[@"RAR5EncryptionExtraCRC"] = @(extracrc);
+					}
+
+					if(flags&0x0002)
+					{
+						[dict setObject:[NSNumber numberWithBool:YES] forKey:@"RAR5ChecksumsAreEncrypted"];
 					}
 
 					if(flags&0x0002)
@@ -774,3 +800,13 @@ static uint32_t EncryptRAR5CRC32(uint32_t crc,id context)
 
 	return newcrc^0xffffffff;
 }
+
+
+@implementation XADRAR5Parser(Testing)
+
++(uint64_t)readRAR5VIntFrom:(CSHandle *)handle
+{
+	return ReadRAR5VInt(handle);
+}
+
+@end
