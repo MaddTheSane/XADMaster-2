@@ -419,11 +419,6 @@ inputParts:(NSArray *)parts isCorrupted:(BOOL)iscorrupted
 					{
 						[dict setObject:[NSNumber numberWithBool:YES] forKey:@"RAR5ChecksumsAreEncrypted"];
 					}
-
-					if(flags&0x0002)
-					{
-						[dict setObject:[NSNumber numberWithBool:YES] forKey:@"RAR5ChecksumsAreEncrypted"];
-					}
 				}
 				break;
 
