@@ -28,6 +28,7 @@ typedef struct XADSkipRegion
 
 //static inline XADSkip XADMakeSkip(off_t start,off_t length) { XADSkip skip={start,length}; return skip; }
 
+XADEXPORT
 @interface XADSkipHandle:CSHandle
 {
 	XADSkipRegion *regions;

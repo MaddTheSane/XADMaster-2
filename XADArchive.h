@@ -43,9 +43,9 @@ typedef NS_ENUM(int, XADAction) {
 //typedef off_t xadSize; // deprecated
 
 
-extern NSString *const XADResourceDataKey;
-extern NSString *const XADResourceForkData UNAVAILABLE_ATTRIBUTE;
-extern NSString *const XADFinderFlags;
+XADEXTERN NSString *const XADResourceDataKey;
+XADEXTERN NSString *const XADResourceForkData UNAVAILABLE_ATTRIBUTE;
+XADEXTERN NSString *const XADFinderFlags;
 
 
 @class UniversalDetector;
@@ -82,6 +82,7 @@ extern NSString *const XADFinderFlags;
 
 @end
 
+XADEXPORT
 @interface XADArchive:NSObject <XADArchiveDelegate, XADUnarchiverDelegate, XADArchiveParserDelegate>
 {
 	XADArchiveParser *parser;

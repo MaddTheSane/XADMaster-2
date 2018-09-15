@@ -19,6 +19,7 @@
  * MA 02110-1301  USA
  */
 #import "Checksums.h"
+#import "CRC.h"
 
 uint32_t XADCRC(uint32_t prevcrc,uint8_t byte,const uint32_t *table)
 {

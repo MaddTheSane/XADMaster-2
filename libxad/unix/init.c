@@ -187,6 +187,7 @@ static struct xadMasterBaseP *InitXADMasterBaseP( struct xadMasterBaseP *xmb )
  ******************************************************************************
  */
 
+XADEXTERN struct xadMasterBase *xadOpenLibrary( xadINT32 version );
 struct xadMasterBase *xadOpenLibrary( xadINT32 version )
 {
   struct xadMasterBase *xmb;
@@ -218,6 +219,7 @@ struct xadMasterBase *xadOpenLibrary( xadINT32 version )
  ******************************************************************************
  */
 
+XADEXTERN void xadCloseLibrary( struct xadMasterBase *xmb );
 void xadCloseLibrary( struct xadMasterBase *xmb )
 {
   if (xmb == NULL)

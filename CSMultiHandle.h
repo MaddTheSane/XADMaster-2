@@ -22,6 +22,7 @@
 
 #define CSMultiHandle XADMultiHandle
 
+XADEXPORT
 @interface CSMultiHandle:CSSegmentedHandle
 {
     NSArray<CSHandle*> *handles;

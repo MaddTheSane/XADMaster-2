@@ -19,12 +19,35 @@
  * MA 02110-1301  USA
  */
 #import "PDFEncryptionUtils.h"
+#if defined(USE_COMMON_CRYPTO) && USE_COMMON_CRYPTO
+#include <CommonCrypto/CommonCrypto.h>
+#include <Security/Security.h>
+typedef CC_MD5_CTX XADMD5;
+#define XADMD5_Init CC_MD5_Init
+#define XADMD5_Update CC_MD5_Update
+#define XADMD5_Final CC_MD5_Final
+#else
+#import "../Crypto/md5.h"
+#import "../Crypto/aes.h"
+typedef MD5_CTX XADMD5;
+#define XADMD5_Init MD5_Init
+#define XADMD5_Update MD5_Update
+#define XADMD5_Final MD5_Final
+#endif
+
+#import "../Crypto/aes.h"
+
 
 NSString *const PDFMD5FinishedException=@"PDFMD5FinishedException";
 
 
 
 @implementation PDFMD5Engine
+{
+	XADMD5 md5;
+	unsigned char digest_bytes[16];
+	BOOL done;
+}
 
 +(PDFMD5Engine *)engine { return [[[self class] new] autorelease]; }
 
@@ -85,6 +108,18 @@ NSString *const PDFMD5FinishedException=@"PDFMD5FinishedException";
 
 
 @implementation PDFAESHandle
+{
+	off_t startoffs;
+	
+	NSData *key,*iv;
+	
+#if (defined(USE_COMMON_CRYPTO) && USE_COMMON_CRYPTO) && TARGET_OS_OSX
+	SecKeyRef aeskey;
+#else
+	aes_decrypt_ctx aes;
+#endif
+	uint8_t ivbuffer[16],streambuffer[16];
+}
 
 -(id)initWithHandle:(CSHandle *)handle key:(NSData *)keydata
 {

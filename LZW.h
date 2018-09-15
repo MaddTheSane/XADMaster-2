@@ -23,6 +23,7 @@
 
 #include <stdint.h>
 #include <stdbool.h>
+#include "XADTypes.h"
 
 #define LZWNoError 0
 #define LZWInvalidCodeError 1
@@ -46,16 +47,16 @@ typedef struct LZW
 	LZWTreeNode nodes[0];
 } LZW;
 
-LZW *AllocLZW(int maxsymbols,int reservedsymbols);
-void FreeLZW(LZW *self);
-void ClearLZWTable(LZW *self);
+XADEXTERN LZW *AllocLZW(int maxsymbols,int reservedsymbols);
+XADEXTERN void FreeLZW(LZW *self);
+XADEXTERN void ClearLZWTable(LZW *self);
 
-int NextLZWSymbol(LZW *self,int symbol);
-int ReplaceLZWSymbol(LZW *self,int oldsymbol,int symbol);
-int LZWOutputLength(LZW *self);
-int LZWOutputToBuffer(LZW *self,uint8_t *buffer);
-int LZWReverseOutputToBuffer(LZW *self,uint8_t *buffer);
-int LZWOutputToInternalBuffer(LZW *self);
+XADEXTERN int NextLZWSymbol(LZW *self,int symbol);
+XADEXTERN int ReplaceLZWSymbol(LZW *self,int oldsymbol,int symbol);
+XADEXTERN int LZWOutputLength(LZW *self);
+XADEXTERN int LZWOutputToBuffer(LZW *self,uint8_t *buffer);
+XADEXTERN int LZWReverseOutputToBuffer(LZW *self,uint8_t *buffer);
+XADEXTERN int LZWOutputToInternalBuffer(LZW *self);
 
 static inline int LZWSuggestedSymbolSize(LZW *self)
 {

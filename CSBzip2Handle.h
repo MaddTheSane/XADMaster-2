@@ -23,8 +23,8 @@
 
 #define CSBzip2Handle XADBzip2Handle
 
-extern NSExceptionName const CSBzip2Exception;
-extern NSErrorDomain const CSBzip2ErrorDomain;
+XADEXTERN NSExceptionName const CSBzip2Exception;
+XADEXTERN NSErrorDomain const CSBzip2ErrorDomain;
 
 typedef NS_ERROR_ENUM(CSBzip2ErrorDomain, CSBzip2Error) {
 	CSBzip2ErrorSequence = -1, //!< BZ_SEQUENCE_ERROR
@@ -38,6 +38,7 @@ typedef NS_ERROR_ENUM(CSBzip2ErrorDomain, CSBzip2Error) {
 	CSBzip2ErrorConfiguration = -9 //!< BZ_CONFIG_ERROR
 };
 
+XADEXPORT
 @interface CSBzip2Handle:CSStreamHandle
 
 +(CSBzip2Handle *)bzip2HandleWithHandle:(CSHandle *)handle;

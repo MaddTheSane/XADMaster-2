@@ -21,11 +21,12 @@
 #import <Foundation/Foundation.h>
 #import "CSInputBuffer.h"
 
-extern NSString *const XADInvalidPrefixCodeException;
+XADEXTERN NSExceptionName const XADInvalidPrefixCodeException;
 
 typedef struct XADCodeTreeNode XADCodeTreeNode;
 typedef struct XADCodeTableEntry XADCodeTableEntry;
 
+XADEXPORT
 @interface XADPrefixCode:NSObject
 {
 	XADCodeTreeNode *tree;
@@ -66,5 +67,5 @@ maximumLength:(int)maxlength shortestCodeIsZeros:(BOOL)zeros;
 
 @end
 
-int CSInputNextSymbolUsingCode(CSInputBuffer *buf,XADPrefixCode *code);
-int CSInputNextSymbolUsingCodeLE(CSInputBuffer *buf,XADPrefixCode *code);
+XADEXTERN int CSInputNextSymbolUsingCode(CSInputBuffer *buf,XADPrefixCode *code);
+XADEXTERN int CSInputNextSymbolUsingCodeLE(CSInputBuffer *buf,XADPrefixCode *code);

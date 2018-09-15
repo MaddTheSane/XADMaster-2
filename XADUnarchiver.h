@@ -19,7 +19,7 @@
  * MA 02110-1301  USA
  */
 #import <Foundation/Foundation.h>
-
+#import "XADTypes.h"
 #import "XADArchiveParser.h"
 
 typedef NS_ENUM(int, XADForkStyle) {
@@ -40,6 +40,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @protocol XADUnarchiverDelegate;
 
+XADEXPORT
 @interface XADUnarchiver:NSObject <XADArchiveParserDelegate>
 {
 	XADArchiveParser *parser;

@@ -38,12 +38,12 @@ typedef struct CSInputBuffer
 
 // Allocation and management
 
-CSInputBuffer *CSInputBufferAlloc(CSHandle *parent,int size);
-CSInputBuffer *CSInputBufferAllocWithBuffer(const uint8_t *buffer,int length,off_t startoffs);
-CSInputBuffer *CSInputBufferAllocEmpty(void);
-void CSInputBufferFree(CSInputBuffer *self);
+XADEXTERN CSInputBuffer *CSInputBufferAlloc(CSHandle *parent,int size);
+XADEXTERN CSInputBuffer *CSInputBufferAllocWithBuffer(const uint8_t *buffer,int length,off_t startoffs);
+XADEXTERN CSInputBuffer *CSInputBufferAllocEmpty(void);
+XADEXTERN void CSInputBufferFree(CSInputBuffer *self);
 
-void CSInputSetMemoryBuffer(CSInputBuffer *self,uint8_t *buffer,int length,off_t startoffs);
+XADEXTERN void CSInputSetMemoryBuffer(CSInputBuffer *self,uint8_t *buffer,int length,off_t startoffs);
 
 static inline CSHandle *CSInputHandle(CSInputBuffer *self)
 {
@@ -54,18 +54,18 @@ static inline CSHandle *CSInputHandle(CSInputBuffer *self)
 
 // Buffer and file positioning
 
-void CSInputRestart(CSInputBuffer *self);
-void CSInputFlush(CSInputBuffer *self);
+XADEXTERN void CSInputRestart(CSInputBuffer *self);
+XADEXTERN void CSInputFlush(CSInputBuffer *self);
 
-void CSInputSynchronizeFileOffset(CSInputBuffer *self);
-void CSInputSeekToFileOffset(CSInputBuffer *self,off_t offset);
-void CSInputSeekToBufferOffset(CSInputBuffer *self,off_t offset);
-void CSInputSetStartOffset(CSInputBuffer *self,off_t offset);
-off_t CSInputBufferOffset(CSInputBuffer *self);
-off_t CSInputFileOffset(CSInputBuffer *self);
-off_t CSInputBufferBitOffset(CSInputBuffer *self);
+XADEXTERN void CSInputSynchronizeFileOffset(CSInputBuffer *self);
+XADEXTERN void CSInputSeekToFileOffset(CSInputBuffer *self,off_t offset);
+XADEXTERN void CSInputSeekToBufferOffset(CSInputBuffer *self,off_t offset);
+XADEXTERN void CSInputSetStartOffset(CSInputBuffer *self,off_t offset);
+XADEXTERN off_t CSInputBufferOffset(CSInputBuffer *self);
+XADEXTERN off_t CSInputFileOffset(CSInputBuffer *self);
+XADEXTERN off_t CSInputBufferBitOffset(CSInputBuffer *self);
 
-void _CSInputFillBuffer(CSInputBuffer *self);
+XADEXTERN void _CSInputFillBuffer(CSInputBuffer *self);
 
 
 
@@ -126,21 +126,21 @@ static inline BOOL CSInputAtEOF(CSInputBuffer *self)
 
 // Bitstream reading
 
-void _CSInputFillBits(CSInputBuffer *self);
-void _CSInputFillBitsLE(CSInputBuffer *self);
+XADEXTERN void _CSInputFillBits(CSInputBuffer *self);
+XADEXTERN void _CSInputFillBitsLE(CSInputBuffer *self);
 
-unsigned int CSInputNextBit(CSInputBuffer *self);
-unsigned int CSInputNextBitLE(CSInputBuffer *self);
-unsigned int CSInputNextBitString(CSInputBuffer *self,int numbits);
-unsigned int CSInputNextBitStringLE(CSInputBuffer *self,int numbits);
-unsigned int CSInputNextLongBitString(CSInputBuffer *self,int numbits);
-unsigned int CSInputNextLongBitStringLE(CSInputBuffer *self,int numbits);
+XADEXTERN unsigned int CSInputNextBit(CSInputBuffer *self);
+XADEXTERN unsigned int CSInputNextBitLE(CSInputBuffer *self);
+XADEXTERN unsigned int CSInputNextBitString(CSInputBuffer *self,int numbits);
+XADEXTERN unsigned int CSInputNextBitStringLE(CSInputBuffer *self,int numbits);
+XADEXTERN unsigned int CSInputNextLongBitString(CSInputBuffer *self,int numbits);
+XADEXTERN unsigned int CSInputNextLongBitStringLE(CSInputBuffer *self,int numbits);
 
-void CSInputSkipBits(CSInputBuffer *self,int numbits);
-void CSInputSkipBitsLE(CSInputBuffer *self,int numbits);
-BOOL CSInputOnByteBoundary(CSInputBuffer *self);
-void CSInputSkipToByteBoundary(CSInputBuffer *self);
-void CSInputSkipTo16BitBoundary(CSInputBuffer *self);
+XADEXTERN void CSInputSkipBits(CSInputBuffer *self,int numbits);
+XADEXTERN void CSInputSkipBitsLE(CSInputBuffer *self,int numbits);
+XADEXTERN BOOL CSInputOnByteBoundary(CSInputBuffer *self);
+XADEXTERN void CSInputSkipToByteBoundary(CSInputBuffer *self);
+XADEXTERN void CSInputSkipTo16BitBoundary(CSInputBuffer *self);
 
 static inline unsigned int CSInputBitsLeftInBuffer(CSInputBuffer *self)
 {

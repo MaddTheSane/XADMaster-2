@@ -19,6 +19,7 @@
  * MA 02110-1301  USA
  */
 #import "XADArchiveParser.h"
+#import "XADTypes.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -30,22 +31,22 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
-NSString *XADHumanReadableFileSize(uint64_t size);
-NSString *XADShortHumanReadableFileSize(uint64_t size);
-NSString *XADHumanReadableBoolean(uint64_t boolean);
-NSString *XADHumanReadablePOSIXPermissions(uint64_t permissions);
-NSString *XADHumanReadableAmigaProtectionBits(uint64_t protection);
-NSString *XADHumanReadableDOSFileAttributes(uint64_t attributes);
-NSString *XADHumanReadableWindowsFileAttributes(uint64_t attributes);
-NSString *XADHumanReadableOSType(uint32_t ostype);
-NSString *XADHumanReadableEntryWithDictionary(NSDictionary<XADArchiveKeys,id> *dict,XADArchiveParser *parser);
+XADEXTERN NSString *XADHumanReadableFileSize(uint64_t size);
+XADEXTERN NSString *XADShortHumanReadableFileSize(uint64_t size);
+XADEXTERN NSString *XADHumanReadableBoolean(uint64_t boolean);
+XADEXTERN NSString *XADHumanReadablePOSIXPermissions(uint64_t permissions);
+XADEXTERN NSString *XADHumanReadableAmigaProtectionBits(uint64_t protection);
+XADEXTERN NSString *XADHumanReadableDOSFileAttributes(uint64_t attributes);
+XADEXTERN NSString *XADHumanReadableWindowsFileAttributes(uint64_t attributes);
+XADEXTERN NSString *XADHumanReadableOSType(uint32_t ostype);
+XADEXTERN NSString *XADHumanReadableEntryWithDictionary(NSDictionary<XADArchiveKeys,id> *dict,XADArchiveParser *parser);
 
-NSString *XADHumanReadableObject(id object);
-NSString *XADHumanReadableDate(NSDate *date);
-NSString *XADHumanReadableData(NSData *data);
-NSString *XADHumanReadableArray(NSArray *array);
-NSString *XADHumanReadableDictionary(NSDictionary *dict);
-NSString *XADHumanReadableList(NSArray<NSString*> *labels,NSArray<NSString*> *values);
-NSString *XADIndentTextWithSpaces(NSString *text,NSInteger spaces);
+XADEXTERN NSString *XADHumanReadableObject(id object);
+XADEXTERN NSString *XADHumanReadableDate(NSDate *date);
+XADEXTERN NSString *XADHumanReadableData(NSData *data);
+XADEXTERN NSString *XADHumanReadableArray(NSArray *array);
+XADEXTERN NSString *XADHumanReadableDictionary(NSDictionary *dict);
+XADEXTERN NSString *XADHumanReadableList(NSArray<NSString*> *labels,NSArray<NSString*> *values);
+XADEXTERN NSString *XADIndentTextWithSpaces(NSString *text,NSInteger spaces);
 
 NS_ASSUME_NONNULL_END

@@ -19,16 +19,18 @@
  * MA 02110-1301  USA
  */
 #import <Foundation/Foundation.h>
+#import "XADTypes.h"
 #import "XADString.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
 typedef const char* XADPathSeparator NS_TYPED_ENUM;
-extern XADPathSeparator XADUnixPathSeparator;
-extern XADPathSeparator XADWindowsPathSeparator;
-extern XADPathSeparator XADEitherPathSeparator;
-extern XADPathSeparator XADNoPathSeparator;
+XADEXTERN XADPathSeparator XADUnixPathSeparator;
+XADEXTERN XADPathSeparator XADWindowsPathSeparator;
+XADEXTERN XADPathSeparator XADEitherPathSeparator;
+XADEXTERN XADPathSeparator XADNoPathSeparator;
 
+XADEXPORT
 @interface XADPath:NSObject <XADString,NSCopying>
 {
 	XADPath *parent;
@@ -132,7 +134,7 @@ separators:(XADPathSeparator)pathseparators;
 
 @end
 
-
+XADEXTERN
 @interface XADStringPath:XADPath
 {
 	NSString *string;
@@ -158,6 +160,7 @@ separators:(XADPathSeparator)pathseparators;
 
 @end
 
+XADEXTERN
 @interface XADRawPath:XADPath
 {
 	NSData *data;

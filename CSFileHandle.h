@@ -25,9 +25,10 @@
 
 #define CSFileHandle XADFileHandle
 
-extern NSExceptionName const CSCannotOpenFileException;
-extern NSExceptionName const CSFileErrorException;
+XADEXTERN NSExceptionName const CSCannotOpenFileException;
+XADEXTERN NSExceptionName const CSFileErrorException;
 
+XADEXPORT
 @interface CSFileHandle:CSHandle
 {
 	FILE *fh;

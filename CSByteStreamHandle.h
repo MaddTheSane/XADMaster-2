@@ -25,6 +25,7 @@
 
 #define CSByteStreamHandle XADByteStreamHandle
 
+XADEXPORT
 @interface CSByteStreamHandle:CSStreamHandle
 {
 	uint8_t (*bytestreamproducebyte_ptr)(id,SEL,off_t);
@@ -53,7 +54,7 @@
 
 
 
-extern NSString *const CSByteStreamEOFReachedException;
+XADEXTERN NSString *const CSByteStreamEOFReachedException;
 
 static inline void CSByteStreamEOF(CSByteStreamHandle *self) __attribute__((noreturn));
 static inline void CSByteStreamEOF(CSByteStreamHandle *self) { longjmp(self->eofenv,1); }

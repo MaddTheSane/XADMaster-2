@@ -47,7 +47,7 @@ framework module XADMaster [extern_c] {
 		export *
 	}
 	
-	explicit module Handle {
+	module Handle {
 		requires objc
 		header "CSHandle.h"
 		
@@ -119,7 +119,7 @@ framework module XADMaster [extern_c] {
 		export *
 	}
 	
-	explicit module Path {
+	module Path {
 		requires objc
 		header "XADPath.h"
 		export *
@@ -137,7 +137,7 @@ framework module XADMaster [extern_c] {
 		export *
 	}
 	
-	explicit module ArchiveParser {
+	module ArchiveParser {
 		requires objc
 		header "XADArchiveParser.h"
 		module Descriptions {
@@ -184,6 +184,48 @@ framework module XADMaster [extern_c] {
 		
 		module Parser {
 			header "XADSWFParser.h"
+			export *
+		}
+
+		export *
+	}
+	
+	explicit module PDF {
+		requires objc
+		header "XADPDFParser.h"
+		
+		module Parser {
+			header "PDF/PDFParser.h"
+			export *
+		}
+		
+		module Stream {
+			header "PDF/PDFStream.h"
+			export *
+		}
+		
+		module EncryptionUtils {
+			header "PDF/PDFEncryptionUtils.h"
+			export *
+		}
+		
+		module EncryptionHandler {
+			header "PDF/PDFEncryptionHandler.h"
+			export *
+		}
+		
+		module LZWHandle {
+			header "PDF/LZWHandle.h"
+			export *
+		}
+		
+		module CCITTHandle {
+			header "PDF/CCITTHandle.h"
+			export *
+		}
+		
+		module NSDictionaryNumberExtension {
+			header "PDF/NSDictionaryNumberExtension.h"
 			export *
 		}
 

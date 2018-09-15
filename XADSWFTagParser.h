@@ -50,9 +50,10 @@
 #define SWFDefineFont3Tag 75
 #define SWFDefineBitsJPEG4Tag 90
 
-extern NSExceptionName const SWFWrongMagicException;
-extern NSExceptionName const SWFNoMoreTagsException;
+XADEXTERN NSExceptionName const SWFWrongMagicException;
+XADEXTERN NSExceptionName const SWFNoMoreTagsException;
 
+XADEXPORT
 @interface XADSWFTagParser:NSObject
 {
 	CSHandle *fh;

@@ -38,6 +38,7 @@ typedef NS_ENUM(int, PDFImageType) {
 
 @class PDFParser,PDFObjectReference;
 
+XADEXPORT
 @interface PDFStream:NSObject
 {
 	NSDictionary *dict;
@@ -97,6 +98,7 @@ offset:(off_t)offset reference:(PDFObjectReference *)reference parser:(PDFParser
 
 @end
 
+XADEXPORT
 @interface PDFASCII85Handle:CSByteStreamHandle
 {
 	uint32_t val;
@@ -118,7 +120,7 @@ offset:(off_t)offset reference:(PDFObjectReference *)reference parser:(PDFParser
 
 
 
-
+XADEXPORT
 @interface PDFTIFFPredictorHandle:CSByteStreamHandle
 {
 	int cols,comps,bpc;
@@ -131,6 +133,7 @@ components:(int)components bitsPerComponent:(int)bitspercomp;
 
 @end
 
+XADEXPORT
 @interface PDFPNGPredictorHandle:CSByteStreamHandle
 {
 	int cols,comps,bpc;

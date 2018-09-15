@@ -24,6 +24,7 @@
 
 #define CSBlockStreamHandle XADBlockStreamHandle
 
+XADEXPORT
 @interface CSBlockStreamHandle:CSStreamHandle
 {
 	uint8_t *_currblock;

@@ -25,6 +25,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 #define CSMultiFileHandle XADMultiFileHandle
 
+XADEXPORT
 @interface CSMultiFileHandle:CSSegmentedHandle
 {
 	NSArray<NSString*> *paths;

@@ -22,9 +22,10 @@
 
 #define CSSegmentedHandle XADSegmentedHandle
 
-extern NSExceptionName const CSNoSegmentsException;
-extern NSExceptionName const CSSizeOfSegmentUnknownException;
+XADEXTERN NSExceptionName const CSNoSegmentsException;
+XADEXTERN NSExceptionName const CSSizeOfSegmentUnknownException;
 
+XADEXPORT
 @interface CSSegmentedHandle:CSHandle
 {
 	NSInteger count;

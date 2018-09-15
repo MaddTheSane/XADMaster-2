@@ -45,6 +45,7 @@
 
 #define CSChecksumWrapperHandle XADChecksumWrapperHandle
 
+XADEXPORT
 @interface CSChecksumWrapperHandle:CSHandle
 {
 	CSHandle *checksum;

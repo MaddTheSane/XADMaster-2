@@ -25,6 +25,33 @@
 #include <CoreFoundation/CoreFoundation.h>
 #include <stdint.h>
 #include <stdio.h>
+//#include "XADTypes.h"
+#ifndef XADTypes_h
+#define XADTypes_h
+
+#ifndef XADEXPORT
+# if defined(__WIN32__) || defined(__WINRT__)
+#  ifdef __BORLANDC__
+#   ifdef BUILD_XADMASTER
+#    define XADEXPORT
+#   else
+#    define XADEXPORT  __declspec(dllimport)
+#   endif
+#  else
+#   define XADEXPORT __declspec(dllexport)
+#  endif
+# else
+#  if defined(__GNUC__) && __GNUC__ >= 4
+#   define XADEXPORT __attribute__ ((visibility("default")))
+#  else
+#   define XADEXPORT
+#  endif
+# endif
+#endif
+
+#define XADEXTERN extern XADEXPORT
+
+#endif /* XADTypes_h */
 
 #ifdef __cplusplus
 extern "C" {
@@ -1242,51 +1269,51 @@ client is replaced. */
 
 #ifndef XAD_NO_PROTOTYPES
 /*** BEGIN auto-generated section (EXTERNAL VARARGS) */
-extern struct xadMasterBase *xadOpenLibrary( xadINT32 version );
-extern void xadCloseLibrary(struct xadMasterBase *);
-extern xadERROR xadAddDiskEntry(struct xadMasterBase *xadMasterBase, struct xadDiskInfo *di, struct xadArchiveInfo *ai, xadTag tag, ...);
-extern xadERROR xadAddDiskEntryA(struct xadMasterBase *xadMasterBase, struct xadDiskInfo *di, struct xadArchiveInfo *ai, xadTAGPTR tags);
-extern xadERROR xadAddFileEntry(struct xadMasterBase *xadMasterBase, struct xadFileInfo *fi, struct xadArchiveInfo *ai, xadTag tag, ...);
-extern xadERROR xadAddFileEntryA(struct xadMasterBase *xadMasterBase, struct xadFileInfo *fi, struct xadArchiveInfo *ai, xadTAGPTR tags);
-extern xadPTR xadAllocObject(struct xadMasterBase *xadMasterBase, xadUINT32 type, xadTag tag, ...);
-extern xadPTR xadAllocObjectA(struct xadMasterBase *xadMasterBase, xadUINT32 type, xadTAGPTR tags);
-extern xadPTR xadAllocVec(struct xadMasterBase *xadMasterBase, xadSize size, xadUINT32 flags);
-extern xadUINT16 xadCalcCRC16(struct xadMasterBase *xadMasterBase, xadUINT16 id, xadUINT16 init, xadSize size, const xadUINT8 *buffer);
-extern xadUINT32 xadCalcCRC32(struct xadMasterBase *xadMasterBase, xadUINT32 id, xadUINT32 init, xadSize size, const xadUINT8 *buffer);
-extern xadERROR xadConvertDates(struct xadMasterBase *xadMasterBase, xadTag tag, ...);
-extern xadERROR xadConvertDatesA(struct xadMasterBase *xadMasterBase, xadTAGPTR tags);
-extern xadSTRPTR xadConvertName(struct xadMasterBase *xadMasterBase, xadUINT32 charset, xadTag tag, ...);
-extern xadSTRPTR xadConvertNameA(struct xadMasterBase *xadMasterBase, xadUINT32 charset, xadTAGPTR tags);
-extern xadERROR xadConvertProtection(struct xadMasterBase *xadMasterBase, xadTag tag, ...);
-extern xadERROR xadConvertProtectionA(struct xadMasterBase *xadMasterBase, xadTAGPTR tags);
-extern void xadCopyMem(struct xadMasterBase *xadMasterBase, const void *s, xadPTR d, xadSize size);
-extern xadERROR xadDiskUnArc(struct xadMasterBase *xadMasterBase, struct xadArchiveInfo *ai, xadTag tag, ...);
-extern xadERROR xadDiskUnArcA(struct xadMasterBase *xadMasterBase, struct xadArchiveInfo *ai, xadTAGPTR tags);
-extern xadERROR xadFileUnArc(struct xadMasterBase *xadMasterBase, struct xadArchiveInfo *ai, xadTag tag, ...);
-extern xadERROR xadFileUnArcA(struct xadMasterBase *xadMasterBase, struct xadArchiveInfo *ai, xadTAGPTR tags);
-extern void xadFreeHookAccess(struct xadMasterBase *xadMasterBase, struct xadArchiveInfo *ai, xadTag tag, ...);
-extern void xadFreeHookAccessA(struct xadMasterBase *xadMasterBase, struct xadArchiveInfo *ai, xadTAGPTR tags);
-extern void xadFreeInfo(struct xadMasterBase *xadMasterBase, struct xadArchiveInfo *ai);
-extern void xadFreeObject(struct xadMasterBase *xadMasterBase, xadPTR object, xadTag tag, ...);
-extern void xadFreeObjectA(struct xadMasterBase *xadMasterBase, xadPTR object, xadTAGPTR tags);
-extern struct xadClient * xadGetClientInfo(struct xadMasterBase *xadMasterBase);
-extern xadSTRPTR xadGetDefaultName(struct xadMasterBase *xadMasterBase, xadTag tag, ...);
-extern xadSTRPTR xadGetDefaultNameA(struct xadMasterBase *xadMasterBase, xadTAGPTR tags);
-extern xadERROR xadGetDiskInfo(struct xadMasterBase *xadMasterBase, struct xadArchiveInfo *ai, xadTag tag, ...);
-extern xadERROR xadGetDiskInfoA(struct xadMasterBase *xadMasterBase, struct xadArchiveInfo *ai, xadTAGPTR tags);
-extern xadSTRPTR xadGetErrorText(struct xadMasterBase *xadMasterBase, xadERROR errnum);
-extern xadERROR xadGetFilename(struct xadMasterBase *xadMasterBase, xadUINT32 buffersize, xadSTRPTR buffer, const xadSTRING *path, const xadSTRING *name, xadTag tag, ...);
-extern xadERROR xadGetFilenameA(struct xadMasterBase *xadMasterBase, xadUINT32 buffersize, xadSTRPTR buffer, const xadSTRING *path, const xadSTRING *name, xadTAGPTR tags);
-extern xadERROR xadGetInfo(struct xadMasterBase *xadMasterBase, struct xadArchiveInfo *ai, xadTag tag, ...);
-extern xadERROR xadGetInfoA(struct xadMasterBase *xadMasterBase, struct xadArchiveInfo *ai, xadTAGPTR tags);
-extern xadERROR xadGetHookAccess(struct xadMasterBase *xadMasterBase, struct xadArchiveInfo *ai, xadTag tag, ...);
-extern xadERROR xadGetHookAccessA(struct xadMasterBase *xadMasterBase, struct xadArchiveInfo *ai, xadTAGPTR tags);
-extern struct xadSystemInfo * xadGetSystemInfo(struct xadMasterBase *xadMasterBase);
-extern xadERROR xadHookAccess(struct xadMasterBase *xadMasterBase, xadHookAccessCommands command, xadSignSize data, xadPTR buffer, struct xadArchiveInfo *ai);
-extern xadERROR xadHookTagAccess(struct xadMasterBase *xadMasterBase, xadUINT32 command, xadSignSize data, xadPTR buffer, struct xadArchiveInfo *ai, xadTag tag, ...);
-extern xadERROR xadHookTagAccessA(struct xadMasterBase *xadMasterBase, xadUINT32 command, xadSignSize data, xadPTR buffer, struct xadArchiveInfo *ai, xadTAGPTR tags);
-extern struct xadClient * xadRecogFile(struct xadMasterBase *xadMasterBase, xadSize size, const void *mem, xadTag tag, ...);
-extern struct xadClient * xadRecogFileA(struct xadMasterBase *xadMasterBase, xadSize size, const void *mem, xadTAGPTR tags);
+XADEXTERN struct xadMasterBase *xadOpenLibrary( xadINT32 version );
+XADEXTERN void xadCloseLibrary(struct xadMasterBase *);
+XADEXTERN xadERROR xadAddDiskEntry(struct xadMasterBase *xadMasterBase, struct xadDiskInfo *di, struct xadArchiveInfo *ai, xadTag tag, ...);
+XADEXTERN xadERROR xadAddDiskEntryA(struct xadMasterBase *xadMasterBase, struct xadDiskInfo *di, struct xadArchiveInfo *ai, xadTAGPTR tags);
+XADEXTERN xadERROR xadAddFileEntry(struct xadMasterBase *xadMasterBase, struct xadFileInfo *fi, struct xadArchiveInfo *ai, xadTag tag, ...);
+XADEXTERN xadERROR xadAddFileEntryA(struct xadMasterBase *xadMasterBase, struct xadFileInfo *fi, struct xadArchiveInfo *ai, xadTAGPTR tags);
+XADEXTERN xadPTR xadAllocObject(struct xadMasterBase *xadMasterBase, xadUINT32 type, xadTag tag, ...);
+XADEXTERN xadPTR xadAllocObjectA(struct xadMasterBase *xadMasterBase, xadUINT32 type, xadTAGPTR tags);
+XADEXTERN xadPTR xadAllocVec(struct xadMasterBase *xadMasterBase, xadSize size, xadUINT32 flags);
+XADEXTERN xadUINT16 xadCalcCRC16(struct xadMasterBase *xadMasterBase, xadUINT16 id, xadUINT16 init, xadSize size, const xadUINT8 *buffer);
+XADEXTERN xadUINT32 xadCalcCRC32(struct xadMasterBase *xadMasterBase, xadUINT32 id, xadUINT32 init, xadSize size, const xadUINT8 *buffer);
+XADEXTERN xadERROR xadConvertDates(struct xadMasterBase *xadMasterBase, xadTag tag, ...);
+XADEXTERN xadERROR xadConvertDatesA(struct xadMasterBase *xadMasterBase, xadTAGPTR tags);
+XADEXTERN xadSTRPTR xadConvertName(struct xadMasterBase *xadMasterBase, xadUINT32 charset, xadTag tag, ...);
+XADEXTERN xadSTRPTR xadConvertNameA(struct xadMasterBase *xadMasterBase, xadUINT32 charset, xadTAGPTR tags);
+XADEXTERN xadERROR xadConvertProtection(struct xadMasterBase *xadMasterBase, xadTag tag, ...);
+XADEXTERN xadERROR xadConvertProtectionA(struct xadMasterBase *xadMasterBase, xadTAGPTR tags);
+XADEXTERN void xadCopyMem(struct xadMasterBase *xadMasterBase, const void *s, xadPTR d, xadSize size);
+XADEXTERN xadERROR xadDiskUnArc(struct xadMasterBase *xadMasterBase, struct xadArchiveInfo *ai, xadTag tag, ...);
+XADEXTERN xadERROR xadDiskUnArcA(struct xadMasterBase *xadMasterBase, struct xadArchiveInfo *ai, xadTAGPTR tags);
+XADEXTERN xadERROR xadFileUnArc(struct xadMasterBase *xadMasterBase, struct xadArchiveInfo *ai, xadTag tag, ...);
+XADEXTERN xadERROR xadFileUnArcA(struct xadMasterBase *xadMasterBase, struct xadArchiveInfo *ai, xadTAGPTR tags);
+XADEXTERN void xadFreeHookAccess(struct xadMasterBase *xadMasterBase, struct xadArchiveInfo *ai, xadTag tag, ...);
+XADEXTERN void xadFreeHookAccessA(struct xadMasterBase *xadMasterBase, struct xadArchiveInfo *ai, xadTAGPTR tags);
+XADEXTERN void xadFreeInfo(struct xadMasterBase *xadMasterBase, struct xadArchiveInfo *ai);
+XADEXTERN void xadFreeObject(struct xadMasterBase *xadMasterBase, xadPTR object, xadTag tag, ...);
+XADEXTERN void xadFreeObjectA(struct xadMasterBase *xadMasterBase, xadPTR object, xadTAGPTR tags);
+XADEXTERN struct xadClient * xadGetClientInfo(struct xadMasterBase *xadMasterBase);
+XADEXTERN xadSTRPTR xadGetDefaultName(struct xadMasterBase *xadMasterBase, xadTag tag, ...);
+XADEXTERN xadSTRPTR xadGetDefaultNameA(struct xadMasterBase *xadMasterBase, xadTAGPTR tags);
+XADEXTERN xadERROR xadGetDiskInfo(struct xadMasterBase *xadMasterBase, struct xadArchiveInfo *ai, xadTag tag, ...);
+XADEXTERN xadERROR xadGetDiskInfoA(struct xadMasterBase *xadMasterBase, struct xadArchiveInfo *ai, xadTAGPTR tags);
+XADEXTERN xadSTRPTR xadGetErrorText(struct xadMasterBase *xadMasterBase, xadERROR errnum);
+XADEXTERN xadERROR xadGetFilename(struct xadMasterBase *xadMasterBase, xadUINT32 buffersize, xadSTRPTR buffer, const xadSTRING *path, const xadSTRING *name, xadTag tag, ...);
+XADEXTERN xadERROR xadGetFilenameA(struct xadMasterBase *xadMasterBase, xadUINT32 buffersize, xadSTRPTR buffer, const xadSTRING *path, const xadSTRING *name, xadTAGPTR tags);
+XADEXTERN xadERROR xadGetInfo(struct xadMasterBase *xadMasterBase, struct xadArchiveInfo *ai, xadTag tag, ...);
+XADEXTERN xadERROR xadGetInfoA(struct xadMasterBase *xadMasterBase, struct xadArchiveInfo *ai, xadTAGPTR tags);
+XADEXTERN xadERROR xadGetHookAccess(struct xadMasterBase *xadMasterBase, struct xadArchiveInfo *ai, xadTag tag, ...);
+XADEXTERN xadERROR xadGetHookAccessA(struct xadMasterBase *xadMasterBase, struct xadArchiveInfo *ai, xadTAGPTR tags);
+XADEXTERN struct xadSystemInfo * xadGetSystemInfo(struct xadMasterBase *xadMasterBase);
+XADEXTERN xadERROR xadHookAccess(struct xadMasterBase *xadMasterBase, xadHookAccessCommands command, xadSignSize data, xadPTR buffer, struct xadArchiveInfo *ai);
+XADEXTERN xadERROR xadHookTagAccess(struct xadMasterBase *xadMasterBase, xadUINT32 command, xadSignSize data, xadPTR buffer, struct xadArchiveInfo *ai, xadTag tag, ...);
+XADEXTERN xadERROR xadHookTagAccessA(struct xadMasterBase *xadMasterBase, xadUINT32 command, xadSignSize data, xadPTR buffer, struct xadArchiveInfo *ai, xadTAGPTR tags);
+XADEXTERN struct xadClient * xadRecogFile(struct xadMasterBase *xadMasterBase, xadSize size, const void *mem, xadTag tag, ...);
+XADEXTERN struct xadClient * xadRecogFileA(struct xadMasterBase *xadMasterBase, xadSize size, const void *mem, xadTAGPTR tags);
 /*** END auto-generated section */
 #endif
 

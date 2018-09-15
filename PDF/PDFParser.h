@@ -24,10 +24,11 @@
 #import "PDFEncryptionHandler.h"
 #import "../ClangAnalyser.h"
 
-extern NSExceptionName const PDFWrongMagicException;
-extern NSExceptionName const PDFInvalidFormatException;
-extern NSExceptionName const PDFParserException;
+XADEXTERN NSExceptionName const PDFWrongMagicException;
+XADEXTERN NSExceptionName const PDFInvalidFormatException;
+XADEXTERN NSExceptionName const PDFParserException;
 
+XADEXPORT
 @interface PDFParser:NSObject
 {
 	CSHandle *mainhandle,*fh;
@@ -104,7 +105,7 @@ extern NSExceptionName const PDFParserException;
 @end
 
 
-
+XADEXPORT
 @interface PDFString:NSObject <NSCopying>
 {
 	NSData *data;
@@ -122,7 +123,7 @@ extern NSExceptionName const PDFParserException;
 @end
 
 
-
+XADEXPORT
 @interface PDFObjectReference:NSObject <NSCopying>
 {
 	int num,gen;

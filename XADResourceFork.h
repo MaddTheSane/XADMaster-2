@@ -19,11 +19,13 @@
  * MA 02110-1301  USA
  */
 #import <Foundation/NSObject.h>
+#import "XADTypes.h"
 #import "CSHandle.h"
 #import "XADException.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
+XADEXPORT
 @interface XADResourceFork:NSObject
 {
 	NSDictionary *resources;

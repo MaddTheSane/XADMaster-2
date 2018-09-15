@@ -337,7 +337,7 @@
 		1B3581AA15A4CFE90002A4C9 /* XADAppleSingleParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B3581A615A4CFE90002A4C9 /* XADAppleSingleParser.m */; };
 		1B3581AB15A4CFE90002A4C9 /* XADAppleSingleParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B3581A615A4CFE90002A4C9 /* XADAppleSingleParser.m */; };
 		1B3581AC15A4CFE90002A4C9 /* XADAppleSingleParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B3581A615A4CFE90002A4C9 /* XADAppleSingleParser.m */; };
-		1B3581D015A7ABE20002A4C9 /* XADPDFParser.h in Headers */ = {isa = PBXBuildFile; fileRef = 1B3581CE15A7ABE20002A4C9 /* XADPDFParser.h */; };
+		1B3581D015A7ABE20002A4C9 /* XADPDFParser.h in Headers */ = {isa = PBXBuildFile; fileRef = 1B3581CE15A7ABE20002A4C9 /* XADPDFParser.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		1B3581D115A7ABE20002A4C9 /* XADPDFParser.h in Headers */ = {isa = PBXBuildFile; fileRef = 1B3581CE15A7ABE20002A4C9 /* XADPDFParser.h */; };
 		1B3581D215A7ABE20002A4C9 /* XADPDFParser.h in Headers */ = {isa = PBXBuildFile; fileRef = 1B3581CE15A7ABE20002A4C9 /* XADPDFParser.h */; };
 		1B3581D315A7ABE20002A4C9 /* XADPDFParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B3581CF15A7ABE20002A4C9 /* XADPDFParser.m */; };
@@ -1880,7 +1880,7 @@
 		551BACD61EB032B500EAF64E /* XADArchiveParserDescriptions.h in Headers */ = {isa = PBXBuildFile; fileRef = 1BBEF8AE14D8A31700790E4B /* XADArchiveParserDescriptions.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		551BACD71EB032B500EAF64E /* XADStuffItSplitParser.h in Headers */ = {isa = PBXBuildFile; fileRef = 1BBEFA5914EF375400790E4B /* XADStuffItSplitParser.h */; };
 		551BACD81EB032B500EAF64E /* XADAppleSingleParser.h in Headers */ = {isa = PBXBuildFile; fileRef = 1B3581A515A4CFE90002A4C9 /* XADAppleSingleParser.h */; };
-		551BACD91EB032B500EAF64E /* XADPDFParser.h in Headers */ = {isa = PBXBuildFile; fileRef = 1B3581CE15A7ABE20002A4C9 /* XADPDFParser.h */; };
+		551BACD91EB032B500EAF64E /* XADPDFParser.h in Headers */ = {isa = PBXBuildFile; fileRef = 1B3581CE15A7ABE20002A4C9 /* XADPDFParser.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		551BACDA1EB032B500EAF64E /* CCITTHandle.h in Headers */ = {isa = PBXBuildFile; fileRef = 1B3581D915A7AC020002A4C9 /* CCITTHandle.h */; };
 		551BACDB1EB032B500EAF64E /* LZWHandle.h in Headers */ = {isa = PBXBuildFile; fileRef = 1B3581DB15A7AC020002A4C9 /* LZWHandle.h */; };
 		551BACDC1EB032B500EAF64E /* NSDictionaryNumberExtension.h in Headers */ = {isa = PBXBuildFile; fileRef = 1B3581DD15A7AC020002A4C9 /* NSDictionaryNumberExtension.h */; };
@@ -2147,6 +2147,23 @@
 		554B4AC821187525002B3BAE /* XADArchive.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55541F711EA7FBC3001A6927 /* XADArchive.swift */; };
 		554B4AC921187525002B3BAE /* XADHandle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 551FC04221120AE500FC1109 /* XADHandle.swift */; };
 		554B4ACA21187573002B3BAE /* XADMaster-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = 559B9CCF1A13F443006BDB74 /* XADMaster-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		55702A53214D756D00372F73 /* XADTypes.h in Headers */ = {isa = PBXBuildFile; fileRef = 55702A52214D756D00372F73 /* XADTypes.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		55702A54214D756D00372F73 /* XADTypes.h in Headers */ = {isa = PBXBuildFile; fileRef = 55702A52214D756D00372F73 /* XADTypes.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		55702A55214D756D00372F73 /* XADTypes.h in Headers */ = {isa = PBXBuildFile; fileRef = 55702A52214D756D00372F73 /* XADTypes.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		55702A57214D84D800372F73 /* PDFParser.h in PDF Headers */ = {isa = PBXBuildFile; fileRef = 1B3581E315A7AC020002A4C9 /* PDFParser.h */; };
+		55702A58214D84DA00372F73 /* PDFStream.h in PDF Headers */ = {isa = PBXBuildFile; fileRef = 1B3581E515A7AC020002A4C9 /* PDFStream.h */; };
+		55702A59214D864000372F73 /* CCITTHandle.h in PDF Headers */ = {isa = PBXBuildFile; fileRef = 1B3581D915A7AC020002A4C9 /* CCITTHandle.h */; };
+		55702A5A214D864500372F73 /* LZWHandle.h in PDF Headers */ = {isa = PBXBuildFile; fileRef = 1B3581DB15A7AC020002A4C9 /* LZWHandle.h */; };
+		55702A5B214D864900372F73 /* NSDictionaryNumberExtension.h in PDF Headers */ = {isa = PBXBuildFile; fileRef = 1B3581DD15A7AC020002A4C9 /* NSDictionaryNumberExtension.h */; };
+		55702A5C214D864E00372F73 /* PDFEncryptionHandler.h in PDF Headers */ = {isa = PBXBuildFile; fileRef = 1B3581DF15A7AC020002A4C9 /* PDFEncryptionHandler.h */; };
+		55702A5D214D865400372F73 /* PDFEncryptionUtils.h in PDF Headers */ = {isa = PBXBuildFile; fileRef = 1B3581E115A7AC020002A4C9 /* PDFEncryptionUtils.h */; };
+		55702A5F214D868700372F73 /* CCITTHandle.h in PDF Headers */ = {isa = PBXBuildFile; fileRef = 1B3581D915A7AC020002A4C9 /* CCITTHandle.h */; };
+		55702A60214D868900372F73 /* LZWHandle.h in PDF Headers */ = {isa = PBXBuildFile; fileRef = 1B3581DB15A7AC020002A4C9 /* LZWHandle.h */; };
+		55702A61214D868A00372F73 /* NSDictionaryNumberExtension.h in PDF Headers */ = {isa = PBXBuildFile; fileRef = 1B3581DD15A7AC020002A4C9 /* NSDictionaryNumberExtension.h */; };
+		55702A62214D868D00372F73 /* PDFEncryptionHandler.h in PDF Headers */ = {isa = PBXBuildFile; fileRef = 1B3581DF15A7AC020002A4C9 /* PDFEncryptionHandler.h */; };
+		55702A63214D869000372F73 /* PDFEncryptionUtils.h in PDF Headers */ = {isa = PBXBuildFile; fileRef = 1B3581E115A7AC020002A4C9 /* PDFEncryptionUtils.h */; };
+		55702A64214D869200372F73 /* PDFParser.h in PDF Headers */ = {isa = PBXBuildFile; fileRef = 1B3581E315A7AC020002A4C9 /* PDFParser.h */; };
+		55702A65214D869500372F73 /* PDFStream.h in PDF Headers */ = {isa = PBXBuildFile; fileRef = 1B3581E515A7AC020002A4C9 /* PDFStream.h */; };
 		557C6A921FCB597700936524 /* XADErrors.strings in Resources */ = {isa = PBXBuildFile; fileRef = 557C6A961FCB597700936524 /* XADErrors.strings */; };
 		557C6A931FCB597700936524 /* XADErrors.strings in Resources */ = {isa = PBXBuildFile; fileRef = 557C6A961FCB597700936524 /* XADErrors.strings */; };
 		557C6A941FCB597700936524 /* XADErrors.strings in Resources */ = {isa = PBXBuildFile; fileRef = 557C6A961FCB597700936524 /* XADErrors.strings */; };
@@ -2332,6 +2349,43 @@
 			remoteInfo = XADMaster;
 		};
 /* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		55702A56214D829100372F73 /* PDF Headers */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = Headers/PDF;
+			dstSubfolderSpec = 1;
+			files = (
+				55702A5D214D865400372F73 /* PDFEncryptionUtils.h in PDF Headers */,
+				55702A5B214D864900372F73 /* NSDictionaryNumberExtension.h in PDF Headers */,
+				55702A5C214D864E00372F73 /* PDFEncryptionHandler.h in PDF Headers */,
+				55702A5A214D864500372F73 /* LZWHandle.h in PDF Headers */,
+				55702A57214D84D800372F73 /* PDFParser.h in PDF Headers */,
+				55702A58214D84DA00372F73 /* PDFStream.h in PDF Headers */,
+				55702A59214D864000372F73 /* CCITTHandle.h in PDF Headers */,
+			);
+			name = "PDF Headers";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		55702A5E214D866800372F73 /* PDF Headers */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = Headers/PDF;
+			dstSubfolderSpec = 1;
+			files = (
+				55702A5F214D868700372F73 /* CCITTHandle.h in PDF Headers */,
+				55702A63214D869000372F73 /* PDFEncryptionUtils.h in PDF Headers */,
+				55702A65214D869500372F73 /* PDFStream.h in PDF Headers */,
+				55702A64214D869200372F73 /* PDFParser.h in PDF Headers */,
+				55702A60214D868900372F73 /* LZWHandle.h in PDF Headers */,
+				55702A62214D868D00372F73 /* PDFEncryptionHandler.h in PDF Headers */,
+				55702A61214D868A00372F73 /* NSDictionaryNumberExtension.h in PDF Headers */,
+			);
+			name = "PDF Headers";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		1737CCA9B444F0AF0C3A4456 /* XADRAR5ParserTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XADRAR5ParserTests.m; sourceTree = "<group>"; };
@@ -2889,6 +2943,7 @@
 		55541F711EA7FBC3001A6927 /* XADArchive.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = XADArchive.swift; sourceTree = "<group>"; };
 		55541F761EA91BE0001A6927 /* XADSimpleUnarchiver.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = XADSimpleUnarchiver.swift; sourceTree = "<group>"; };
 		555EF07B1EA7DB57000CAE58 /* XADArchiveParserSwift.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = XADArchiveParserSwift.swift; sourceTree = "<group>"; };
+		55702A52214D756D00372F73 /* XADTypes.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XADTypes.h; sourceTree = "<group>"; usesTabs = 1; };
 		557C6A951FCB597700936524 /* en */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/XADErrors.strings; sourceTree = "<group>"; };
 		557C6A971FCB59C500936524 /* de */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/XADErrors.strings; sourceTree = "<group>"; };
 		557C6A981FCB59C800936524 /* fr */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/XADErrors.strings; sourceTree = "<group>"; };
@@ -2909,8 +2964,6 @@
 		557C6AA71FCB5AAF00936524 /* hu */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = hu; path = hu.lproj/XADErrors.strings; sourceTree = "<group>"; };
 		557C6AA81FCB5ABB00936524 /* sv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = sv; path = sv.lproj/XADErrors.strings; sourceTree = "<group>"; };
 		557C6AA91FCB5AC200936524 /* ja */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = ja; path = ja.lproj/XADErrors.strings; sourceTree = "<group>"; };
-		557EA8751DB1C37C00A5AE04 /* XAD-simple.exp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.exports; path = "XAD-simple.exp"; sourceTree = "<group>"; };
-		558A1EDB1E70E00C00C41ADA /* XAD.exp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.exports; path = XAD.exp; sourceTree = "<group>"; };
 		5591221D1EB3D21D007CF99D /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = System/Library/Frameworks/CoreFoundation.framework; sourceTree = SDKROOT; };
 		559B9CCC1A13F30E006BDB74 /* XAD.modulemap */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.module-map"; path = XAD.modulemap; sourceTree = "<group>"; };
 		559B9CCF1A13F443006BDB74 /* XADMaster-umbrella.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "XADMaster-umbrella.h"; sourceTree = "<group>"; };
@@ -3175,8 +3228,6 @@
 				559B9CCC1A13F30E006BDB74 /* XAD.modulemap */,
 				55D93FE91DB9E6AC00F01BBC /* XAD-whole.modulemap */,
 				56FBC92B0A57541300BE98CF /* Info.plist */,
-				557EA8751DB1C37C00A5AE04 /* XAD-simple.exp */,
-				558A1EDB1E70E00C00C41ADA /* XAD.exp */,
 				557C6A961FCB597700936524 /* XADErrors.strings */,
 			);
 			name = Resources;
@@ -3185,6 +3236,7 @@
 		08FB77AEFE84172EC02AAC07 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
+				55702A52214D756D00372F73 /* XADTypes.h */,
 				1BBAB6760EC26AA6007FE6A2 /* XADArchiveParser.h */,
 				1BBAB6770EC26AA6007FE6A2 /* XADArchiveParser.m */,
 				555EF07B1EA7DB57000CAE58 /* XADArchiveParserSwift.swift */,
@@ -4391,6 +4443,7 @@
 				5500A48C1D776ADB00321300 /* xadClient.h in Headers */,
 				5500A4931D776ADB00321300 /* XADCRCHandle.h in Headers */,
 				5500A4941D776ADB00321300 /* XADCRCSuffixHandle.h in Headers */,
+				55702A55214D756D00372F73 /* XADTypes.h in Headers */,
 				5500A4951D776ADB00321300 /* XADDeflateHandle.h in Headers */,
 				5500A4961D776ADB00321300 /* XADDeltaHandle.h in Headers */,
 				5500A49B1D776ADB00321300 /* XADFastLZSSHandle.h in Headers */,
@@ -4613,6 +4666,7 @@
 				551BAC931EB032B500EAF64E /* XADRLE90Handle.h in Headers */,
 				551BAC941EB032B500EAF64E /* XADSplitFileParser.h in Headers */,
 				551BAC951EB032B500EAF64E /* XADSqueezeHandle.h in Headers */,
+				55702A54214D756D00372F73 /* XADTypes.h in Headers */,
 				551BAC961EB032B500EAF64E /* XADSqueezeParser.h in Headers */,
 				551BAC971EB032B500EAF64E /* XADStacLZSHandle.h in Headers */,
 				551BAC981EB032B500EAF64E /* XADStuffIt13Handle.h in Headers */,
@@ -4842,6 +4896,7 @@
 				1B75B920134E5BD900510EA5 /* XADRLE90Handle.h in Headers */,
 				1B75B921134E5BDA00510EA5 /* XADSplitFileParser.h in Headers */,
 				1B75B922134E5BDB00510EA5 /* XADSqueezeHandle.h in Headers */,
+				55702A53214D756D00372F73 /* XADTypes.h in Headers */,
 				1B75B923134E5BDC00510EA5 /* XADSqueezeParser.h in Headers */,
 				1B75B924134E5BDD00510EA5 /* XADStacLZSHandle.h in Headers */,
 				1B75B925134E5BDF00510EA5 /* XADStuffIt13Handle.h in Headers */,
@@ -5185,6 +5240,7 @@
 			buildConfigurationList = 551BADCE1EB032B500EAF64E /* Build configuration list for PBXNativeTarget "XADMaster-iOS" */;
 			buildPhases = (
 				551BAC121EB032B500EAF64E /* Headers */,
+				55702A5E214D866800372F73 /* PDF Headers */,
 				551BACEE1EB032B500EAF64E /* Resources */,
 				551BACEF1EB032B500EAF64E /* Sources */,
 				551BADC71EB032B500EAF64E /* Frameworks */,
@@ -5222,6 +5278,7 @@
 			buildConfigurationList = 1DEB91AD08733DA50010E9CD /* Build configuration list for PBXNativeTarget "XADMaster" */;
 			buildPhases = (
 				8DC2EF500486A6940098B216 /* Headers */,
+				55702A56214D829100372F73 /* PDF Headers */,
 				8DC2EF520486A6940098B216 /* Resources */,
 				8DC2EF540486A6940098B216 /* Sources */,
 				8DC2EF560486A6940098B216 /* Frameworks */,
@@ -7156,7 +7213,6 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				EXPORTED_SYMBOLS_FILE = XAD.exp;
 				FRAMEWORK_VERSION = A;
 				GCC_CHAR_IS_UNSIGNED_CHAR = YES;
 				GCC_C_LANGUAGE_STANDARD = c99;
@@ -7166,6 +7222,7 @@
 					"USE_COMMON_CRYPTO=1",
 					"$(inherited)",
 				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "@executable_path/../Frameworks";
 				MODULEMAP_FILE = "XAD-whole.modulemap";
@@ -7708,7 +7765,6 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				EXPORTED_SYMBOLS_FILE = XAD.exp;
 				FRAMEWORK_VERSION = A;
 				GCC_CHAR_IS_UNSIGNED_CHAR = YES;
 				GCC_C_LANGUAGE_STANDARD = c99;
@@ -7719,6 +7775,7 @@
 					"USE_COMMON_CRYPTO=1",
 					"$(inherited)",
 				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "@executable_path/../Frameworks";
 				MODULEMAP_FILE = "XAD-whole.modulemap";
@@ -7799,7 +7856,6 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				EXPORTED_SYMBOLS_FILE = "XAD-simple.exp";
 				FRAMEWORK_VERSION = A;
 				GCC_CHAR_IS_UNSIGNED_CHAR = YES;
 				GCC_C_LANGUAGE_STANDARD = c99;
@@ -7811,6 +7867,7 @@
 					"USE_COMMON_CRYPTO=1",
 					"$(inherited)",
 				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
 				INFOPLIST_FILE = Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/../Frameworks";
 				MODULEMAP_FILE = XAD.modulemap;
@@ -7833,7 +7890,6 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				EXPORTED_SYMBOLS_FILE = "XAD-simple.exp";
 				FRAMEWORK_VERSION = A;
 				GCC_CHAR_IS_UNSIGNED_CHAR = YES;
 				GCC_C_LANGUAGE_STANDARD = c99;
@@ -7844,6 +7900,7 @@
 					"USE_COMMON_CRYPTO=1",
 					"$(inherited)",
 				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
 				INFOPLIST_FILE = Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/../Frameworks";
 				MODULEMAP_FILE = XAD.modulemap;
@@ -7864,7 +7921,6 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				EXPORTED_SYMBOLS_FILE = XAD.exp;
 				FRAMEWORK_VERSION = A;
 				GCC_CHAR_IS_UNSIGNED_CHAR = YES;
 				GCC_C_LANGUAGE_STANDARD = c99;
@@ -7875,6 +7931,7 @@
 					"USE_COMMON_CRYPTO=1",
 					"$(inherited)",
 				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "@executable_path/Frameworks";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
@@ -7904,7 +7961,6 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				EXPORTED_SYMBOLS_FILE = XAD.exp;
 				FRAMEWORK_VERSION = A;
 				GCC_CHAR_IS_UNSIGNED_CHAR = YES;
 				GCC_C_LANGUAGE_STANDARD = c99;
@@ -7914,6 +7970,7 @@
 					"USE_COMMON_CRYPTO=1",
 					"$(inherited)",
 				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "@executable_path/Frameworks";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;

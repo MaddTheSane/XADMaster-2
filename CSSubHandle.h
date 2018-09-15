@@ -23,6 +23,7 @@
 
 #define CSSubHandle XADSubHandle
 
+XADEXPORT
 @interface CSSubHandle:CSHandle
 {
 	off_t start,end;

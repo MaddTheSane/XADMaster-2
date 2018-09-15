@@ -21,6 +21,7 @@
 #import "XADArchiveParser.h"
 #import "XADSWFTagParser.h"
 
+XADEXPORT
 @interface XADSWFParser:XADArchiveParser
 {
 	XADSWFTagParser *parser;

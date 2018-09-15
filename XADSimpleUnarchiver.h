@@ -19,7 +19,7 @@
  * MA 02110-1301  USA
  */
 #import <Foundation/Foundation.h>
-
+#import "XADTypes.h"
 #import "XADArchiveParser.h"
 #import "XADUnarchiver.h"
 #import "XADRegex.h"
@@ -32,6 +32,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @protocol XADSimpleUnarchiverDelegate;
 
+XADEXPORT
 @interface XADSimpleUnarchiver:NSObject<XADArchiveParserDelegate, XADUnarchiverDelegate>
 {
 	XADArchiveParser *parser;

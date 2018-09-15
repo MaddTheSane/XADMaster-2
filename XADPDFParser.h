@@ -21,6 +21,7 @@
 #import "XADArchiveParser.h"
 #import "PDF/PDFParser.h"
 
+XADEXPORT
 @interface XADPDFParser:XADArchiveParser
 {
 	PDFParser *parser;

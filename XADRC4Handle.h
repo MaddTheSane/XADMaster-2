@@ -23,6 +23,7 @@
 
 @class XADRC4Engine;
 
+XADEXPORT
 @interface XADRC4Handle:CSStreamHandle
 {
 	off_t startoffs;
@@ -38,6 +39,7 @@
 
 @end
 
+XADEXPORT
 @interface XADRC4Engine:NSObject
 {
 	uint8_t s[256];

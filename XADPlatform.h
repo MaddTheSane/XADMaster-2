@@ -19,11 +19,13 @@
  * MA 02110-1301  USA
  */
 #import <Foundation/Foundation.h>
+#import "XADTypes.h"
 #import "XADUnarchiver.h"
 #import "CSHandle.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
+XADEXPORT
 @interface XADPlatform:NSObject
 
 // Archive entry extraction.

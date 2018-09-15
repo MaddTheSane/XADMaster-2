@@ -23,8 +23,9 @@
 
 #define CSZlibHandle XADZlibHandle
 
-extern NSExceptionName const CSZlibException;
+XADEXTERN NSExceptionName const CSZlibException;
 
+XADEXPORT
 @interface CSZlibHandle:CSStreamHandle
 
 +(CSZlibHandle *)zlibHandleWithHandle:(CSHandle *)handle;

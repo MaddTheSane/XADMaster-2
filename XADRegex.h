@@ -19,6 +19,7 @@
  * MA 02110-1301  USA
  */
 #import <Foundation/Foundation.h>
+#import "XADTypes.h"
 
 #ifdef _WIN32
 #import "regex.h"
@@ -28,6 +29,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+XADEXPORT
 @interface XADRegex:NSObject
 {
 	NSString *patternstring;

@@ -21,8 +21,9 @@
 #import "../CSByteStreamHandle.h"
 #import "../XADPrefixCode.h"
 
-extern NSString *const CCITTCodeException;
+XADEXTERN NSExceptionName const CCITTCodeException;
 
+XADEXPORT
 @interface CCITTFaxHandle:CSByteStreamHandle
 {
 	int columns,white;
@@ -39,6 +40,7 @@ extern NSString *const CCITTCodeException;
 
 @end
 
+XADEXPORT
 @interface CCITTFaxT41DHandle:CCITTFaxHandle
 {
 	XADPrefixCode *whitecode,*blackcode;
@@ -51,6 +53,7 @@ extern NSString *const CCITTCodeException;
 
 @end
 
+XADEXPORT
 @interface CCITTFaxT6Handle:CCITTFaxHandle
 {
 	int *prevchanges,numprevchanges;

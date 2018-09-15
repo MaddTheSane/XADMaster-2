@@ -22,11 +22,12 @@
 #import "PDFEncryptionUtils.h"
 #import "../CSHandle.h"
 
-extern NSString *const PDFUnsupportedEncryptionException;
+XADEXTERN NSExceptionName const PDFUnsupportedEncryptionException;
 
 @class PDFEncryptionAlgorithm;
 @class PDFObjectReference,PDFString;
 
+XADEXPORT
 @interface PDFEncryptionHandler:NSObject
 {
 	int version,revision;
@@ -60,7 +61,7 @@ extern NSString *const PDFUnsupportedEncryptionException;
 @end
 
 
-
+XADEXPORT
 @interface PDFEncryptionAlgorithm:NSObject
 
 -(NSData *)decryptedData:(NSData *)data reference:(PDFObjectReference *)ref;
@@ -70,7 +71,7 @@ extern NSString *const PDFUnsupportedEncryptionException;
 @end
 
 
-
+XADEXPORT
 @interface PDFNoAlgorithm:PDFEncryptionAlgorithm
 
 -(NSData *)decryptedData:(NSData *)data reference:(PDFObjectReference *)ref;
@@ -79,7 +80,7 @@ extern NSString *const PDFUnsupportedEncryptionException;
 @end
 
 
-
+XADEXPORT
 @interface PDFStandardAlgorithm:PDFEncryptionAlgorithm
 {
 	int keylength;
@@ -92,7 +93,7 @@ extern NSString *const PDFUnsupportedEncryptionException;
 @end
 
 
-
+XADEXPORT
 @interface PDFRC4Algorithm:PDFStandardAlgorithm
 
 -(NSData *)decryptedData:(NSData *)data reference:(PDFObjectReference *)ref;
@@ -100,7 +101,7 @@ extern NSString *const PDFUnsupportedEncryptionException;
 
 @end
 
-
+XADEXPORT
 @interface PDFAESAlgorithm:PDFStandardAlgorithm
 
 -(NSData *)decryptedData:(NSData *)data reference:(PDFObjectReference *)ref;

@@ -20,7 +20,7 @@
  */
 #import <Foundation/Foundation.h>
 #include <stdint.h>
-
+#import "XADTypes.h"
 
 
 #define CSHandleMaxLength 0x7fffffffffffffffll
@@ -39,13 +39,13 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-extern NSExceptionName const CSOutOfMemoryException;
-extern NSExceptionName const CSEndOfFileException;
-extern NSExceptionName const CSNotImplementedException;
-extern NSExceptionName const CSNotSupportedException;
+XADEXTERN NSExceptionName const CSOutOfMemoryException;
+XADEXTERN NSExceptionName const CSEndOfFileException;
+XADEXTERN NSExceptionName const CSNotImplementedException;
+XADEXTERN NSExceptionName const CSNotSupportedException;
 
 
-
+XADEXPORT
 @interface CSHandle:NSObject <NSCopying>
 {
 	CSHandle *parent;

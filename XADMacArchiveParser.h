@@ -18,13 +18,15 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA 02110-1301  USA
  */
+#import "XADTypes.h"
 #import "XADArchiveParser.h"
 #import "CSStreamHandle.h"
 
-extern XADArchiveKeys const XADIsMacBinaryKey;
-extern XADArchiveKeys const XADMightBeMacBinaryKey;
-extern XADArchiveKeys const XADDisableMacForkExpansionKey;
+XADEXTERN XADArchiveKeys const XADIsMacBinaryKey;
+XADEXTERN XADArchiveKeys const XADMightBeMacBinaryKey;
+XADEXTERN XADArchiveKeys const XADDisableMacForkExpansionKey;
 
+XADEXPORT
 @interface XADMacArchiveParser:XADArchiveParser
 {
 	XADPath *previousname;

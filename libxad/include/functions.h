@@ -68,8 +68,8 @@
   } \
   va_end(ap);
 
-xadERROR xadAddDiskEntry(struct xadMasterBaseP *xadMasterBase, struct xadDiskInfo *di, struct xadArchiveInfoP *ai, xadTag tag, ...);
-xadERROR xadAddDiskEntryA(struct xadMasterBaseP *xadMasterBase, struct xadDiskInfo *di, struct xadArchiveInfoP *ai, xadTAGPTR tags);
+XADEXTERN xadERROR xadAddDiskEntry(struct xadMasterBaseP *xadMasterBase, struct xadDiskInfo *di, struct xadArchiveInfoP *ai, xadTag tag, ...);
+XADEXTERN xadERROR xadAddDiskEntryA(struct xadMasterBaseP *xadMasterBase, struct xadDiskInfo *di, struct xadArchiveInfoP *ai, xadTAGPTR tags);
 #define FUNCxadAddDiskEntry \
   xadERROR xadAddDiskEntry( \
     struct xadMasterBaseP *xadMasterBase, \
@@ -83,8 +83,8 @@ xadERROR xadAddDiskEntryA(struct xadMasterBaseP *xadMasterBase, struct xadDiskIn
     struct xadArchiveInfoP *ai, \
     xadTAGPTR tags)
 
-xadERROR xadAddFileEntry(struct xadMasterBaseP *xadMasterBase, struct xadFileInfo *fi, struct xadArchiveInfoP *ai, xadTag tag, ...);
-xadERROR xadAddFileEntryA(struct xadMasterBaseP *xadMasterBase, struct xadFileInfo *fi, struct xadArchiveInfoP *ai, xadTAGPTR tags);
+XADEXTERN xadERROR xadAddFileEntry(struct xadMasterBaseP *xadMasterBase, struct xadFileInfo *fi, struct xadArchiveInfoP *ai, xadTag tag, ...);
+XADEXTERN xadERROR xadAddFileEntryA(struct xadMasterBaseP *xadMasterBase, struct xadFileInfo *fi, struct xadArchiveInfoP *ai, xadTAGPTR tags);
 #define FUNCxadAddFileEntry \
   xadERROR xadAddFileEntry( \
     struct xadMasterBaseP *xadMasterBase, \
@@ -98,8 +98,8 @@ xadERROR xadAddFileEntryA(struct xadMasterBaseP *xadMasterBase, struct xadFileIn
     struct xadArchiveInfoP *ai, \
     xadTAGPTR tags)
 
-xadPTR xadAllocObject(struct xadMasterBaseP *xadMasterBase, xadUINT32 type, xadTag tag, ...);
-xadPTR xadAllocObjectA(struct xadMasterBaseP *xadMasterBase, xadUINT32 type, xadTAGPTR tags);
+XADEXTERN xadPTR xadAllocObject(struct xadMasterBaseP *xadMasterBase, xadUINT32 type, xadTag tag, ...);
+XADEXTERN xadPTR xadAllocObjectA(struct xadMasterBaseP *xadMasterBase, xadUINT32 type, xadTAGPTR tags);
 #define FUNCxadAllocObject \
   xadPTR xadAllocObject( \
     struct xadMasterBaseP *xadMasterBase, \
@@ -111,14 +111,14 @@ xadPTR xadAllocObjectA(struct xadMasterBaseP *xadMasterBase, xadUINT32 type, xad
     xadUINT32 type, \
     xadTAGPTR tags)
 
-xadPTR xadAllocVec(struct xadMasterBaseP *xadMasterBase, xadSize size, xadUINT32 flags);
+XADEXTERN xadPTR xadAllocVec(struct xadMasterBaseP *xadMasterBase, xadSize size, xadUINT32 flags);
 #define FUNCxadAllocVec xadPTR xadAllocVec(struct xadMasterBaseP *xadMasterBase, xadSize size, xadUINT32 flags)
-xadUINT16 xadCalcCRC16(struct xadMasterBaseP *xadMasterBase, xadUINT16 id, xadUINT16 init, xadSize size, const xadUINT8 *buffer);
+XADEXTERN xadUINT16 xadCalcCRC16(struct xadMasterBaseP *xadMasterBase, xadUINT16 id, xadUINT16 init, xadSize size, const xadUINT8 *buffer);
 #define FUNCxadCalcCRC16 xadUINT16 xadCalcCRC16(struct xadMasterBaseP *xadMasterBase, xadUINT16 id, xadUINT16 init, xadSize size, const xadUINT8 *buffer)
-xadUINT32 xadCalcCRC32(struct xadMasterBaseP *xadMasterBase, xadUINT32 id, xadUINT32 init, xadSize size, const xadUINT8 *buffer);
+XADEXTERN xadUINT32 xadCalcCRC32(struct xadMasterBaseP *xadMasterBase, xadUINT32 id, xadUINT32 init, xadSize size, const xadUINT8 *buffer);
 #define FUNCxadCalcCRC32 xadUINT32 xadCalcCRC32(struct xadMasterBaseP *xadMasterBase, xadUINT32 id, xadUINT32 init, xadSize size, const xadUINT8 *buffer)
-xadERROR xadConvertDates(struct xadMasterBaseP *xadMasterBase, xadTag tag, ...);
-xadERROR xadConvertDatesA(struct xadMasterBaseP *xadMasterBase, xadTAGPTR tags);
+XADEXTERN xadERROR xadConvertDates(struct xadMasterBaseP *xadMasterBase, xadTag tag, ...);
+XADEXTERN xadERROR xadConvertDatesA(struct xadMasterBaseP *xadMasterBase, xadTAGPTR tags);
 #define FUNCxadConvertDates \
   xadERROR xadConvertDates( \
     struct xadMasterBaseP *xadMasterBase, \
@@ -128,8 +128,8 @@ xadERROR xadConvertDatesA(struct xadMasterBaseP *xadMasterBase, xadTAGPTR tags);
     struct xadMasterBaseP *xadMasterBase, \
     xadTAGPTR tags)
 
-xadSTRPTR xadConvertName(struct xadMasterBaseP *xadMasterBase, xadUINT32 charset, xadTag tag, ...);
-xadSTRPTR xadConvertNameA(struct xadMasterBaseP *xadMasterBase, xadUINT32 charset, xadTAGPTR tags);
+XADEXTERN xadSTRPTR xadConvertName(struct xadMasterBaseP *xadMasterBase, xadUINT32 charset, xadTag tag, ...);
+XADEXTERN xadSTRPTR xadConvertNameA(struct xadMasterBaseP *xadMasterBase, xadUINT32 charset, xadTAGPTR tags);
 #define FUNCxadConvertName \
   xadSTRPTR xadConvertName( \
     struct xadMasterBaseP *xadMasterBase, \
@@ -141,8 +141,8 @@ xadSTRPTR xadConvertNameA(struct xadMasterBaseP *xadMasterBase, xadUINT32 charse
     xadUINT32 charset, \
     xadTAGPTR tags)
 
-xadERROR xadConvertProtection(struct xadMasterBaseP *xadMasterBase, xadTag tag, ...);
-xadERROR xadConvertProtectionA(struct xadMasterBaseP *xadMasterBase, xadTAGPTR tags);
+XADEXTERN xadERROR xadConvertProtection(struct xadMasterBaseP *xadMasterBase, xadTag tag, ...);
+XADEXTERN xadERROR xadConvertProtectionA(struct xadMasterBaseP *xadMasterBase, xadTAGPTR tags);
 #define FUNCxadConvertProtection \
   xadERROR xadConvertProtection( \
     struct xadMasterBaseP *xadMasterBase, \
@@ -152,10 +152,10 @@ xadERROR xadConvertProtectionA(struct xadMasterBaseP *xadMasterBase, xadTAGPTR t
     struct xadMasterBaseP *xadMasterBase, \
     xadTAGPTR tags)
 
-void xadCopyMem(struct xadMasterBaseP *xadMasterBase, const void *s, xadPTR d, xadSize size);
+XADEXTERN void xadCopyMem(struct xadMasterBaseP *xadMasterBase, const void *s, xadPTR d, xadSize size);
 #define FUNCxadCopyMem void xadCopyMem(struct xadMasterBaseP *xadMasterBase, const void *s, xadPTR d, xadSize size)
-xadERROR xadDiskUnArc(struct xadMasterBaseP *xadMasterBase, struct xadArchiveInfoP *ai, xadTag tag, ...);
-xadERROR xadDiskUnArcA(struct xadMasterBaseP *xadMasterBase, struct xadArchiveInfoP *ai, xadTAGPTR tags);
+XADEXTERN xadERROR xadDiskUnArc(struct xadMasterBaseP *xadMasterBase, struct xadArchiveInfoP *ai, xadTag tag, ...);
+XADEXTERN xadERROR xadDiskUnArcA(struct xadMasterBaseP *xadMasterBase, struct xadArchiveInfoP *ai, xadTAGPTR tags);
 #define FUNCxadDiskUnArc \
   xadERROR xadDiskUnArc( \
     struct xadMasterBaseP *xadMasterBase, \
@@ -167,8 +167,8 @@ xadERROR xadDiskUnArcA(struct xadMasterBaseP *xadMasterBase, struct xadArchiveIn
     struct xadArchiveInfoP *ai, \
     xadTAGPTR tags)
 
-xadERROR xadFileUnArc(struct xadMasterBaseP *xadMasterBase, struct xadArchiveInfoP *ai, xadTag tag, ...);
-xadERROR xadFileUnArcA(struct xadMasterBaseP *xadMasterBase, struct xadArchiveInfoP *ai, xadTAGPTR tags);
+XADEXTERN xadERROR xadFileUnArc(struct xadMasterBaseP *xadMasterBase, struct xadArchiveInfoP *ai, xadTag tag, ...);
+XADEXTERN xadERROR xadFileUnArcA(struct xadMasterBaseP *xadMasterBase, struct xadArchiveInfoP *ai, xadTAGPTR tags);
 #define FUNCxadFileUnArc \
   xadERROR xadFileUnArc( \
     struct xadMasterBaseP *xadMasterBase, \
@@ -180,8 +180,8 @@ xadERROR xadFileUnArcA(struct xadMasterBaseP *xadMasterBase, struct xadArchiveIn
     struct xadArchiveInfoP *ai, \
     xadTAGPTR tags)
 
-void xadFreeHookAccess(struct xadMasterBaseP *xadMasterBase, struct xadArchiveInfoP *ai, xadTag tag, ...);
-void xadFreeHookAccessA(struct xadMasterBaseP *xadMasterBase, struct xadArchiveInfoP *ai, xadTAGPTR tags);
+XADEXTERN void xadFreeHookAccess(struct xadMasterBaseP *xadMasterBase, struct xadArchiveInfoP *ai, xadTag tag, ...);
+XADEXTERN void xadFreeHookAccessA(struct xadMasterBaseP *xadMasterBase, struct xadArchiveInfoP *ai, xadTAGPTR tags);
 #define FUNCxadFreeHookAccess \
   void xadFreeHookAccess( \
     struct xadMasterBaseP *xadMasterBase, \
@@ -193,10 +193,10 @@ void xadFreeHookAccessA(struct xadMasterBaseP *xadMasterBase, struct xadArchiveI
     struct xadArchiveInfoP *ai, \
     xadTAGPTR tags)
 
-void xadFreeInfo(struct xadMasterBaseP *xadMasterBase, struct xadArchiveInfoP *ai);
+XADEXTERN void xadFreeInfo(struct xadMasterBaseP *xadMasterBase, struct xadArchiveInfoP *ai);
 #define FUNCxadFreeInfo void xadFreeInfo(struct xadMasterBaseP *xadMasterBase, struct xadArchiveInfoP *ai)
-void xadFreeObject(struct xadMasterBaseP *xadMasterBase, xadPTR object, xadTag tag, ...);
-void xadFreeObjectA(struct xadMasterBaseP *xadMasterBase, xadPTR object, xadTAGPTR tags);
+XADEXTERN void xadFreeObject(struct xadMasterBaseP *xadMasterBase, xadPTR object, xadTag tag, ...);
+XADEXTERN void xadFreeObjectA(struct xadMasterBaseP *xadMasterBase, xadPTR object, xadTAGPTR tags);
 #define FUNCxadFreeObject \
   void xadFreeObject( \
     struct xadMasterBaseP *xadMasterBase, \
@@ -208,10 +208,10 @@ void xadFreeObjectA(struct xadMasterBaseP *xadMasterBase, xadPTR object, xadTAGP
     xadPTR object, \
     xadTAGPTR tags)
 
-struct xadClient * xadGetClientInfo(struct xadMasterBaseP *xadMasterBase);
+XADEXTERN struct xadClient * xadGetClientInfo(struct xadMasterBaseP *xadMasterBase);
 #define FUNCxadGetClientInfo struct xadClient * xadGetClientInfo(struct xadMasterBaseP *xadMasterBase)
-xadSTRPTR xadGetDefaultName(struct xadMasterBaseP *xadMasterBase, xadTag tag, ...);
-xadSTRPTR xadGetDefaultNameA(struct xadMasterBaseP *xadMasterBase, xadTAGPTR tags);
+XADEXTERN xadSTRPTR xadGetDefaultName(struct xadMasterBaseP *xadMasterBase, xadTag tag, ...);
+XADEXTERN xadSTRPTR xadGetDefaultNameA(struct xadMasterBaseP *xadMasterBase, xadTAGPTR tags);
 #define FUNCxadGetDefaultName \
   xadSTRPTR xadGetDefaultName( \
     struct xadMasterBaseP *xadMasterBase, \
@@ -221,8 +221,8 @@ xadSTRPTR xadGetDefaultNameA(struct xadMasterBaseP *xadMasterBase, xadTAGPTR tag
     struct xadMasterBaseP *xadMasterBase, \
     xadTAGPTR tags)
 
-xadERROR xadGetDiskInfo(struct xadMasterBaseP *xadMasterBase, struct xadArchiveInfoP *ai, xadTag tag, ...);
-xadERROR xadGetDiskInfoA(struct xadMasterBaseP *xadMasterBase, struct xadArchiveInfoP *ai, xadTAGPTR tags);
+XADEXTERN xadERROR xadGetDiskInfo(struct xadMasterBaseP *xadMasterBase, struct xadArchiveInfoP *ai, xadTag tag, ...);
+XADEXTERN xadERROR xadGetDiskInfoA(struct xadMasterBaseP *xadMasterBase, struct xadArchiveInfoP *ai, xadTAGPTR tags);
 #define FUNCxadGetDiskInfo \
   xadERROR xadGetDiskInfo( \
     struct xadMasterBaseP *xadMasterBase, \
@@ -234,10 +234,10 @@ xadERROR xadGetDiskInfoA(struct xadMasterBaseP *xadMasterBase, struct xadArchive
     struct xadArchiveInfoP *ai, \
     xadTAGPTR tags)
 
-xadSTRPTR xadGetErrorText(struct xadMasterBaseP *xadMasterBase, xadERROR errnum);
+XADEXTERN xadSTRPTR xadGetErrorText(struct xadMasterBaseP *xadMasterBase, xadERROR errnum);
 #define FUNCxadGetErrorText xadSTRPTR xadGetErrorText(struct xadMasterBaseP *xadMasterBase, xadERROR errnum)
-xadERROR xadGetFilename(struct xadMasterBaseP *xadMasterBase, xadUINT32 buffersize, xadSTRPTR buffer, const xadSTRING *path, const xadSTRING *name, xadTag tag, ...);
-xadERROR xadGetFilenameA(struct xadMasterBaseP *xadMasterBase, xadUINT32 buffersize, xadSTRPTR buffer, const xadSTRING *path, const xadSTRING *name, xadTAGPTR tags);
+XADEXTERN xadERROR xadGetFilename(struct xadMasterBaseP *xadMasterBase, xadUINT32 buffersize, xadSTRPTR buffer, const xadSTRING *path, const xadSTRING *name, xadTag tag, ...);
+XADEXTERN xadERROR xadGetFilenameA(struct xadMasterBaseP *xadMasterBase, xadUINT32 buffersize, xadSTRPTR buffer, const xadSTRING *path, const xadSTRING *name, xadTAGPTR tags);
 #define FUNCxadGetFilename \
   xadERROR xadGetFilename( \
     struct xadMasterBaseP *xadMasterBase, \
@@ -255,8 +255,8 @@ xadERROR xadGetFilenameA(struct xadMasterBaseP *xadMasterBase, xadUINT32 buffers
     const xadSTRING *name, \
     xadTAGPTR tags)
 
-xadERROR xadGetInfo(struct xadMasterBaseP *xadMasterBase, struct xadArchiveInfoP *ai, xadTag tag, ...);
-xadERROR xadGetInfoA(struct xadMasterBaseP *xadMasterBase, struct xadArchiveInfoP *ai, xadTAGPTR tags);
+XADEXTERN xadERROR xadGetInfo(struct xadMasterBaseP *xadMasterBase, struct xadArchiveInfoP *ai, xadTag tag, ...);
+XADEXTERN xadERROR xadGetInfoA(struct xadMasterBaseP *xadMasterBase, struct xadArchiveInfoP *ai, xadTAGPTR tags);
 #define FUNCxadGetInfo \
   xadERROR xadGetInfo( \
     struct xadMasterBaseP *xadMasterBase, \
@@ -268,8 +268,8 @@ xadERROR xadGetInfoA(struct xadMasterBaseP *xadMasterBase, struct xadArchiveInfo
     struct xadArchiveInfoP *ai, \
     xadTAGPTR tags)
 
-xadERROR xadGetHookAccess(struct xadMasterBaseP *xadMasterBase, struct xadArchiveInfoP *ai, xadTag tag, ...);
-xadERROR xadGetHookAccessA(struct xadMasterBaseP *xadMasterBase, struct xadArchiveInfoP *ai, xadTAGPTR tags);
+XADEXTERN xadERROR xadGetHookAccess(struct xadMasterBaseP *xadMasterBase, struct xadArchiveInfoP *ai, xadTag tag, ...);
+XADEXTERN xadERROR xadGetHookAccessA(struct xadMasterBaseP *xadMasterBase, struct xadArchiveInfoP *ai, xadTAGPTR tags);
 #define FUNCxadGetHookAccess \
   xadERROR xadGetHookAccess( \
     struct xadMasterBaseP *xadMasterBase, \
@@ -281,12 +281,12 @@ xadERROR xadGetHookAccessA(struct xadMasterBaseP *xadMasterBase, struct xadArchi
     struct xadArchiveInfoP *ai, \
     xadTAGPTR tags)
 
-struct xadSystemInfo * xadGetSystemInfo(struct xadMasterBaseP *xadMasterBase);
+XADEXTERN struct xadSystemInfo * xadGetSystemInfo(struct xadMasterBaseP *xadMasterBase);
 #define FUNCxadGetSystemInfo struct xadSystemInfo * xadGetSystemInfo(struct xadMasterBaseP *xadMasterBase)
-xadERROR xadHookAccess(struct xadMasterBaseP *xadMasterBase, xadUINT32 command, xadSignSize data, xadPTR buffer, struct xadArchiveInfoP *ai);
+XADEXTERN xadERROR xadHookAccess(struct xadMasterBaseP *xadMasterBase, xadUINT32 command, xadSignSize data, xadPTR buffer, struct xadArchiveInfoP *ai);
 #define FUNCxadHookAccess xadERROR xadHookAccess(struct xadMasterBaseP *xadMasterBase, xadUINT32 command, xadSignSize data, xadPTR buffer, struct xadArchiveInfoP *ai)
-xadERROR xadHookTagAccess(struct xadMasterBaseP *xadMasterBase, xadUINT32 command, xadSignSize data, xadPTR buffer, struct xadArchiveInfoP *ai, xadTag tag, ...);
-xadERROR xadHookTagAccessA(struct xadMasterBaseP *xadMasterBase, xadUINT32 command, xadSignSize data, xadPTR buffer, struct xadArchiveInfoP *ai, xadTAGPTR tags);
+XADEXTERN xadERROR xadHookTagAccess(struct xadMasterBaseP *xadMasterBase, xadUINT32 command, xadSignSize data, xadPTR buffer, struct xadArchiveInfoP *ai, xadTag tag, ...);
+XADEXTERN xadERROR xadHookTagAccessA(struct xadMasterBaseP *xadMasterBase, xadUINT32 command, xadSignSize data, xadPTR buffer, struct xadArchiveInfoP *ai, xadTAGPTR tags);
 #define FUNCxadHookTagAccess \
   xadERROR xadHookTagAccess( \
     struct xadMasterBaseP *xadMasterBase, \
@@ -304,8 +304,8 @@ xadERROR xadHookTagAccessA(struct xadMasterBaseP *xadMasterBase, xadUINT32 comma
     struct xadArchiveInfoP *ai, \
     xadTAGPTR tags)
 
-struct xadClient * xadRecogFile(struct xadMasterBaseP *xadMasterBase, xadSize size, const void *mem, xadTag tag, ...);
-struct xadClient * xadRecogFileA(struct xadMasterBaseP *xadMasterBase, xadSize size, const void *mem, xadTAGPTR tags);
+XADEXTERN struct xadClient * xadRecogFile(struct xadMasterBaseP *xadMasterBase, xadSize size, const void *mem, xadTag tag, ...);
+XADEXTERN struct xadClient * xadRecogFileA(struct xadMasterBaseP *xadMasterBase, xadSize size, const void *mem, xadTAGPTR tags);
 #define FUNCxadRecogFile \
   struct xadClient * xadRecogFile( \
     struct xadMasterBaseP *xadMasterBase, \

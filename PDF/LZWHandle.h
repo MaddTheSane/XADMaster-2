@@ -21,8 +21,9 @@
 #import "../CSByteStreamHandle.h"
 #import "../LZW.h"
 
-extern NSString *const LZWInvalidCodeException;
+XADEXTERN NSExceptionName const LZWInvalidCodeException;
 
+XADEXPORT
 @interface LZWHandle:CSByteStreamHandle
 {
 	BOOL early;

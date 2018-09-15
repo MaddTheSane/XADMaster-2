@@ -19,6 +19,7 @@
  * MA 02110-1301  USA
  */
 #import <Foundation/Foundation.h>
+#import "XADTypes.h"
 #import "XADException.h"
 #import "XADString.h"
 #import "XADPath.h"
@@ -32,70 +33,71 @@ NS_ASSUME_NONNULL_BEGIN
 
 typedef NSString *XADArchiveKeys NS_TYPED_EXTENSIBLE_ENUM;
 
-extern XADArchiveKeys const XADFileNameKey;
-extern XADArchiveKeys const XADCommentKey;
-extern XADArchiveKeys const XADFileSizeKey;
-extern XADArchiveKeys const XADCompressedSizeKey;
-extern XADArchiveKeys const XADCompressionNameKey;
+XADEXTERN XADArchiveKeys const XADFileNameKey;
+XADEXTERN XADArchiveKeys const XADCommentKey;
+XADEXTERN XADArchiveKeys const XADFileSizeKey;
+XADEXTERN XADArchiveKeys const XADCompressedSizeKey;
+XADEXTERN XADArchiveKeys const XADCompressionNameKey;
 
-extern XADArchiveKeys const XADLastModificationDateKey;
-extern XADArchiveKeys const XADLastAccessDateKey;
-extern XADArchiveKeys const XADLastAttributeChangeDateKey;
-extern XADArchiveKeys const XADLastBackupDateKey;
-extern XADArchiveKeys const XADCreationDateKey;
+XADEXTERN XADArchiveKeys const XADLastModificationDateKey;
+XADEXTERN XADArchiveKeys const XADLastAccessDateKey;
+XADEXTERN XADArchiveKeys const XADLastAttributeChangeDateKey;
+XADEXTERN XADArchiveKeys const XADLastBackupDateKey;
+XADEXTERN XADArchiveKeys const XADCreationDateKey;
 
-extern XADArchiveKeys const XADIsDirectoryKey;
-extern XADArchiveKeys const XADIsResourceForkKey;
-extern XADArchiveKeys const XADIsArchiveKey;
-extern XADArchiveKeys const XADIsHiddenKey;
-extern XADArchiveKeys const XADIsLinkKey;
-extern XADArchiveKeys const XADIsHardLinkKey;
-extern XADArchiveKeys const XADLinkDestinationKey;
-extern XADArchiveKeys const XADIsCharacterDeviceKey;
-extern XADArchiveKeys const XADIsBlockDeviceKey;
-extern XADArchiveKeys const XADDeviceMajorKey;
-extern XADArchiveKeys const XADDeviceMinorKey;
-extern XADArchiveKeys const XADIsFIFOKey;
-extern XADArchiveKeys const XADIsEncryptedKey;
-extern XADArchiveKeys const XADIsCorruptedKey;
+XADEXTERN XADArchiveKeys const XADIsDirectoryKey;
+XADEXTERN XADArchiveKeys const XADIsResourceForkKey;
+XADEXTERN XADArchiveKeys const XADIsArchiveKey;
+XADEXTERN XADArchiveKeys const XADIsHiddenKey;
+XADEXTERN XADArchiveKeys const XADIsLinkKey;
+XADEXTERN XADArchiveKeys const XADIsHardLinkKey;
+XADEXTERN XADArchiveKeys const XADLinkDestinationKey;
+XADEXTERN XADArchiveKeys const XADIsCharacterDeviceKey;
+XADEXTERN XADArchiveKeys const XADIsBlockDeviceKey;
+XADEXTERN XADArchiveKeys const XADDeviceMajorKey;
+XADEXTERN XADArchiveKeys const XADDeviceMinorKey;
+XADEXTERN XADArchiveKeys const XADIsFIFOKey;
+XADEXTERN XADArchiveKeys const XADIsEncryptedKey;
+XADEXTERN XADArchiveKeys const XADIsCorruptedKey;
 
-extern XADArchiveKeys const XADExtendedAttributesKey;
-extern XADArchiveKeys const XADFileTypeKey;
-extern XADArchiveKeys const XADFileCreatorKey;
-extern XADArchiveKeys const XADFinderFlagsKey;
-extern XADArchiveKeys const XADFinderInfoKey;
-extern XADArchiveKeys const XADPosixPermissionsKey;
-extern XADArchiveKeys const XADPosixUserKey;
-extern XADArchiveKeys const XADPosixGroupKey;
-extern XADArchiveKeys const XADPosixUserNameKey;
-extern XADArchiveKeys const XADPosixGroupNameKey;
-extern XADArchiveKeys const XADDOSFileAttributesKey NS_SWIFT_NAME(dosFileAttributesKey);
-extern XADArchiveKeys const XADWindowsFileAttributesKey;
-extern XADArchiveKeys const XADAmigaProtectionBitsKey;
+XADEXTERN XADArchiveKeys const XADExtendedAttributesKey;
+XADEXTERN XADArchiveKeys const XADFileTypeKey;
+XADEXTERN XADArchiveKeys const XADFileCreatorKey;
+XADEXTERN XADArchiveKeys const XADFinderFlagsKey;
+XADEXTERN XADArchiveKeys const XADFinderInfoKey;
+XADEXTERN XADArchiveKeys const XADPosixPermissionsKey;
+XADEXTERN XADArchiveKeys const XADPosixUserKey;
+XADEXTERN XADArchiveKeys const XADPosixGroupKey;
+XADEXTERN XADArchiveKeys const XADPosixUserNameKey;
+XADEXTERN XADArchiveKeys const XADPosixGroupNameKey;
+XADEXTERN XADArchiveKeys const XADDOSFileAttributesKey NS_SWIFT_NAME(dosFileAttributesKey);
+XADEXTERN XADArchiveKeys const XADWindowsFileAttributesKey;
+XADEXTERN XADArchiveKeys const XADAmigaProtectionBitsKey;
 
-extern XADArchiveKeys const XADIndexKey;
-extern XADArchiveKeys const XADDataOffsetKey;
-extern XADArchiveKeys const XADDataLengthKey;
-extern XADArchiveKeys const XADSkipOffsetKey;
-extern XADArchiveKeys const XADSkipLengthKey;
+XADEXTERN XADArchiveKeys const XADIndexKey;
+XADEXTERN XADArchiveKeys const XADDataOffsetKey;
+XADEXTERN XADArchiveKeys const XADDataLengthKey;
+XADEXTERN XADArchiveKeys const XADSkipOffsetKey;
+XADEXTERN XADArchiveKeys const XADSkipLengthKey;
 
-extern XADArchiveKeys const XADIsSolidKey;
-extern XADArchiveKeys const XADFirstSolidIndexKey;
-extern XADArchiveKeys const XADFirstSolidEntryKey;
-extern XADArchiveKeys const XADNextSolidIndexKey;
-extern XADArchiveKeys const XADNextSolidEntryKey;
-extern XADArchiveKeys const XADSolidObjectKey;
-extern XADArchiveKeys const XADSolidOffsetKey;
-extern XADArchiveKeys const XADSolidLengthKey;
+XADEXTERN XADArchiveKeys const XADIsSolidKey;
+XADEXTERN XADArchiveKeys const XADFirstSolidIndexKey;
+XADEXTERN XADArchiveKeys const XADFirstSolidEntryKey;
+XADEXTERN XADArchiveKeys const XADNextSolidIndexKey;
+XADEXTERN XADArchiveKeys const XADNextSolidEntryKey;
+XADEXTERN XADArchiveKeys const XADSolidObjectKey;
+XADEXTERN XADArchiveKeys const XADSolidOffsetKey;
+XADEXTERN XADArchiveKeys const XADSolidLengthKey;
 
 // Archive properties only
-extern XADArchiveKeys const XADArchiveNameKey;
-extern XADArchiveKeys const XADVolumesKey;
-extern XADArchiveKeys const XADVolumeScanningFailedKey;
-extern XADArchiveKeys const XADDiskLabelKey;
+XADEXTERN XADArchiveKeys const XADArchiveNameKey;
+XADEXTERN XADArchiveKeys const XADVolumesKey;
+XADEXTERN XADArchiveKeys const XADVolumeScanningFailedKey;
+XADEXTERN XADArchiveKeys const XADDiskLabelKey;
 
 @protocol XADArchiveParserDelegate;
 
+XADEXPORT
 @interface XADArchiveParser:NSObject
 {
 	CSHandle *sourcehandle;
