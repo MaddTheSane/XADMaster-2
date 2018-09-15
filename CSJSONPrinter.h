@@ -31,12 +31,11 @@
 	NSArray *excludedKeys;
 }
 
--(id)init;
--(void)dealloc;
+-(instancetype)init;
 
--(void)setIndentString:(NSString *)string;
--(void)setASCIIMode:(BOOL)ascii;
--(void)setExcludedKeys:(NSArray*)keysToExclude;
+@property (copy) NSString *indentString;
+@property BOOL ASCIIMode;
+@property (copy) NSArray *excludedKeys;
 
 -(void)printObject:(id)object;
 

@@ -22,6 +22,9 @@
 #import "NSStringPrinting.h"
 
 @implementation CSJSONPrinter
+@synthesize indentString=indentstring;
+@synthesize ASCIIMode=asciimode;
+@synthesize excludedKeys=excludedKeys;
 
 -(id)init
 {
@@ -41,28 +44,6 @@
 	[excludedKeys release];
 	[super dealloc];
 }
-
-
-
-
--(void)setIndentString:(NSString *)string
-{
-	[indentstring autorelease];
-	indentstring=[string retain];
-}
-
--(void)setASCIIMode:(BOOL)ascii
-{
-	asciimode=ascii;
-}
-
--(void)setExcludedKeys:(NSArray*)keysToExclude
-{
-	[excludedKeys autorelease];
-	excludedKeys=[keysToExclude retain];
-}
-
-
 
 
 -(void)printObject:(id)object
