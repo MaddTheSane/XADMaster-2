@@ -22,13 +22,11 @@
 #import "../CSHandle.h"
 #import "../CSBlockStreamHandle.h"
 
-
 XADEXTERN NSExceptionName const PDFMD5FinishedException;
 
 
 XADEXPORT
 @interface PDFMD5Engine:NSObject
-
 
 +(instancetype)engine;
 +(NSData *)digestForData:(NSData *)data;
