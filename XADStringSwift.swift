@@ -84,12 +84,16 @@ extension XADStringSource {
 		return String.Encoding(rawValue: __encoding)
 	}
 	
-	@nonobjc open var fixedEncoding: String.Encoding {
+	@nonobjc open var fixedEncoding: String.Encoding? {
 		get {
-			return String.Encoding(rawValue: __fixedEncoding)
+			let encVal = __fixedEncoding
+			guard encVal != 0 else {
+				return nil
+			}
+			return String.Encoding(rawValue: encVal)
 		}
 		set {
-			__fixedEncoding = newValue.rawValue
+			__fixedEncoding = newValue?.rawValue ?? 0
 		}
 	}
 }
