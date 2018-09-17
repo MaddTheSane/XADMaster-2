@@ -39,10 +39,10 @@
 static int TestEntry(XADSimpleUnarchiver *unarchiver,NSDictionary *dict);
 
 
-@interface Lister:NSObject {}
+@interface Lister:NSObject <XADSimpleUnarchiverDelegate>
 @end
 
-@interface JSONLister:NSObject {}
+@interface JSONLister:NSObject <XADSimpleUnarchiverDelegate>
 @end
 
 int returncode;
@@ -157,7 +157,7 @@ int main(int argc,const char **argv)
 	}
 
 	NSArray *files=[cmdline remainingArguments];
-	int numfiles=[files count];
+	NSInteger numfiles=[files count];
 	if(numfiles==0)
 	{
 		[cmdline printUsage];
@@ -174,7 +174,7 @@ int main(int argc,const char **argv)
 		if (jsonskipsolidobjects) [printer setExcludedKeys:[NSArray arrayWithObject:@"XADSolidObject"]];
 
 		[printer startPrintingDictionary];
-		[printer printDictionaryObject:[NSNumber numberWithInt:2] forKey:@"lsarFormatVersion"];
+		[printer printDictionaryObject:@2 forKey:@"lsarFormatVersion"];
 
 		XADError openerror;
 		XADSimpleUnarchiver *unarchiver=[XADSimpleUnarchiver simpleUnarchiverForPath:filename error:&openerror];
@@ -554,7 +554,7 @@ static int TestEntry(XADSimpleUnarchiver *unarchiver,NSDictionary *dict)
 	if(!handle)
 	{
 		returncode=1;
-		if(error==XADPasswordError) return EntryHasWrongPasswordResult;
+		if(error==XADErrorPassword) return EntryHasWrongPasswordResult;
 		else return EntryIsNotSupportedResult;
 	}
 

@@ -197,7 +197,7 @@ description:(NSString *)description argumentDescription:(NSString *)argdescripti
 		NSUInteger index=[allowedvalues indexOfObject:[defaultvalue lowercaseString]];
 		if(index==NSNotFound) [NSException raise:NSInvalidArgumentException format:
 		@"Default value \"%@\" is not in the array of allowed values.",defaultvalue];
-		[dict setObject:[NSNumber numberWithUnsignedInt:index] forKey:DefaultValueKey];
+		[dict setObject:@(index) forKey:DefaultValueKey];
 	}
 
 	[options setObject:dict forKey:option];
@@ -564,7 +564,7 @@ name:(NSString *)option value:(NSString *)value errors:(NSMutableArray *)errors
 		}
 
 		[dict setObject:[allowedvalues objectAtIndex:index] forKey:StringValueKey];
-		[dict setObject:[NSNumber numberWithUnsignedInt:index] forKey:NumberValueKey];
+		[dict setObject:@(index) forKey:NumberValueKey];
 	}
 	else if(type==IntegerOptionType)
 	{
@@ -753,12 +753,12 @@ name:(NSString *)option value:(NSString *)value errors:(NSMutableArray *)errors
 	[usageheader print];
 
 	int terminalwidth=[NSString terminalWidth];
-	int count=[optionordering count];
-	int maxlength=0;
+	NSInteger count=[optionordering count];
+	NSInteger maxlength=0;
 
 	NSMutableArray *optiondescriptions=[NSMutableArray array];
 
-	for(int i=0;i<count;i++)
+	for(NSInteger i=0;i<count;i++)
 	{
 		NSString *option=[optionordering objectAtIndex:i];
 
@@ -766,14 +766,14 @@ name:(NSString *)option value:(NSString *)value errors:(NSMutableArray *)errors
 
 		[optiondescriptions addObject:description];
 
-		int length=[description length];
+		NSInteger length=[description length];
 		if(length>maxlength) maxlength=length;
 	}
 
-	int columnwidth1=maxlength+2;
-	int columnwidth2=terminalwidth-columnwidth1;
+	NSInteger columnwidth1=maxlength+2;
+	NSInteger columnwidth2=terminalwidth-columnwidth1;
 
-	for(int i=0;i<count;i++)
+	for(NSInteger i=0;i<count;i++)
 	{
 		NSString *option=[optionordering objectAtIndex:i];
 		NSString *optiondescription=[optiondescriptions objectAtIndex:i];
@@ -781,13 +781,13 @@ name:(NSString *)option value:(NSString *)value errors:(NSMutableArray *)errors
 
 		[optiondescription print];
 
-		for(int i=[optiondescription length];i<columnwidth1;i++)
+		for(NSInteger i=[optiondescription length];i<columnwidth1;i++)
 		[@" " print];
 
-		NSArray *lines=[[dict objectForKey:DescriptionKey] linesWrappedToWidth:columnwidth2];
+		NSArray *lines=[[dict objectForKey:DescriptionKey] linesWrappedToWidth:(int)columnwidth2];
 
-		int numlines=[lines count];
-		for(int i=0;i<numlines;i++)
+		NSInteger numlines=[lines count];
+		for(NSInteger i=0;i<numlines;i++)
 		{
 			if(i!=0) for(int j=0;j<columnwidth1;j++) [@" " print];
 			[[lines objectAtIndex:i] print];
