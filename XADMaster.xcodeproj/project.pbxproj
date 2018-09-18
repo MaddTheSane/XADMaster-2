@@ -7104,6 +7104,7 @@
 				PRODUCT_NAME = XADMaster.ios;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "appletvsimulator appletvos iphonesimulator iphoneos";
 			};
 			name = Debug;
 		};
@@ -7128,6 +7129,7 @@
 				PRODUCT_NAME = XADMaster.ios;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "appletvsimulator appletvos iphonesimulator iphoneos";
 			};
 			name = Release;
 		};
