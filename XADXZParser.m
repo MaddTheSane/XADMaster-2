@@ -50,7 +50,7 @@
 		[self XADStringWithString:@"LZMA2"],XADCompressionNameKey,
 	nil];
 
-	if([contentname matchedByPattern:@"\\.(tar|cpio|pax)$" options:REG_ICASE])
+	if([contentname matchedByPattern:@"\\.(tar|cpio|pax|warc)$" options:REG_ICASE])
 	dict[XADIsArchiveKey] = @YES;
 
 	off_t filesize=self.handle.fileSize;
