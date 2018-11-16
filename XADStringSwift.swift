@@ -80,8 +80,12 @@ extension XADString /*: ExpressibleByStringLiteral*/ {
 }
 
 extension XADStringSource {
-	@nonobjc open var encoding: String.Encoding {
-		return String.Encoding(rawValue: __encoding)
+	@nonobjc open var encoding: String.Encoding? {
+		let enc = __encoding
+		guard enc != 0 else {
+			return nil
+		}
+		return String.Encoding(rawValue: enc)
 	}
 	
 	@nonobjc open var fixedEncoding: String.Encoding? {
