@@ -259,8 +259,7 @@ static int maxheader=0;
 	if ([NSError respondsToSelector:@selector(setUserInfoValueProviderForDomain:provider:)]) {
 		[NSError setUserInfoValueProviderForDomain:XADErrorDomain provider:^id _Nullable(NSError * _Nonnull err, NSString * _Nonnull userInfoKey) {
 			if ([userInfoKey isEqualToString:NSLocalizedDescriptionKey]) {
-				NSString *nonLocDes = [XADException describeXADError:(XADError)err.code];
-				NSString *locDes = [[NSBundle bundleForClass:[XADException class]] localizedStringForKey:nonLocDes value:nonLocDes table:@"XADErrors"];
+				NSString *locDes = [XADException localizedDescribeXADError:(XADError)err.code];
 				return locDes;
 			}
 			return nil;
