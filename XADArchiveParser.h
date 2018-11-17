@@ -260,7 +260,7 @@ resourceFork:(XADResourceFork *)fork name:(NSString *)name propertiesToAdd:(NSMu
 name:(NSString *)name;
 
 -(void)parse NS_SWIFT_UNAVAILABLE("Call throws on failure");
--(nullable CSHandle *)handleForEntryWithDictionary:(NSDictionary<XADArchiveKeys,id> *)dict wantChecksum:(BOOL)checksum NS_SWIFT_UNAVAILABLE("Call throws on failure");;
+-(nullable CSHandle *)handleForEntryWithDictionary:(NSDictionary<XADArchiveKeys,id> *)dict wantChecksum:(BOOL)checksum NS_SWIFT_UNAVAILABLE("Call throws on failure");
 @property (NS_NONATOMIC_IOSONLY, readonly, copy) NSString *formatName;
 
 -(nullable CSHandle *)handleForSolidStreamWithObject:(id)obj wantChecksum:(BOOL)checksum;

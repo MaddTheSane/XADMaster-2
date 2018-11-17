@@ -73,10 +73,10 @@ XADEXPORT
 
 -(XADError)parseAndUnarchive NS_REFINED_FOR_SWIFT;
 
--(XADError)extractEntryWithDictionary:(NSDictionary<XADArchiveKeys,id> *)dict;
--(XADError)extractEntryWithDictionary:(NSDictionary<XADArchiveKeys,id> *)dict forceDirectories:(BOOL)force;
--(XADError)extractEntryWithDictionary:(NSDictionary<XADArchiveKeys,id> *)dict as:(nullable NSString *)path;
--(XADError)extractEntryWithDictionary:(NSDictionary<XADArchiveKeys,id> *)dict as:(nullable NSString *)path forceDirectories:(BOOL)force;
+-(XADError)extractEntryWithDictionary:(NSDictionary<XADArchiveKeys,id> *)dict NS_REFINED_FOR_SWIFT;
+-(XADError)extractEntryWithDictionary:(NSDictionary<XADArchiveKeys,id> *)dict forceDirectories:(BOOL)force NS_REFINED_FOR_SWIFT;
+-(XADError)extractEntryWithDictionary:(NSDictionary<XADArchiveKeys,id> *)dict as:(nullable NSString *)path NS_REFINED_FOR_SWIFT;
+-(XADError)extractEntryWithDictionary:(NSDictionary<XADArchiveKeys,id> *)dict as:(nullable NSString *)path forceDirectories:(BOOL)force NS_REFINED_FOR_SWIFT;
 
 -(XADError)finishExtractions;
 -(XADError)_fixDeferredLinks;

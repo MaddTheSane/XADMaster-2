@@ -32,6 +32,7 @@ extension XADError: CustomStringConvertible {
 }
 
 extension XADArchiveParser {
+	/// Tests the checksum of the archive.
 	/// - returns: `true` if the checksum is valid,
 	/// `false` otherwise.
 	/// Throws if there was a failure.
