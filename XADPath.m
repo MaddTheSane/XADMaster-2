@@ -21,10 +21,10 @@
 #import "XADPath.h"
 #import "XADPlatform.h"
 
-XADPathSeparator XADUnixPathSeparator = "/";
-XADPathSeparator XADWindowsPathSeparator = "\\";
-XADPathSeparator XADEitherPathSeparator = "/\\";
-XADPathSeparator XADNoPathSeparator = "";
+XADPathSeparator const XADUnixPathSeparator = "/";
+XADPathSeparator const XADWindowsPathSeparator = "\\";
+XADPathSeparator const XADEitherPathSeparator = "/\\";
+XADPathSeparator const XADNoPathSeparator = "";
 
 #if !__has_feature(objc_arc)
 #error this file needs to be compiled with Automatic Reference Counting (ARC)

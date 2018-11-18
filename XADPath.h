@@ -25,10 +25,10 @@
 NS_ASSUME_NONNULL_BEGIN
 
 typedef const char* XADPathSeparator NS_TYPED_ENUM;
-XADEXTERN XADPathSeparator XADUnixPathSeparator NS_SWIFT_NAME(unix);
-XADEXTERN XADPathSeparator XADWindowsPathSeparator NS_SWIFT_NAME(windows);
-XADEXTERN XADPathSeparator XADEitherPathSeparator NS_SWIFT_NAME(either);
-XADEXTERN XADPathSeparator XADNoPathSeparator NS_SWIFT_NAME(none);
+XADEXTERN XADPathSeparator const XADUnixPathSeparator NS_SWIFT_NAME(unix);
+XADEXTERN XADPathSeparator const XADWindowsPathSeparator NS_SWIFT_NAME(windows);
+XADEXTERN XADPathSeparator const XADEitherPathSeparator NS_SWIFT_NAME(either);
+XADEXTERN XADPathSeparator const XADNoPathSeparator NS_SWIFT_NAME(none);
 
 XADEXPORT
 @interface XADPath:NSObject <XADString,NSCopying>
