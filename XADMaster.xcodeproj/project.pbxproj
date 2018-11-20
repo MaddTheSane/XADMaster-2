@@ -5302,6 +5302,9 @@
 				CLASSPREFIX = XAD;
 				LastUpgradeCheck = 1010;
 				TargetAttributes = {
+					5500A44A1D776ADB00321300 = {
+						LastSwiftMigration = 1010;
+					};
 					73DA3464206B6BF1006ADB42 = {
 						CreatedOnToolsVersion = 9.2;
 						DevelopmentTeam = S8EX82NJP6;
@@ -7199,7 +7202,7 @@
 				MACOSX_DEPLOYMENT_TARGET = 10.10;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 4.2;
 				TVOS_DEPLOYMENT_TARGET = 9.0;
 				USE_HEADERMAP = NO;
 			};
@@ -7838,7 +7841,7 @@
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 4.2;
 				TVOS_DEPLOYMENT_TARGET = 9.0;
 				USE_HEADERMAP = NO;
 			};
