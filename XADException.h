@@ -79,7 +79,7 @@ NS_SWIFT_UNAVAILABLE("Exceptions aren't supported by Swift") XADEXPORT
 +(void)raiseDataFormatException CLANG_ANALYZER_NORETURN;
 +(void)raiseOutOfMemoryException CLANG_ANALYZER_NORETURN;
 +(void)raiseExceptionWithXADError:(XADError)errnum CLANG_ANALYZER_NORETURN;
-+(void)raiseExceptionWithXADError:(XADError)errnum underlyingError:(NSError*)nsErr CLANG_ANALYZER_NORETURN;
++(void)raiseExceptionWithXADError:(XADError)errnum underlyingError:(NSError*_Nonnull)nsErr CLANG_ANALYZER_NORETURN;
 
 +(XADError)parseException:(nonnull id)exception;
 +(nonnull NSError*)parseExceptionReturningNSError:(nonnull id)exception;
