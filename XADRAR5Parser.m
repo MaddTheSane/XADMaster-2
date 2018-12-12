@@ -24,10 +24,16 @@
 #import "XADRARAESHandle.h"
 #import "XADCRCHandle.h"
 #import "NSDateXAD.h"
+#import "CSFileHandle.h"
 #import "Crypto/hmac_sha256.h"
 #import "Crypto/pbkdf2_hmac_sha256.h"
 
 #define ZeroBlock ((RAR5Block){0})
+#define ZeroHeaderBlock ((RAR5HeaderBlock){0})
+
+NSString *RAR5SignatureCannotBeFound=@"RAR5SignatureCannotBeFound";
+const off_t RAR5MaximumSFXHeader  = 1 << 20; // 1 MB
+const off_t RAR5SignatureNotFound = -1;
 
 static uint32_t EncryptRAR5CRC32(uint32_t crc,id context);
 
@@ -55,9 +61,11 @@ static uint64_t ReadRAR5VInt(CSHandle *handle)
 }
 
 static inline BOOL IsZeroBlock(RAR5Block block) { return block.start==0; }
+static inline BOOL IsZeroHeaderBlock(RAR5HeaderBlock block) { return IsZeroBlock(block.block); }
 
-
-
+@interface XADRAR5Parser (Multipart)
++(BOOL)isPartOfMultiVolume:(CSHandle *)handle;
+@end
 
 @implementation XADRAR5Parser
 
@@ -68,24 +76,42 @@ static inline BOOL IsZeroBlock(RAR5Block block) { return block.start==0; }
 
 +(BOOL)recognizeFileWithHandle:(CSHandle *)handle firstBytes:(NSData *)data name:(NSString *)name
 {
-	const uint8_t *bytes=data.bytes;
-	NSInteger length=data.length;
+    off_t signatureLocation = [self signatureLocationInData:data];
+    return signatureLocation != RAR5SignatureNotFound;
+}
 
-	if(length<8) return NO; // TODO: fix to use correct min size
-
-	if(IsRAR5Signature(bytes)) return YES;
-
-	return NO;
++ (off_t)signatureLocationInData:(NSData *)data {
+    const uint8_t *bytes=[data bytes];
+    int length=[data length];
+    
+    if(length<8) return RAR5SignatureNotFound; // TODO: fix to use correct min size
+    
+    // for SFXX, RAR Signature can be found not at start, but anywhere in the data
+    int maxxSearch = MIN(length, RAR5MaximumSFXHeader) - 8;
+    
+    const uint8_t *sign = bytes;
+    for (int i =0 ; i < maxxSearch; i++, sign++) {
+        if(IsRAR5Signature(sign)) {
+            return i;
+        }
+    }
+    return RAR5SignatureNotFound;
 }
 
 +(NSArray *)volumesForHandle:(CSHandle *)handle firstBytes:(NSData *)data name:(NSString *)name
 {
+    // Check if multipart
+    CSFileHandle *filehandle=[CSFileHandle fileHandleForReadingAtPath:name];
+    if (![self isPartOfMultiVolume:filehandle]) {
+        return nil;
+    }
+
 	// New naming scheme. Find the last number in the name, and look for other files
 	// with the same number of digits in the same location.
 	NSArray *matches;
-	if((matches=[name substringsCapturedByPattern:@"^(.*[^0-9])([0-9]+)(.*)\\.rar$" options:REG_ICASE]))
+	if((matches=[name substringsCapturedByPattern:@"^(.*[^0-9])([0-9]+)(.*)\\.(rar|sfx|exe)$" options:REG_ICASE]))
 	return [self scanForVolumesWithFilename:name
-	regex:[XADRegex regexWithPattern:[NSString stringWithFormat:@"^%@[0-9]{%ld}%@.rar$",
+	regex:[XADRegex regexWithPattern:[NSString stringWithFormat:@"^%@[0-9]{%ld}%@.(rar|sfx|exe)$",
 		[matches[1] escapedPattern],
 		(long)((NSString *)matches[2]).length,
 		[matches[3] escapedPattern]] options:REG_ICASE]
@@ -114,6 +140,17 @@ static inline BOOL IsZeroBlock(RAR5Block block) { return block.start==0; }
 	[super dealloc];
 }
 
+- (void)readUntilSignature {
+    CSHandle * signatureSearchingHandle = [[self handle] subHandleToEndOfFileFrom:0];
+    NSData * data = [signatureSearchingHandle readDataOfLengthAtMost:RAR5MaximumSFXHeader];
+    off_t signatureLocation = [XADRAR5Parser signatureLocationInData:data];
+    if (signatureLocation == RAR5SignatureNotFound) {
+        [NSException raise:RAR5SignatureCannotBeFound format:@"Signature cannot be found %@",[self class]];
+    }
+    
+    [self.handle skipBytes:signatureLocation];
+}
+
 -(void)parse
 {
 	currsolidstream=nil;
@@ -122,12 +159,13 @@ static inline BOOL IsZeroBlock(RAR5Block block) { return block.start==0; }
 	NSMutableDictionary *currdict=nil;
 	NSMutableArray *currparts=[NSMutableArray array];
 
-	[[self handle] skipBytes:8];
-
 	// TODO: Catch exceptions and emit partial files?
 
 	@try
 	{
+        [self readUntilSignature];
+        [self.handle skipBytes:8];
+        
 		for(;;)
 		{
 			RAR5Block block=[self readBlockHeader];
@@ -138,11 +176,11 @@ static inline BOOL IsZeroBlock(RAR5Block block) { return block.start==0; }
 
 			switch(block.type)
 			{
-				case 1: // Main archive header.
+				case RAR5HeaderTypeMain: // Main archive header.
 					[self skipBlock:block];
 				break;
 
-				case 2: // File header.
+				case RAR5HeaderTypeFile: // File header.
 				{
 					NSMutableDictionary *dict=[self readFileBlockHeader:block];
 
@@ -197,10 +235,10 @@ static inline BOOL IsZeroBlock(RAR5Block block) { return block.start==0; }
 				}
 				break;
 
-				//case 3: // Service header.
+				//case RAR5HeaderTypeService: // Service header.
 				//break;
 
-				case 4: // Archive encryption header.
+				case RAR5HeaderTypeEncryption: // Archive encryption header.
 				{
 					uint64_t version=ReadRAR5VInt(handle);
 					if(version!=0) [XADException raiseNotSupportedException];
@@ -223,7 +261,7 @@ static inline BOOL IsZeroBlock(RAR5Block block) { return block.start==0; }
 				}
 				break;
 
-				case 5: // End of archive header.
+				case RAR5HeaderTypeEnd: // End of archive header.
 				{
 					uint64_t flags=ReadRAR5VInt(handle);
 					if(flags&0x0001)
@@ -559,6 +597,53 @@ inputParts:(NSArray *)parts isCorrupted:(BOOL)iscorrupted
 	return dict;
 }
 
++(RAR5HeaderBlock)readMasterHeaderFromHandle:(CSHandle *)handle
+{
+    RAR5HeaderBlock header;
+
+    RAR5Block block;
+    block.outerstart=0;
+    
+    @try
+    {
+        CSHandle * signatureSearchingHandle = [handle subHandleToEndOfFileFrom:0];
+        NSData * data = [signatureSearchingHandle readDataOfLengthAtMost:RAR5MaximumSFXHeader];
+        off_t signatureLocation = [XADRAR5Parser signatureLocationInData:data];
+        if (signatureLocation == RAR5SignatureNotFound) {
+            [NSException raise:RAR5SignatureCannotBeFound format:@"Signature cannot be found %@",[self class]];
+        }
+        
+        [handle skipBytes:signatureLocation];
+        [handle skipBytes:8];
+        if([handle atEndOfFile]) return ZeroHeaderBlock;
+
+        block.crc=[handle readUInt32LE];
+        block.headersize=ReadRAR5VInt(handle);
+        block.start=[handle offsetInFile];
+        block.type=ReadRAR5VInt(handle);
+        block.flags=ReadRAR5VInt(handle);
+        
+        if(block.flags&0x0001) block.extrasize=ReadRAR5VInt(handle);
+        else block.extrasize=0;
+        
+        header.archiveFlags=ReadRAR5VInt(handle);
+        
+        if(block.flags&0x0002) block.datasize=ReadRAR5VInt(handle);
+        else block.datasize=0;
+    }
+    @catch(id e) { return ZeroHeaderBlock; }
+    
+    // If first block wasn't main
+    if (block.type != RAR5HeaderTypeMain) {
+        return ZeroHeaderBlock;
+    }
+    
+    block.fh=handle;
+    
+    header.block = block;
+    return header;
+}
+    
 -(RAR5Block)readBlockHeader
 {
 	CSHandle *fh=self.handle;
@@ -797,7 +882,7 @@ static uint32_t EncryptRAR5CRC32(uint32_t crc,id context)
 }
 
 
-@implementation XADRAR5Parser(Testing)
+@implementation XADRAR5Parser (Testing)
 
 +(uint64_t)readRAR5VIntFrom:(CSHandle *)handle
 {
@@ -805,3 +890,17 @@ static uint32_t EncryptRAR5CRC32(uint32_t crc,id context)
 }
 
 @end
+
+@implementation XADRAR5Parser (Multipart)
+
++(BOOL)isPartOfMultiVolume:(CSHandle *)handle
+{
+    RAR5HeaderBlock header = [self readMasterHeaderFromHandle:handle];
+    if (IsZeroHeaderBlock(header)) {
+        return NO;
+    }
+    return (header.archiveFlags & RAR5ArchiveFlagsVolume);
+}
+@end
+
+
