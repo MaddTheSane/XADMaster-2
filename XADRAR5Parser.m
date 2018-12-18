@@ -82,15 +82,15 @@ static inline BOOL IsZeroHeaderBlock(RAR5HeaderBlock block) { return IsZeroBlock
 
 + (off_t)signatureLocationInData:(NSData *)data {
     const uint8_t *bytes=[data bytes];
-    int length=[data length];
+    NSInteger length=[data length];
     
     if(length<8) return RAR5SignatureNotFound; // TODO: fix to use correct min size
     
     // for SFXX, RAR Signature can be found not at start, but anywhere in the data
-    int maxxSearch = MIN(length, RAR5MaximumSFXHeader) - 8;
+    NSInteger maxxSearch = MIN(length, RAR5MaximumSFXHeader) - 8;
     
     const uint8_t *sign = bytes;
-    for (int i =0 ; i < maxxSearch; i++, sign++) {
+    for (NSInteger i =0 ; i < maxxSearch; i++, sign++) {
         if(IsRAR5Signature(sign)) {
             return i;
         }
