@@ -388,7 +388,6 @@
 		1B3FAB2C0EC3D5E7006D2F06 /* XADException.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B578C330DDBC8BF005B0F68 /* XADException.m */; };
 		1B3FABA80EC52532006D2F06 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 1B3FABA70EC52532006D2F06 /* libz.tbd */; };
 		1B3FAC5D0EC5255A006D2F06 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1B3FAC5C0EC5255A006D2F06 /* Foundation.framework */; };
-		1B3FACE10EC52632006D2F06 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1B3FAC5C0EC5255A006D2F06 /* Foundation.framework */; };
 		1B3FAD680EC5D4E8006D2F06 /* XADMacArchiveParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B3FAD660EC5D4E8006D2F06 /* XADMacArchiveParser.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
 		1B3FAD810EC6826E006D2F06 /* NSDateXAD.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B3FAD7F0EC6826E006D2F06 /* NSDateXAD.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
 		1B4679F915CD9A73001AB1DD /* CSCommandLineParser.h in Headers */ = {isa = PBXBuildFile; fileRef = 1B34AC0D11CED29A00396C26 /* CSCommandLineParser.h */; };
@@ -2177,7 +2176,6 @@
 		734C13B921C79C8500917EAA /* unpack_utils.c in Sources */ = {isa = PBXBuildFile; fileRef = 734C13B621C79C8400917EAA /* unpack_utils.c */; };
 		734C13BA21C79C8500917EAA /* unpack_utils.c in Sources */ = {isa = PBXBuildFile; fileRef = 734C13B621C79C8400917EAA /* unpack_utils.c */; };
 		7378D98B21CCD04000A4B11F /* CRCCalculationTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 7378D98A21CCD04000A4B11F /* CRCCalculationTests.m */; };
-		7398C7AE2059248700D7B977 /* UniversalDetector.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1B06D3770DDA5C2600D9C000 /* UniversalDetector.framework */; };
 		73DA3468206B6BF1006ADB42 /* XADPlatformOSXTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 73DA3467206B6BF1006ADB42 /* XADPlatformOSXTests.m */; };
 		73DA346A206B6BF1006ADB42 /* XADMaster.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8DC2EF5B0486A6940098B216 /* XADMaster.framework */; };
 		E424FB4721CAE11D00E1C950 /* XADArchiveParserTests.m in Sources */ = {isa = PBXBuildFile; fileRef = E424FB4621CAE11D00E1C950 /* XADArchiveParserTests.m */; };
@@ -2212,34 +2210,6 @@
 /* End PBXBuildRule section */
 
 /* Begin PBXContainerItemProxy section */
-		1B06D3760DDA5C2600D9C000 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 56FBC8DC0A57531D00BE98CF /* UniversalDetector.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 8DC2EF5B0486A6940098B216;
-			remoteInfo = UniversalDetector;
-		};
-		1B06D3780DDA5C2600D9C000 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 56FBC8DC0A57531D00BE98CF /* UniversalDetector.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 1B0DDCAB0A2D0AD10009B697;
-			remoteInfo = DetectorTest;
-		};
-		1B23E08B1190F2B400620319 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 56FBC8DC0A57531D00BE98CF /* UniversalDetector.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 1B23E0871190F29400620319;
-			remoteInfo = libUniversalDetector;
-		};
-		1B23E1C01190F9AF00620319 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 56FBC8DC0A57531D00BE98CF /* UniversalDetector.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 1B23E0861190F29400620319;
-			remoteInfo = libUniversalDetector;
-		};
 		1B34AA6A11C30A1400396C26 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 0867D690FE84028FC02AAC07 /* Project object */;
@@ -2275,20 +2245,6 @@
 			remoteGlobalIDString = 1B91CD9611D981E20081E40A;
 			remoteInfo = "unar.exe (Windows)";
 		};
-		1B467B2915CD9B4D001AB1DD /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 56FBC8DC0A57531D00BE98CF /* UniversalDetector.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 1B467B2615CD9B1F001AB1DD;
-			remoteInfo = libUniversalDetector.ios.a;
-		};
-		1B91CBE811D821C50081E40A /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 56FBC8DC0A57531D00BE98CF /* UniversalDetector.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 1B91CBE011D821A70081E40A;
-			remoteInfo = "libUniversalDetector (Windows)";
-		};
 		1B91CDC511D983DA0081E40A /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 0867D690FE84028FC02AAC07 /* Project object */;
@@ -2309,20 +2265,6 @@
 			proxyType = 1;
 			remoteGlobalIDString = 1B91CCBE11D97E7C0081E40A;
 			remoteInfo = "libXADMaster.a (Windows)";
-		};
-		1B91D2DA11E694860081E40A /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 56FBC8DC0A57531D00BE98CF /* UniversalDetector.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 1B91CBB711D821A70081E40A;
-			remoteInfo = "libUniversalDetector (Windows)";
-		};
-		3D664E3E10376F6A00A679EF /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 56FBC8DC0A57531D00BE98CF /* UniversalDetector.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 8DC2EF4F0486A6940098B216;
-			remoteInfo = UniversalDetector;
 		};
 		73DA346B206B6BF1006ADB42 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -3125,7 +3067,7 @@
 			);
 			name = XADMaster;
 			sourceTree = "<group>";
-			usesTabs = 1;
+			usesTabs = 0;
 		};
 		0867D69AFE84028FC02AAC07 /* Frameworks */ = {
 			isa = PBXGroup;
@@ -6592,11 +6534,6 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		1B23E1C11190F9AF00620319 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = libUniversalDetector;
-			targetProxy = 1B23E1C01190F9AF00620319 /* PBXContainerItemProxy */;
-		};
 		1B34AA6B11C30A1400396C26 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 1B34A97411C2FD0500396C26 /* libXADMaster.a */;
@@ -6636,16 +6573,6 @@
 			isa = PBXTargetDependency;
 			target = 1B91CCBE11D97E7C0081E40A /* libXADMaster.win.a */;
 			targetProxy = 1B91D2D811E694860081E40A /* PBXContainerItemProxy */;
-		};
-		1B91D2D911E694860081E40A /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = "libUniversalDetector (Windows)";
-			targetProxy = 1B91D2DA11E694860081E40A /* PBXContainerItemProxy */;
-		};
-		3D664E3F10376F6A00A679EF /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = UniversalDetector;
-			targetProxy = 3D664E3E10376F6A00A679EF /* PBXContainerItemProxy */;
 		};
 		73DA346C206B6BF1006ADB42 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
