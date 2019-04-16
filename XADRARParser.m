@@ -827,6 +827,7 @@ name:(NSString *)name propertiesToAdd:(NSMutableDictionary *)props
 	if(header)
 	{
 		props[@"RAREmbedOffset"] = [NSNumber numberWithLongLong:header-bytes];
+        [props setObject:[NSNumber numberWithLongLong:header-bytes] forKey:XADSignatureOffset];
 		return YES;
 	}
 
