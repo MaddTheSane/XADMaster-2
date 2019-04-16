@@ -147,8 +147,8 @@ NSString *const XADVolumesKey=@"XADVolumes";
 NSString *const XADVolumeScanningFailedKey=@"XADVolumeScanningFailed";
 NSString *const XADDiskLabelKey=@"XADDiskLabel";
 
-NSString *XADSignatureOffset=@"XADFoundSignatureOffset";
-NSString *XADParserClass=@"XADParserClass";
+NSString *const XADSignatureOffset=@"XADFoundSignatureOffset";
+NSString *const XADParserClass=@"XADParserClass";
 
 static NSComparisonResult CompareParserSignaturesLocations(id first,id second,void *context)
 {
@@ -167,7 +167,7 @@ static NSComparisonResult CompareParserSignaturesLocations(id first,id second,vo
 @synthesize passwordEncodingName = passwordencodingname;
 
 static NSMutableArray<Class> *parserclasses=nil;
-static NSArray *parsersWithFloatingSignaturesClasses=nil;
+static NSArray<Class> *parsersWithFloatingSignaturesClasses=nil;
 
 static int maxheader=0;
 
