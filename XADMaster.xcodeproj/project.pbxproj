@@ -2189,6 +2189,8 @@
 			isa = PBXBuildRule;
 			compilerSpec = org.cocotron.1.0.windows.i386.gcc.default;
 			fileType = sourcecode.c;
+			inputFiles = (
+			);
 			isEditable = 1;
 			outputFiles = (
 			);
@@ -2197,6 +2199,8 @@
 			isa = PBXBuildRule;
 			compilerSpec = org.cocotron.1.0.windows.i386.gcc.default;
 			fileType = sourcecode.c;
+			inputFiles = (
+			);
 			isEditable = 1;
 			outputFiles = (
 			);
@@ -2205,6 +2209,8 @@
 			isa = PBXBuildRule;
 			compilerSpec = org.cocotron.1.0.windows.i386.gcc.default;
 			fileType = sourcecode.c;
+			inputFiles = (
+			);
 			isEditable = 1;
 			outputFiles = (
 			);
@@ -5071,7 +5077,7 @@
 				LastUpgradeCheck = 1010;
 				TargetAttributes = {
 					5500A44A1D776ADB00321300 = {
-						LastSwiftMigration = 1010;
+						LastSwiftMigration = 1100;
 					};
 					73DA3464206B6BF1006ADB42 = {
 						CreatedOnToolsVersion = 9.2;
@@ -7307,6 +7313,7 @@
 				PRODUCT_NAME = XADMaster;
 				SDKROOT = macosx;
 				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 5.0;
 				WRAPPER_EXTENSION = framework;
 			};
 			name = Debug;
@@ -7340,6 +7347,7 @@
 				PRODUCT_NAME = XADMaster;
 				SDKROOT = macosx;
 				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 5.0;
 				WRAPPER_EXTENSION = framework;
 			};
 			name = Release;
