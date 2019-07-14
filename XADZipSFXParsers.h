@@ -23,7 +23,7 @@
 @interface XADZipSFXParser:XADZipParser
 
 +(int)requiredHeaderSize;
-+(BOOL)recognizeFileWithHandle:(CSHandle *)handle firstBytes:(NSData *)data name:(NSString *)name propertiesToAdd:(NSMutableDictionary *)props;
++(BOOL)recognizeFileWithHandle:(CSHandle *)handle firstBytes:(NSData *)data name:(NSString *)name propertiesToAdd:(NSMutableDictionary<XADArchiveKeys,id> *)props;
 -(NSString *)formatName;
 
 @end
