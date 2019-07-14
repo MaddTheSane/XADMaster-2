@@ -146,7 +146,7 @@
 		1B34A97D11C2FE1700396C26 /* XADArchive.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B5A80B50A27AA9900B189EB /* XADArchive.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
 		1B34A97E11C2FE1900396C26 /* XADException.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B578C330DDBC8BF005B0F68 /* XADException.m */; };
 		1B34A97F11C2FE1B00396C26 /* XADPath.m in Sources */ = {isa = PBXBuildFile; fileRef = 1BA266DD0FC78BF600279E95 /* XADPath.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
-		1B34A98011C2FE1C00396C26 /* XADString.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B06D5BA0DDA67E000D9C000 /* XADString.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
+		1B34A98011C2FE1C00396C26 /* XADString.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B06D5BA0DDA67E000D9C000 /* XADString.m */; settings = {COMPILER_FLAGS = "-fobjc-arc -I.."; }; };
 		1B34A98111C2FE1C00396C26 /* XADUnarchiver.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B81DD450FFEB87B005C5B23 /* XADUnarchiver.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
 		1B34A98211C2FE1F00396C26 /* XADPlatformMacOSX.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B349EF011BACA2900396C26 /* XADPlatformMacOSX.m */; };
 		1B34A98311C2FE2700396C26 /* XADArchiveParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 1BBAB6770EC26AA6007FE6A2 /* XADArchiveParser.m */; };
@@ -449,7 +449,7 @@
 		1B467A3315CD9A73001AB1DD /* PDFStream.h in Headers */ = {isa = PBXBuildFile; fileRef = 1B3581E515A7AC020002A4C9 /* PDFStream.h */; };
 		1B467A3615CD9A73001AB1DD /* XADException.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B578C330DDBC8BF005B0F68 /* XADException.m */; };
 		1B467A3715CD9A73001AB1DD /* XADPath.m in Sources */ = {isa = PBXBuildFile; fileRef = 1BA266DD0FC78BF600279E95 /* XADPath.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
-		1B467A3815CD9A73001AB1DD /* XADString.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B06D5BA0DDA67E000D9C000 /* XADString.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
+		1B467A3815CD9A73001AB1DD /* XADString.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B06D5BA0DDA67E000D9C000 /* XADString.m */; settings = {COMPILER_FLAGS = "-fobjc-arc -I.."; }; };
 		1B467A3915CD9A73001AB1DD /* XADUnarchiver.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B81DD450FFEB87B005C5B23 /* XADUnarchiver.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
 		1B467A3B15CD9A73001AB1DD /* XADArchiveParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 1BBAB6770EC26AA6007FE6A2 /* XADArchiveParser.m */; };
 		1B467A3C15CD9A73001AB1DD /* XADMacArchiveParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B3FAD660EC5D4E8006D2F06 /* XADMacArchiveParser.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
@@ -5078,7 +5078,7 @@
 			};
 			buildConfigurationList = 1DEB91B108733DA50010E9CD /* Build configuration list for PBXProject "XADMaster" */;
 			compatibilityVersion = "Xcode 3.2";
-			developmentRegion = English;
+			developmentRegion = en;
 			hasScannedForEncodings = 1;
 			knownRegions = (
 				en,
