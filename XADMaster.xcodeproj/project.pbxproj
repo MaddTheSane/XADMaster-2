@@ -5074,7 +5074,7 @@
 			isa = PBXProject;
 			attributes = {
 				CLASSPREFIX = XAD;
-				LastUpgradeCheck = 1010;
+				LastUpgradeCheck = 1100;
 				TargetAttributes = {
 					5500A44A1D776ADB00321300 = {
 						LastSwiftMigration = 1100;

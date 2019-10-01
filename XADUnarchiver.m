@@ -750,7 +750,10 @@ outputTarget:(id)target selector:(SEL)selector argument:(id)argument
 	{
 		NSString *path=[self unarchiver:unarchiver pathForExtractingEntryWithDictionary:dict];
 		if(path) *pathptr=path;
+        #pragma clang diagnostic push
+        #pragma clang diagnostic ignored "-Wdeprecated"
 		return [(NSObject<XADUnarchiverDelegate>*)self unarchiver:unarchiver shouldExtractEntryWithDictionary:dict to:*pathptr];
+        #pragma clang diagnostic pop
 	}
 	else return YES;
 }
@@ -764,11 +767,14 @@ outputTarget:(id)target selector:(SEL)selector argument:(id)argument
 	// Kludge to handle old-style interface.
 	if([self respondsToSelector:@selector(unarchiver:linkDestinationForEntryWithDictionary:from:)])
 	{
+        #pragma clang diagnostic push
+        #pragma clang diagnostic ignored "-Wdeprecated"
 		return [(NSObject<XADUnarchiverDelegate>*)self unarchiver:unarchiver linkDestinationForEntryWithDictionary:
 		[NSMutableDictionary dictionaryWithObjectsAndKeys:
 			link,XADLinkDestinationKey,
 			@YES,XADIsLinkKey,
 		nil] from:path];
+        #pragma clang diagnostic pop
 	}
 	else return link.string;
 }

@@ -1382,10 +1382,6 @@ fileFraction:(double)fileprogress estimatedTotalFraction:(double)totalprogress
 
 -(void)archive:(XADArchive *)archive extractionProgressFiles:(NSInteger)files of:(NSInteger)total;
 
-// Deprecated
--(NSStringEncoding)archive:(XADArchive *)archive encodingForName:(const char *)bytes guess:(NSStringEncoding)guess confidence:(float)confidence DEPRECATED_ATTRIBUTE;
--(XADAction)archive:(XADArchive *)archive nameDecodingDidFailForEntry:(NSInteger)n bytes:(const char *)bytes DEPRECATED_ATTRIBUTE;
-
 @end
 
 
@@ -1394,18 +1390,32 @@ fileFraction:(double)fileprogress estimatedTotalFraction:(double)totalprogress
 -(NSStringEncoding)archive:(XADArchive *)archive encodingForData:(NSData *)data guess:(NSStringEncoding)guess confidence:(float)confidence
 {
 	// Default implementation calls old method
-	NSMutableData *terminateddata=[[NSMutableData alloc] initWithData:data];
-	[terminateddata increaseLengthBy:1]; // append a 0 byte
-	NSStringEncoding enc=[self archive:archive encodingForName:terminateddata.bytes guess:guess confidence:confidence];
-	return enc;
+	// ...if it's available
+	if ([self respondsToSelector:@selector(archive:encodingForName:guess:confidence:)]) {
+		NSMutableData *terminateddata=[[NSMutableData alloc] initWithData:data];
+		[terminateddata increaseLengthBy:1]; // append a 0 byte
+		#pragma clang diagnostic push
+		#pragma clang diagnostic ignored "-Wdeprecated"
+		NSStringEncoding enc=[(id<XADArchiveDelegate>)self archive:archive encodingForName:terminateddata.bytes guess:guess confidence:confidence];
+		#pragma clang diagnostic pop
+		return enc;
+	}
+	return guess;
 }
 
 -(XADAction)archive:(XADArchive *)archive nameDecodingDidFailForEntry:(NSInteger)n data:(NSData *)data
 {
 	// Default implementation calls old method
-	NSMutableData *terminateddata=[[NSMutableData alloc] initWithData:data];
-	XADAction action=[self archive:archive nameDecodingDidFailForEntry:n bytes:terminateddata.bytes];
-	return action;
+	// ...if it's available
+	if ([self respondsToSelector:@selector(archive:nameDecodingDidFailForEntry:bytes:)]) {
+		NSMutableData *terminateddata=[[NSMutableData alloc] initWithData:data];
+		#pragma clang diagnostic push
+		#pragma clang diagnostic ignored "-Wdeprecated"
+		XADAction action=[(id<XADArchiveDelegate>)self archive:archive nameDecodingDidFailForEntry:n bytes:terminateddata.bytes];
+		#pragma clang diagnostic pop
+		return action;
+	}
+	return XADActionAbort;
 }
 
 -(BOOL)archiveExtractionShouldStop:(XADArchive *)archive { return NO; }
@@ -1422,10 +1432,6 @@ fileFraction:(double)fileprogress estimatedTotalFraction:(double)totalprogress
 
 -(void)archive:(XADArchive *)archive extractionProgressBytes:(off_t)bytes of:(off_t)total {}
 -(void)archive:(XADArchive *)archive extractionProgressFiles:(NSInteger)files of:(NSInteger)total {}
-
-// Deprecated
--(NSStringEncoding)archive:(XADArchive *)archive encodingForName:(const char *)bytes guess:(NSStringEncoding)guess confidence:(float)confidence { return guess; }
--(XADAction)archive:(XADArchive *)archive nameDecodingDidFailForEntry:(NSInteger)n bytes:(const char *)bytes { return XADActionAbort; }
 
 @end
 
