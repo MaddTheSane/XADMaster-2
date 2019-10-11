@@ -23,7 +23,7 @@
 #import "CSMultiHandle.h"
 #import "XADLZMAHandle.h"
 
-static int SortPages(id first,id second,void *context);
+static NSComparisonResult SortPages(id first,id second,void *context);
 
 static NSDictionary *TIFFShortEntry(int tag,int value);
 static NSDictionary *TIFFLongEntry(int tag,int value);
@@ -121,7 +121,7 @@ static NSData *CreateNewJPEGHeaderWithColourProfile(NSData *fileheader,NSData *p
 	}
 
 	// Sort images in page order.
-	[images sortUsingFunction:(void *)SortPages context:order];
+	[images sortUsingFunction:SortPages context:order];
 
 	// Output images.
 	enumerator=[images objectEnumerator];
@@ -457,14 +457,14 @@ static NSData *CreateNewJPEGHeaderWithColourProfile(NSData *fileheader,NSData *p
 
 
 
-static int SortPages(id first,id second,void *context)
+static NSComparisonResult SortPages(id first,id second,void *context)
 {
 	NSDictionary *order=(NSDictionary *)context;
 	NSNumber *firstpage=order[[first reference]];
 	NSNumber *secondpage=order[[second reference]];
-	if(firstpage == nil && secondpage == nil) return 0;
-	else if(firstpage == nil) return 1;
-	else if(secondpage == nil) return -1;
+	if(firstpage == nil && secondpage == nil) return NSOrderedSame;
+	else if(firstpage == nil) return NSOrderedDescending;
+	else if(secondpage == nil) return NSOrderedAscending;
 	else return [firstpage compare:secondpage];
 }
 
