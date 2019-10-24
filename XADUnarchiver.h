@@ -48,7 +48,7 @@ XADEXPORT
 
 	BOOL shouldstop;
 
-	NSMutableArray *deferreddirectories,*deferredlinks;
+	NSMutableArray<NSArray*> *deferreddirectories,*deferredlinks;
 }
 
 +(nullable instancetype)unarchiverForArchiveParser:(XADArchiveParser *)archiveparser;

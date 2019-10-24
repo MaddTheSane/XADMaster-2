@@ -66,9 +66,9 @@ preservePermissions:(BOOL)preservepermissions NS_REFINED_FOR_SWIFT;
 
 // Time functions.
 #if __has_feature(objc_class_property)
-@property (class, readonly) double currentTimeInSeconds;
+@property (class, readonly) NSTimeInterval currentTimeInSeconds;
 #else
-+(double)currentTimeInSeconds;
++(NSTimeInterval)currentTimeInSeconds;
 #endif
 
 @end
