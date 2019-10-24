@@ -110,7 +110,7 @@ XADEXPORT
 -(void)flushReadBits;
 
 -(NSData *)readLine;
--(nullable NSString *)readLineWithEncoding:(NSStringEncoding)encoding NS_REFINED_FOR_SWIFT;
+-(nullable NSString *)readLineWithEncoding:(NSStringEncoding)encoding;
 -(nullable NSString *)readUTF8Line;
 
 -(NSData *)fileContents;

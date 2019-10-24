@@ -9,6 +9,6 @@ import Foundation
 
 extension XADHandle {
 	public func readLine(with encoding: String.Encoding) -> String? {
-		return __readLine(withEncoding: encoding.rawValue)
+		return readLine(withEncoding: encoding.rawValue)
 	}
 }
