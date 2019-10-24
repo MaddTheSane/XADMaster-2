@@ -15,9 +15,8 @@ extension XADPath {
 	}
 	
 	open func sanitizedPathString(with encoding: String.Encoding) -> String {
-		return __sanitizedPathString(withEncoding: encoding.rawValue)
+		return sanitizedPathString(withEncoding: encoding.rawValue)
 	}
-
 }
 
 extension XADError: CustomStringConvertible {

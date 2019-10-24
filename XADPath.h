@@ -109,7 +109,7 @@ separators:(XADPathSeparator)pathseparators;
 #ifdef __APPLE__
 -(BOOL)canDecodeWithEncoding:(NSStringEncoding)encoding;
 -(NSString *)stringWithEncoding:(NSStringEncoding)encoding;
--(NSString *)sanitizedPathStringWithEncoding:(NSStringEncoding)encoding NS_REFINED_FOR_SWIFT;
+-(NSString *)sanitizedPathStringWithEncoding:(NSStringEncoding)encoding;
 @property (NS_NONATOMIC_IOSONLY, readonly) NSStringEncoding encoding;
 #endif
 
