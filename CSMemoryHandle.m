@@ -33,14 +33,14 @@
 	return [[CSMemoryHandle alloc] initWithData:data];
 }
 
-+(CSMemoryHandle *)memoryHandleForReadingBuffer:(const void *)buf length:(unsigned)len
++(CSMemoryHandle *)memoryHandleForReadingBuffer:(const void *)buf length:(size_t)len
 {
 	return [[CSMemoryHandle alloc] initWithData:[NSData dataWithBytesNoCopy:(void *)buf length:len freeWhenDone:NO]];
 }
 
 +(CSMemoryHandle *)memoryHandleForReadingMappedFile:(NSString *)filename
 {
-	return [[CSMemoryHandle alloc] initWithData:[NSData dataWithContentsOfFile:filename options:NSDataReadingMappedIfSafe error:NULL]];
+	return [[CSMemoryHandle alloc] initWithData:[NSData dataWithContentsOfFile:filename options:NSDataReadingMappedAlways error:NULL]];
 }
 
 +(CSMemoryHandle *)memoryHandleForWriting
@@ -75,6 +75,11 @@
 	return (NSMutableData *)backingdata;
 }
 
+-(NSMutableData *)mutableDataNoThrow
+{
+    if(![backingdata isKindOfClass:[NSMutableData class]]) return nil;
+    return (NSMutableData *)backingdata;
+}
 
 
 -(off_t)fileSize { return backingdata.length; }
@@ -129,7 +134,7 @@
 
 -(NSData *)readDataOfLength:(int)length
 {
-	unsigned long totallen=backingdata.length;
+	NSUInteger totallen=backingdata.length;
 	if(memorypos+length>totallen) [self _raiseEOF];
 	NSData *subbackingdata=[backingdata subdataWithRange:NSMakeRange((long)memorypos,length)];
 	memorypos+=length;
@@ -138,7 +143,7 @@
 
 -(NSData *)readDataOfLengthAtMost:(int)length;
 {
-	unsigned long totallen=backingdata.length;
+	NSUInteger totallen=backingdata.length;
 	if(memorypos+length>totallen) length=(int)(totallen-memorypos);
 	NSData *subbackingdata=[backingdata subdataWithRange:NSMakeRange((long)memorypos,length)];
 	memorypos+=length;

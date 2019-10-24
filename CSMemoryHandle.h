@@ -21,6 +21,8 @@
 #import <Foundation/Foundation.h>
 #import "CSHandle.h"
 
+NS_ASSUME_NONNULL_BEGIN
+
 #define CSMemoryHandle XADMemoryHandle
 
 XADEXPORT
@@ -31,7 +33,7 @@ XADEXPORT
 }
 
 +(CSMemoryHandle *)memoryHandleForReadingData:(NSData *)data;
-+(CSMemoryHandle *)memoryHandleForReadingBuffer:(const void *)buf length:(unsigned)len;
++(CSMemoryHandle *)memoryHandleForReadingBuffer:(const void *)buf length:(size_t)len;
 +(CSMemoryHandle *)memoryHandleForReadingMappedFile:(NSString *)filename;
 +(CSMemoryHandle *)memoryHandleForWriting;
 
@@ -41,7 +43,10 @@ XADEXPORT
 
 // Public methods
 @property (NS_NONATOMIC_IOSONLY, readonly, strong) NSData *data;
--(NSMutableData *)mutableData;
+-(NSMutableData *)mutableData NS_SWIFT_UNAVAILABLE("Call can throw");
+/// Useful for Swift code. Will return \c nil if the backing data isn't
+/// \c NSMutableData
+-(nullable NSMutableData *)mutableDataNoThrow;
 
 // Implemented by this class
 @property (NS_NONATOMIC_IOSONLY, readonly) off_t fileSize;
@@ -64,3 +69,5 @@ XADEXPORT
 -(NSString *)name;
 
 @end
+
+NS_ASSUME_NONNULL_END
