@@ -371,9 +371,7 @@ NSString *XADHumanReadableEntryWithDictionary(NSDictionary *dict,XADArchiveParse
 	NSMutableArray *labels=[NSMutableArray array];
 	NSMutableArray *values=[NSMutableArray array];
 
-	NSEnumerator *enumerator=[keys objectEnumerator];
-	NSString *key;
-	while((key=[enumerator nextObject]))
+	for(NSString *key in keys)
 	{
 		NSString *label=[parser descriptionOfKey:key];
 		NSString *value=[parser descriptionOfValueInDictionary:dict key:key];
@@ -436,7 +434,7 @@ NSString *XADHumanReadableData(NSData *data)
 	if(length>256) [string appendString:@"..."];
 	[string appendString:@")"];
 
-	return string;
+	return [NSString stringWithString:string];
 }
 
 NSString *XADHumanReadableArray(NSArray *array)
@@ -461,9 +459,7 @@ NSString *XADHumanReadableDictionary(NSDictionary *dict)
 	NSMutableArray *labels=[NSMutableArray array];
 	NSMutableArray *values=[NSMutableArray array];
 
-	NSEnumerator *enumerator=[keys objectEnumerator];
-	NSString *key;
-	while((key=[enumerator nextObject]))
+	for(NSString *key in keys)
 	{
 		id value=dict[key];
 		[labels addObject:key];
@@ -502,7 +498,7 @@ NSString *XADHumanReadableList(NSArray *labels,NSArray *values)
 		if(i!=count-1) [string appendString:@"\n"];
 	}
 
-	return string;
+	return [NSString stringWithString:string];
 }
 
 NSString *XADIndentTextWithSpaces(NSString *text,NSInteger spaces)
@@ -521,7 +517,7 @@ NSString *XADIndentTextWithSpaces(NSString *text,NSInteger spaces)
 		}
 	}
 
-	return res;
+	return [NSString stringWithString:res];
 }
 
 

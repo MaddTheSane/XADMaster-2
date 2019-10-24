@@ -45,7 +45,7 @@ XADEXTERN NSString *XADHumanReadableObject(id object);
 XADEXTERN NSString *XADHumanReadableDate(NSDate *date);
 XADEXTERN NSString *XADHumanReadableData(NSData *data);
 XADEXTERN NSString *XADHumanReadableArray(NSArray *array);
-XADEXTERN NSString *XADHumanReadableDictionary(NSDictionary *dict);
+XADEXTERN NSString *XADHumanReadableDictionary(NSDictionary<NSString*,id> *dict);
 XADEXTERN NSString *XADHumanReadableList(NSArray<NSString*> *labels,NSArray<NSString*> *values);
 XADEXTERN NSString *XADIndentTextWithSpaces(NSString *text,NSInteger spaces);
 
