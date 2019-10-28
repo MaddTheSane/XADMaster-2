@@ -20,6 +20,8 @@
  */
 #import <Foundation/Foundation.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
 @interface NSDictionary (NumberExtension)
 
 -(int)intValueForKey:(NSString *)key default:(int)def;
@@ -34,3 +36,5 @@
 -(NSArray *)arrayForKey:(NSString *)key;
 
 @end
+
+NS_ASSUME_NONNULL_END
