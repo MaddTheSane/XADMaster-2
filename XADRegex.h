@@ -29,6 +29,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+XADEXTERN NSExceptionName const XADRegexException;
+
 XADEXPORT
 @interface XADRegex:NSObject
 {
@@ -61,10 +63,10 @@ XADEXPORT
 
 -(BOOL)matchesString:(NSString *)string;
 -(nullable NSString *)matchedSubstringOfString:(NSString *)string;
--(nullable NSArray *)capturedSubstringsOfString:(NSString *)string;
--(NSArray *)allMatchedSubstringsOfString:(NSString *)string;
--(NSArray *)allCapturedSubstringsOfString:(NSString *)string;
--(NSArray *)componentsOfSeparatedString:(NSString *)string;
+-(nullable NSArray<NSString*> *)capturedSubstringsOfString:(NSString *)string;
+-(NSArray<NSString*> *)allMatchedSubstringsOfString:(NSString *)string;
+-(NSArray<NSString*> *)allCapturedSubstringsOfString:(NSString *)string;
+-(NSArray<NSString*> *)componentsOfSeparatedString:(NSString *)string;
 
 /*
 -(NSString *)expandReplacementString:(NSString *)replacement;

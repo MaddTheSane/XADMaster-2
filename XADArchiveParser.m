@@ -26,13 +26,7 @@
 #import "XADCRCHandle.h"
 #import "XADPlatform.h"
 
-#import "XADZipParser.h"
-#import "XADRARParser.h"
 #import "XAD7ZipParser.h"
-#import "XADTarParser.h"
-#import "XADLZHParser.h"
-
-#if !defined(XADMASTER_SIMPLE) && !XADMASTER_SIMPLE
 #import "XADALZipParser.h"
 #import "XADAppleSingleParser.h"
 #import "XADARCParser.h"
@@ -51,6 +45,7 @@
 #import "XADISO9660Parser.h"
 #import "XADLBRParser.h"
 #import "XADLibXADParser.h"
+#import "XADLZHParser.h"
 #import "XADLZHSFXParsers.h"
 #import "XADLZMAAloneParser.h"
 #import "XADLZXParser.h"
@@ -63,6 +58,7 @@
 #import "XADPDFParser.h"
 #import "XADPowerPackerParser.h"
 #import "XADPPMdParser.h"
+#import "XADRARParser.h"
 #import "XADRAR5Parser.h"
 #import "XADRPMParser.h"
 #import "XADSARParser.h"
@@ -73,12 +69,13 @@
 #import "XADStuffItSplitParser.h"
 #import "XADStuffItXParser.h"
 #import "XADSWFParser.h"
+#import "XADTarParser.h"
 #import "XADWARCParser.h"
 #import "XADXARParser.h"
 #import "XADXZParser.h"
+#import "XADZipParser.h"
 #import "XADZipSFXParsers.h"
 #import "XADZooParser.h"
-#endif
 
 #include <dirent.h>
 
@@ -178,20 +175,14 @@ static int maxheader=0;
 	hasinitialized=YES;
 
 	parserclasses=[[NSMutableArray arrayWithObjects:
-					// Common formats
-					[XADZipParser class],
-					[XADRARParser class],
-					[XAD7ZipParser class],
-					[XADTarParser class],
-					
-					// Less common formats
-					[XADLZHParser class],
-
-#if !defined(XADMASTER_SIMPLE) && !XADMASTER_SIMPLE
 		// Common formats
+		[XADZipParser class],
+		[XADRARParser class],
 		[XADRAR5Parser class],
+		[XAD7ZipParser class],
 		[XADGzipParser class],
 		[XADBzip2Parser class],
+		[XADTarParser class],
 
 		// Mac formats
 		[XADStuffItParser class],
@@ -218,6 +209,7 @@ static int maxheader=0;
 		[XADCABParser class],
 		[XADCFBFParser class],
 		[XADCABSFXParser class],
+		[XADLZHParser class],
 		[XADLZHAmigaSFXParser class],
 		[XADLZHCommodore64SFXParser class],
 		[XADLZHSFXParser class],
@@ -256,18 +248,13 @@ static int maxheader=0;
 
 		// LibXAD
 		[XADLibXADParser class],
-#endif
 	nil] retain];
 
     // These classes can detect themselves incorrectly if one archive is placed in another
     parsersWithFloatingSignaturesClasses = [[NSArray arrayWithObjects:
-#if !defined(XADMASTER_SIMPLE) && !XADMASTER_SIMPLE
         [XADZipSFXParser class],
-#endif
         [XADEmbeddedRARParser class],
-#if !defined(XADMASTER_SIMPLE) && !XADMASTER_SIMPLE
         [XADEmbeddedRAR5Parser class],
-#endif
      nil
     ] retain];
 

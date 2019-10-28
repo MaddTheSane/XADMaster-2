@@ -24,6 +24,8 @@
 #error this file needs to be compiled with Automatic Reference Counting (ARC)
 #endif
 
+NSString * const XADRegexException = @"XADRegexException";
+
 static BOOL IsRegexSpecialCharacter(unichar c)
 {
 	return c=='^'||c=='.'||c=='['||c=='$'||c=='('||c==')'||
@@ -61,12 +63,12 @@ static BOOL IsRegexSpecialCharacter(unichar c)
 
 +(NSString *)patternForGlob:(NSString *)glob
 {
-	long len=glob.length;
+	NSInteger len=glob.length;
 	NSMutableString *pattern=[NSMutableString stringWithCapacity:len+2];
 
 	[pattern appendString:@"^"];
 
-	for(long i=0;i<len;i++)
+	for(NSInteger i=0;i<len;i++)
 	{
 		unichar c=[glob characterAtIndex:i];
 		if(c=='\\')
@@ -124,7 +126,7 @@ static BOOL IsRegexSpecialCharacter(unichar c)
 		{
 			char errbuf[256];
 			regerror(err,&preg,errbuf,sizeof(errbuf));
-			[NSException raise:@"XADRegexException" format:@"Could not compile regex \"%@\": %s",pattern,errbuf];
+			[NSException raise:XADRegexException format:@"Could not compile regex \"%@\": %s",pattern,errbuf];
 			return nil;
 		}
 
