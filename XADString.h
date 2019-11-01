@@ -161,8 +161,8 @@ XADEXPORT
 #endif
 
 #ifdef __APPLE__
-+(XADStringEncodingName)encodingNameForEncoding:(NSStringEncoding)encoding NS_REFINED_FOR_SWIFT;
-+(NSStringEncoding)encodingForEncodingName:(XADStringEncodingName)encoding NS_REFINED_FOR_SWIFT;
++(XADStringEncodingName)encodingNameForEncoding:(NSStringEncoding)encoding;
++(NSStringEncoding)encodingForEncodingName:(XADStringEncodingName)encoding;
 #endif
 
 @end

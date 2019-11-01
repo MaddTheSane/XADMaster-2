@@ -38,11 +38,11 @@ extension XADStringProtocol {
 
 extension XADString {
 	@nonobjc open class func encodingName(for encoding: String.Encoding) -> XADStringEncodingName {
-		return __encodingName(forEncoding: encoding.rawValue)
+		return encodingName(forEncoding: encoding.rawValue)
 	}
 	
 	@nonobjc open class func encoding(for encoding: XADStringEncodingName) -> String.Encoding {
-		return String.Encoding(rawValue: __encoding(forEncodingName: encoding))
+        return String.Encoding(rawValue: self.encoding(forEncodingName: encoding))
 	}
 	
 	@available(*, deprecated, renamed: "encodingName(for:)")
