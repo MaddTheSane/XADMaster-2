@@ -17,8 +17,12 @@ extension XADStringProtocol {
 		return __string(withEncoding: encoding.rawValue)
 	}
 	
-	public var encoding: String.Encoding {
-		return String.Encoding(rawValue: __encoding)
+	public var encoding: String.Encoding? {
+        let enc = __encoding
+        guard enc == 0 else {
+            return nil
+        }
+		return String.Encoding(rawValue: enc)
 	}
 	
 	@available(*, deprecated, renamed: "canDecode(with:)")
