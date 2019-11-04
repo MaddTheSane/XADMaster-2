@@ -800,7 +800,7 @@
 {
 	// If we are writing OS X or HFV resource forks, keep a list of which resource
 	// forks have been extracted, for the collision tests in checkPath.
-	int style=unarch.macResourceForkStyle;
+	XADForkStyle style=unarch.macResourceForkStyle;
 	if(style==XADForkStyleMacOSX || style==XADForkStyleHFVExplorerAppleDouble)
 	{
 		NSNumber *resnum=dict[XADIsResourceForkKey];

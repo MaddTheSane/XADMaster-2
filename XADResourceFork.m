@@ -21,6 +21,10 @@
 #import "XADResourceFork.h"
 #import "CSMemoryHandle.h"
 
+#if !__has_feature(objc_arc)
+#error this file needs to be compiled with Automatic Reference Counting (ARC)
+#endif
+
 #define ResourceMapHeader 22 // 16+4+2 bytes reserved for in-memory structures.
 #define ResourceMapEntryHeader 2 // 2-byte type count actually part of type list.
 #define ResourceMapEntrySize 8 // 4+2+2 bytes per type list entry.
@@ -30,7 +34,7 @@
 +(XADResourceFork *)resourceForkWithHandle:(CSHandle *)handle
 {
 	if(!handle) return nil;
-	XADResourceFork *fork=[[self new] autorelease];
+	XADResourceFork *fork=[self new];
 	[fork parseFromHandle:handle];
 	return fork;
 }
@@ -44,6 +48,13 @@
 
 +(instancetype)resourceForkWithHandle:(XADHandle *)handle nserror:(NSError * _Nullable *)errorptr
 {
+    if(!handle) {
+        if (errorptr) {
+            *errorptr=[NSError errorWithDomain:XADErrorDomain code:XADErrorBadParameters userInfo:nil];
+        }
+        return nil;
+    }
+
 	@try { return [self resourceForkWithHandle:handle]; }
 	@catch(id exception) {
 		if(errorptr)
@@ -65,12 +76,6 @@
 	return self;
 }
 
--(void)dealloc
-{
-	[resources release];
-	[super dealloc];
-}
-
 -(void)parseFromHandle:(CSHandle *)handle
 {
 	off_t pos=handle.offsetInFile;
@@ -89,16 +94,15 @@
 	NSData *mapdata=[handle readDataOfLength:(int)maplength];
 	CSHandle *maphandle=[CSMemoryHandle memoryHandleForReadingData:mapdata];
 
-	[resources release];
-	resources=[[self _parseMapFromHandle:maphandle withDataObjects:dataobjects] retain];
+	resources=[self _parseMapFromHandle:maphandle withDataObjects:dataobjects];
 }
 
--(NSData *)resourceDataForType:(uint32_t)type identifier:(int)identifier
+-(NSData *)resourceDataForType:(uint32_t)type identifier:(int16_t)identifier
 {
 	NSNumber *typekey=@(type);
 	NSNumber *identifierkey=@(identifier);
-	NSDictionary *resourcesoftype=resources[typekey];
-	NSDictionary *resource=resourcesoftype[identifierkey];
+	NSDictionary<NSNumber*,NSDictionary<NSString*,id>*> *resourcesoftype=resources[typekey];
+	NSDictionary<NSString*,id> *resource=resourcesoftype[identifierkey];
 	return resource[@"Data"];
 }
 
@@ -123,7 +127,7 @@
 	int namelistoffset=[handle readInt16BE];
 	
 	int typecount=[handle readInt16BE]+1;
-	NSMutableDictionary *dict=[NSMutableDictionary dictionaryWithCapacity:typecount];
+	NSMutableDictionary<NSNumber*,NSDictionary<NSNumber*, NSMutableDictionary<NSString*, id>*>*> *dict=[NSMutableDictionary dictionaryWithCapacity:typecount];
 	for(int i=0;i<typecount;i++)
 	{
 		[handle seekToFileOffset:typelistoffset+i*ResourceMapEntrySize+ResourceMapEntryHeader];
@@ -132,21 +136,17 @@
 		int offset=[handle readInt16BE];
 
 		[handle seekToFileOffset:typelistoffset+offset];
-		NSDictionary *references=[self _parseReferencesFromHandle:handle count:count];
+		NSDictionary<NSNumber*, NSMutableDictionary<NSString*, id>*> *references=[self _parseReferencesFromHandle:handle count:count];
 
 		dict[@(type)] = references;
 	}
 
-	NSEnumerator *typeenumerator=[dict keyEnumerator];
-	NSNumber *type;
-	while(type=[typeenumerator nextObject])
+	for(NSNumber *type in dict)
 	{
-		NSDictionary *resourcesoftype=dict[type];
-		NSEnumerator *identifierenumerator=[resourcesoftype keyEnumerator];
-		NSNumber *identifier;
-		while(identifier=[identifierenumerator nextObject])
+		NSDictionary<NSNumber*, NSMutableDictionary<NSString*, id>*> *resourcesoftype=dict[type];
+		for(NSNumber *identifier in resourcesoftype)
 		{
-			NSMutableDictionary *resource=resourcesoftype[identifier];
+			NSMutableDictionary<NSString*, id> *resource=resourcesoftype[identifier];
 			resource[@"Type"] = type;
 
 			// Resolve the name (if any).
@@ -167,7 +167,7 @@
 		}
 	}
 	
-	return dict;
+	return [[NSDictionary alloc] initWithDictionary:dict copyItems:YES];
 }
 
 -(NSDictionary *)_parseReferencesFromHandle:(CSHandle *)handle count:(int)count

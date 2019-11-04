@@ -184,7 +184,7 @@ resourceFork:(nullable XADResourceFork *)fork name:(NSString *)name propertiesTo
 -(nullable XADString *)linkDestinationForDictionary:(NSDictionary<XADArchiveKeys,id> *)dict NS_SWIFT_UNAVAILABLE("Call throws on failure");
 -(nullable XADString *)linkDestinationForDictionary:(NSDictionary<XADArchiveKeys,id> *)dict error:(XADError *)errorptr NS_REFINED_FOR_SWIFT;
 -(nullable XADString *)linkDestinationForDictionary:(NSDictionary<XADArchiveKeys,id> *)dict nserror:(NSError *__autoreleasing __nullable*__nullable)errorptr;
--(nullable NSDictionary<NSString*,id> *)extendedAttributesForDictionary:(NSDictionary<XADArchiveKeys,id> *)dict;
+-(nullable NSDictionary<NSString*,NSData*> *)extendedAttributesForDictionary:(NSDictionary<XADArchiveKeys,id> *)dict;
 -(nullable NSData *)finderInfoForDictionary:(NSDictionary<XADArchiveKeys,id> *)dict;
 #if __APPLE__
 +(NSString*)possibleUTIForDictionary:(NSDictionary<XADArchiveKeys,id> *)dict;

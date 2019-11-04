@@ -840,10 +840,10 @@
 		1B78A34D1431339100E4AB87 /* Realloc.h in Headers */ = {isa = PBXBuildFile; fileRef = 1B78A34B1431339100E4AB87 /* Realloc.h */; };
 		1B78A34E1431339100E4AB87 /* Realloc.h in Headers */ = {isa = PBXBuildFile; fileRef = 1B78A34B1431339100E4AB87 /* Realloc.h */; };
 		1B7A06D61642131A0077A3AA /* XADResourceFork.h in Headers */ = {isa = PBXBuildFile; fileRef = 1B7A06D41642131A0077A3AA /* XADResourceFork.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		1B7A06DA1642131A0077A3AA /* XADResourceFork.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B7A06D51642131A0077A3AA /* XADResourceFork.m */; };
-		1B7A06DB1642131A0077A3AA /* XADResourceFork.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B7A06D51642131A0077A3AA /* XADResourceFork.m */; };
-		1B7A06DC1642131A0077A3AA /* XADResourceFork.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B7A06D51642131A0077A3AA /* XADResourceFork.m */; };
-		1B7A06DD1642131A0077A3AA /* XADResourceFork.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B7A06D51642131A0077A3AA /* XADResourceFork.m */; };
+		1B7A06DA1642131A0077A3AA /* XADResourceFork.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B7A06D51642131A0077A3AA /* XADResourceFork.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
+		1B7A06DB1642131A0077A3AA /* XADResourceFork.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B7A06D51642131A0077A3AA /* XADResourceFork.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
+		1B7A06DC1642131A0077A3AA /* XADResourceFork.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B7A06D51642131A0077A3AA /* XADResourceFork.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
+		1B7A06DD1642131A0077A3AA /* XADResourceFork.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B7A06D51642131A0077A3AA /* XADResourceFork.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
 		1B7F3CB313147CD6008238BF /* XADPaddedBlockHandle.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B7F3CB113147CD6008238BF /* XADPaddedBlockHandle.m */; };
 		1B7F3CB413147CD6008238BF /* XADPaddedBlockHandle.h in Headers */ = {isa = PBXBuildFile; fileRef = 1B7F3CB013147CD6008238BF /* XADPaddedBlockHandle.h */; };
 		1B7F3CB513147CD6008238BF /* XADPaddedBlockHandle.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B7F3CB113147CD6008238BF /* XADPaddedBlockHandle.m */; };
@@ -1781,7 +1781,7 @@
 		551BADC01EB032B500EAF64E /* des.c in Sources */ = {isa = PBXBuildFile; fileRef = 1BA241EE163E1E6F000D8174 /* des.c */; };
 		551BADC11EB032B500EAF64E /* XADMD5Handle.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B6F13CF163E25160054C1AE /* XADMD5Handle.m */; };
 		551BADC21EB032B500EAF64E /* XADSHA1Handle.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B6F13DB163E25320054C1AE /* XADSHA1Handle.m */; };
-		551BADC31EB032B500EAF64E /* XADResourceFork.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B7A06D51642131A0077A3AA /* XADResourceFork.m */; };
+		551BADC31EB032B500EAF64E /* XADResourceFork.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B7A06D51642131A0077A3AA /* XADResourceFork.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
 		551BADC41EB032B500EAF64E /* XADStuffItDESHandle.m in Sources */ = {isa = PBXBuildFile; fileRef = 1BA155E11645BF0600BFF440 /* XADStuffItDESHandle.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
 		551BADC51EB032B500EAF64E /* XADWARCParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B86817A167BCEB7007BEA5D /* XADWARCParser.m */; };
 		551BADC61EB032B500EAF64E /* XADPMArc1Handle.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B738C9E17DBC83400481D43 /* XADPMArc1Handle.m */; };
