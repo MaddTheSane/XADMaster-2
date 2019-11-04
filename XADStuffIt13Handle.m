@@ -21,6 +21,10 @@
 #import "XADStuffIt13Handle.h"
 #import "XADException.h"
 
+#if !__has_feature(objc_arc)
+#error this file needs to be compiled with Automatic Reference Counting (ARC)
+#endif
+
 static const int *FirstCodeLengths[5];
 static const int *SecondCodeLengths[5];
 static const int *OffsetCodeLengths[5];
@@ -39,19 +43,8 @@ static const int MetaCodeLengths[37];
 	return self;
 }
 
--(void)dealloc
-{
-	[firstcode release];
-	[secondcode release];
-	[offsetcode release];
-	[super dealloc];
-}
-
 -(void)resetLZSSHandle
 {
-	[firstcode release];
-	[secondcode release];
-	[offsetcode release];
 	firstcode=secondcode=offsetcode=nil;
 
 	int val=CSInputNextByte(input);
@@ -64,7 +57,7 @@ static const int MetaCodeLengths[37];
 		for(int i=0;i<37;i++) [metacode addValue:i forCodeWithLowBitFirst:MetaCodes[i] length:MetaCodeLengths[i]];
 
 		firstcode=[self allocAndParseCodeOfSize:321 metaCode:metacode];
-		if(val&0x08) secondcode=[firstcode retain];
+		if(val&0x08) secondcode=firstcode;
 		else secondcode=[self allocAndParseCodeOfSize:321 metaCode:metacode];
 		offsetcode=[self allocAndParseCodeOfSize:(val&0x07)+10 metaCode:metacode];
 	}

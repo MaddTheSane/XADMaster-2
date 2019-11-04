@@ -21,6 +21,10 @@
 #import "XADStuffItDESHandle.h"
 #import "XADException.h"
 
+#if !__has_feature(objc_arc)
+#error this file needs to be compiled with Automatic Reference Counting (ARC)
+#endif
+
 typedef struct StuffItDESKeySchedule
 {
 	uint32_t subkeys[16][2];

@@ -34,6 +34,10 @@
 
 // TODO: implement final bits of libxad's Stuffit.c
 
+#if !__has_feature(objc_arc)
+#error this file needs to be compiled with Automatic Reference Counting (ARC)
+#endif
+
 @implementation XADStuffItParser
 
 +(int)requiredHeaderSize { return 22; }
@@ -310,25 +314,25 @@
 	switch(compressionmethod&0x0f)
 	{
 		case 0: break;
-		case 1: handle=[[[XADRLE90Handle alloc] initWithHandle:handle length:size] autorelease]; break;
-		case 2: handle=[[[XADCompressHandle alloc] initWithHandle:handle length:size flags:0x8e] autorelease]; break;
-		case 3: handle=[[[XADStuffItHuffmanHandle alloc] initWithHandle:handle length:size] autorelease]; break;
+		case 1: handle=[[XADRLE90Handle alloc] initWithHandle:handle length:size]; break;
+		case 2: handle=[[XADCompressHandle alloc] initWithHandle:handle length:size flags:0x8e]; break;
+		case 3: handle=[[XADStuffItHuffmanHandle alloc] initWithHandle:handle length:size]; break;
 		//case 5: handle=[[[XADStuffItLZAHHandle alloc] initWithHandle:handle inputLength:compsize outputLength:size] autorelease]; break;
-		case 5: handle=[[[XADLZHDynamicHandle alloc] initWithHandle:handle length:size] autorelease]; break;
+		case 5: handle=[[XADLZHDynamicHandle alloc] initWithHandle:handle length:size]; break;
 		// TODO: Figure out if the initialization of the window differs between LHArc and StuffIt
 		//case 6:  fixed huffman
 		case 8:
 		{
 			[self reportInterestingFileWithReason:@"Compression method 8 (MW)"];
-			handle=[[[XADStuffItMWHandle alloc] initWithHandle:handle length:size] autorelease]; break;
+			handle=[[XADStuffItMWHandle alloc] initWithHandle:handle length:size]; break;
 		}
-		case 13: handle=[[[XADStuffIt13Handle alloc] initWithHandle:handle length:size] autorelease]; break;
+		case 13: handle=[[XADStuffIt13Handle alloc] initWithHandle:handle length:size]; break;
 		case 14:
 		{
 			[self reportInterestingFileWithReason:@"Compression method 14"];
-			handle=[[[XADStuffIt14Handle alloc] initWithHandle:handle length:size] autorelease]; break;
+			handle=[[XADStuffIt14Handle alloc] initWithHandle:handle length:size]; break;
 		}
-		case 15: handle=[[[XADStuffItArsenicHandle alloc] initWithHandle:handle length:size] autorelease]; break;
+		case 15: handle=[[XADStuffItArsenicHandle alloc] initWithHandle:handle length:size]; break;
 
 		default:
 			[self reportInterestingFileWithReason:@"Unsupported compression method %d",compressionmethod&0x0f];
@@ -366,7 +370,7 @@
 
 	off_t outlength=inlength-padding.longLongValue;
 
-	return [[[XADStuffItDESHandle alloc] initWithHandle:fh length:outlength key:key] autorelease];
+	return [[XADStuffItDESHandle alloc] initWithHandle:fh length:outlength key:key];
 }
 
 -(NSString *)formatName { return @"StuffIt"; }

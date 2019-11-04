@@ -23,6 +23,10 @@
 
 /*****************************************************************************/
 
+#if !__has_feature(objc_arc)
+#error this file needs to be compiled with Automatic Reference Counting (ARC)
+#endif
+
 struct SITMWData {
   xadUINT16 dict[16385];
   xadUINT16 stack[16384];

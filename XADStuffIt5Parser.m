@@ -32,6 +32,10 @@ typedef CC_MD5_CTX MD5_CTX;
 #import "Crypto/md5.h"
 #endif
 
+#if !__has_feature(objc_arc)
+#error this file needs to be compiled with Automatic Reference Counting (ARC)
+#endif
+
 static NSData *StuffItMD5(NSData *data);
 
 @implementation XADStuffIt5Parser
@@ -422,7 +426,7 @@ static NSData *StuffItMD5(NSData *data);
 	NSData *key=[self keyForEntryWithDictionary:dict];
 	if(key)
 	{
-		return [[[XADRC4Handle alloc] initWithHandle:fh key:key] autorelease];
+		return [[XADRC4Handle alloc] initWithHandle:fh key:key];
 	}
 	else
 	{

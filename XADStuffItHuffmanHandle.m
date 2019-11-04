@@ -20,6 +20,10 @@
  */
 #import "XADStuffItHuffmanHandle.h"
 
+#if !__has_feature(objc_arc)
+#error this file needs to be compiled with Automatic Reference Counting (ARC)
+#endif
+
 @implementation XADStuffItHuffmanHandle
 
 -(id)initWithHandle:(CSHandle *)handle
@@ -36,15 +40,8 @@
 	return self;
 }
 
--(void)dealloc
-{
-	[code release];
-	[super dealloc];
-}
-
 -(void)resetByteStream
 {
-	[code release];
 	code=[XADPrefixCode new];
 
 	[code startBuildingTree];

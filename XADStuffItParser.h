@@ -20,15 +20,17 @@
  */
 #import "XADArchiveParser.h"
 
+NS_ASSUME_NONNULL_BEGIN
+
 @interface XADStuffItParser:XADArchiveParser
-{
-}
 
 -(void)parse;
--(XADString *)nameOfCompressionMethod:(int)method;
+-(nullable XADString *)nameOfCompressionMethod:(int)method;
 
--(CSHandle *)handleForEntryWithDictionary:(NSDictionary *)dict wantChecksum:(BOOL)checksum;
+-(nullable CSHandle *)handleForEntryWithDictionary:(NSDictionary *)dict wantChecksum:(BOOL)checksum;
 -(CSHandle *)decryptHandleForEntryWithDictionary:(NSDictionary *)dict handle:(CSHandle *)fh;
 -(NSString *)formatName;
 
 @end
+
+NS_ASSUME_NONNULL_END

@@ -22,6 +22,9 @@
 #import "XADException.h"
 #import "CRC.h"
 
+#if !__has_feature(objc_arc)
+#error this file needs to be compiled with Automatic Reference Counting (ARC)
+#endif
 
 
 static const uint16_t RandomizationTable[];
@@ -139,7 +142,6 @@ static int NextArithmeticBitString(ArithmeticDecoder *decoder,ArithmeticModel *m
 {
 	free(block);
 	free(transform);
-	[super dealloc];
 }
 
 -(void)resetByteStream
