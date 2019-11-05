@@ -22,7 +22,9 @@
 #import "XADTypes.h"
 #import "ClangAnalyser.h"
 
-XADEXTERN NSErrorDomain __nonnull const XADErrorDomain;
+NS_ASSUME_NONNULL_BEGIN
+
+XADEXTERN NSErrorDomain const XADErrorDomain;
 
 #if ((__cplusplus && __cplusplus >= 201103L && (__has_extension(cxx_strong_enums) || __has_feature(objc_fixed_enum))) || (!__cplusplus && __has_feature(objc_fixed_enum))) && __has_attribute(ns_error_domain)
 #define XAD_ERROR_ENUM(_domain, _name)     enum _name : int _name; enum __attribute__((ns_error_domain(_domain))) _name : int
@@ -62,8 +64,8 @@ typedef XAD_ERROR_ENUM(XADErrorDomain, XADError) {
 	XADErrorSubArchive = 0x10000
 };
 
-XADEXTERN NSExceptionName __nonnull const XADExceptionName;
-XADEXTERN NSErrorUserInfoKey __nonnull const XADExceptionReasonKey;
+XADEXTERN NSExceptionName const XADExceptionName;
+XADEXTERN NSErrorUserInfoKey const XADExceptionReasonKey;
 
 NS_SWIFT_UNAVAILABLE("Exceptions aren't supported by Swift") XADEXPORT
 @interface XADException:NSObject
@@ -79,10 +81,10 @@ NS_SWIFT_UNAVAILABLE("Exceptions aren't supported by Swift") XADEXPORT
 +(void)raiseDataFormatException CLANG_ANALYZER_NORETURN;
 +(void)raiseOutOfMemoryException CLANG_ANALYZER_NORETURN;
 +(void)raiseExceptionWithXADError:(XADError)errnum CLANG_ANALYZER_NORETURN;
-+(void)raiseExceptionWithXADError:(XADError)errnum underlyingError:(NSError*_Nonnull)nsErr CLANG_ANALYZER_NORETURN;
++(void)raiseExceptionWithXADError:(XADError)errnum underlyingError:(NSError*)nsErr CLANG_ANALYZER_NORETURN;
 
-+(XADError)parseException:(nonnull id)exception;
-+(nonnull NSError*)parseExceptionReturningNSError:(nonnull id)exception;
++(XADError)parseException:(id)exception;
++(NSError*)parseExceptionReturningNSError:(id)exception;
 +(nullable NSString *)describeXADError:(XADError)errnum;
 +(nullable NSString *)localizedDescribeXADError:(XADError)errnum;
 
@@ -120,3 +122,5 @@ static const XADError XADEncodingError API_DEPRECATED_WITH_REPLACEMENT("XADError
 static const XADError XADLinkError API_DEPRECATED_WITH_REPLACEMENT("XADErrorLink", macosx(10.0, 10.8), ios(3.0, 8.0)) = XADErrorLink;
 
 static const XADError XADSubArchiveError API_DEPRECATED_WITH_REPLACEMENT("XADErrorSubArchive", macosx(10.0, 10.8), ios(3.0, 8.0)) = XADErrorSubArchive;
+
+NS_ASSUME_NONNULL_END
