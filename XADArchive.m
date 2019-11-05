@@ -533,6 +533,7 @@ NSString *const XADFinderFlags=@"XADFinderFlags";
 -(NSString *)describeLastError { return [XADException describeXADError:lasterror]; }
 
 -(NSString *)describeError:(XADError)error { return [XADException describeXADError:error]; }
++(NSString *)describeError:(XADError)error { return [XADException describeXADError:error]; }
 
 
 

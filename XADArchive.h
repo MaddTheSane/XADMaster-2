@@ -160,6 +160,7 @@ immediateExtractionTo:(NSString *)destination subArchives:(BOOL)sub nserror:(NSE
 -(void)clearLastError;
 @property (NS_NONATOMIC_IOSONLY, readonly, copy) NSString * _Nullable describeLastError;
 -(nullable NSString *)describeError:(XADError)error;
++(nullable NSString *)describeError:(XADError)error;
 
 @property (readonly, copy) NSString *description;
 
