@@ -34,7 +34,7 @@ extension XADArchiveParser {
 	/// Tests the checksum of the archive.
 	/// - returns: `true` if the checksum is valid,
 	/// `false` otherwise.
-	/// Throws if there was a failure.
+	/// - throws: if the checksum couldn't be checked for whatever reason.
 	@nonobjc open func testChecksum() throws -> Bool {
 		do {
 			try __testChecksum()
