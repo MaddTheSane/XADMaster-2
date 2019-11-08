@@ -18,10 +18,10 @@ extension XADStringProtocol {
 	}
 	
 	public var encoding: String.Encoding? {
-        let enc = __encoding
-        guard enc == 0 else {
-            return nil
-        }
+		let enc = __encoding
+		guard enc == 0 else {
+			return nil
+		}
 		return String.Encoding(rawValue: enc)
 	}
 	
@@ -42,7 +42,7 @@ extension XADString {
 	}
 	
 	@nonobjc open class func encoding(for encoding: XADStringEncodingName) -> String.Encoding {
-        return String.Encoding(rawValue: self.encoding(forEncodingName: encoding))
+		return String.Encoding(rawValue: self.encoding(forEncodingName: encoding))
 	}
 	
 	@available(*, deprecated, renamed: "encodingName(for:)")

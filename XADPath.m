@@ -288,7 +288,7 @@ separators:(const char *)pathseparators
 
 	// If there are no . or .. components, there is no need to do any further work.
 	if([components indexOfObject:@"."]!=NSNotFound&&
-	   [components indexOfObject:@".."]!=NSNotFound) return components;
+	[components indexOfObject:@".."]!=NSNotFound) return components;
 
 	// Drop . anywhere in the path
 	for(int i=0;i<components.count;)

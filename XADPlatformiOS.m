@@ -37,11 +37,11 @@
 		[NSError setUserInfoValueProviderForDomain:XADErrorDomain provider:^id _Nullable(NSError * _Nonnull err, NSErrorUserInfoKey  _Nonnull userInfoKey) {
 			if ([userInfoKey isEqualToString:NSLocalizedDescriptionKey]) {
 				return [XADException localizedDescribeXADError:(XADError)err.code];
-            } else if ([userInfoKey isEqualToString:NSLocalizedFailureReasonErrorKey]) {
-                if (err.userInfo[XADExceptionReasonKey]) {
-                    return err.userInfo[XADExceptionReasonKey];
-                }
-            }
+			} else if ([userInfoKey isEqualToString:NSLocalizedFailureReasonErrorKey]) {
+				if (err.userInfo[XADExceptionReasonKey]) {
+					return err.userInfo[XADExceptionReasonKey];
+				}
+			}
 			return nil;
 		}];
 	}

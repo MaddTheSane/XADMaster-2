@@ -21,14 +21,6 @@
 #import <Foundation/Foundation.h>
 #import "XADTypes.h"
 
-#ifndef NS_TYPED_ENUM
-#define NS_TYPED_ENUM
-#endif
-
-#ifndef NS_SWIFT_NAME
-#define NS_SWIFT_NAME(x)
-#endif
-
 NS_ASSUME_NONNULL_BEGIN
 
 @class XADStringSource, UniversalDetector;

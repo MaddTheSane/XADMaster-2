@@ -30,4 +30,12 @@
 
 #define XADEXTERN extern XADEXPORT
 
+#ifndef NS_TYPED_ENUM
+#define NS_TYPED_ENUM
+#endif
+
+#ifndef NS_SWIFT_NAME
+#define NS_SWIFT_NAME(x)
+#endif
+
 #endif /* XADTypes_h */

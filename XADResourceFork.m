@@ -48,12 +48,12 @@
 
 +(instancetype)resourceForkWithHandle:(XADHandle *)handle nserror:(NSError * _Nullable *)errorptr
 {
-    if(!handle) {
-        if (errorptr) {
-            *errorptr=[NSError errorWithDomain:XADErrorDomain code:XADErrorBadParameters userInfo:nil];
-        }
-        return nil;
-    }
+	if(!handle) {
+		if (errorptr) {
+			*errorptr=[NSError errorWithDomain:XADErrorDomain code:XADErrorBadParameters userInfo:nil];
+		}
+		return nil;
+	}
 
 	@try { return [self resourceForkWithHandle:handle]; }
 	@catch(id exception) {

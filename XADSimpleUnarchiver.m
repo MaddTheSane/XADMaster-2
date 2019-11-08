@@ -815,7 +815,7 @@
 -(void)unarchiver:(XADUnarchiver *)unarchiver didExtractEntryWithDictionary:(NSDictionary *)dict to:(NSString *)path error:(XADError)error
 {
 	numextracted++;
-	
+
 	if(propagatemetadata && metadata) [XADPlatform writeCloneableMetadata:metadata toPath:path];
 	
 	if ([delegate respondsToSelector:@selector(simpleUnarchiver:didExtractEntryWithDictionary:to:error:)]) {

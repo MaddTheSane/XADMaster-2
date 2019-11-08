@@ -11,10 +11,10 @@ import Foundation
 extension XADArchive {
 	@nonobjc open var nameEncoding: String.Encoding? {
 		get {
-            let enc = __nameEncoding
-            guard enc != 0 else {
-                return nil
-            }
+			let enc = __nameEncoding
+			guard enc != 0 else {
+				return nil
+			}
 			return String.Encoding(rawValue: enc)
 		}
 		set {

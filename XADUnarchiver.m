@@ -364,11 +364,11 @@ wantChecksum:(BOOL)checksum nserror:(NSError *_Nullable __autoreleasing *_Nullab
 wantChecksum:(BOOL)checksum error:(XADError *)errorptr
 {
 	return [self unarchiverForEntryWithDictionary:dict resourceForkDictionary:nil
-									 wantChecksum:checksum error:errorptr];
+	wantChecksum:checksum error:errorptr];
 }
 
 -(XADUnarchiver *)unarchiverForEntryWithDictionary:(NSDictionary *)dict
-resourceForkDictionary:(NSDictionary *)forkdict wantChecksum:(BOOL)checksum error:(XADError*)errorptr
+resourceForkDictionary:(NSDictionary *)forkdict wantChecksum:(BOOL)checksum error:(XADError *)errorptr
 {
 	XADArchiveParser *subparser=[XADArchiveParser
 	archiveParserForEntryWithDictionary:dict
@@ -385,6 +385,7 @@ resourceForkDictionary:(NSDictionary *)forkdict wantChecksum:(BOOL)checksum erro
 
 	return subunarchiver;
 }
+
 
 -(XADUnarchiver *)unarchiverForEntryWithDictionary:(NSDictionary *)dict
 							resourceForkDictionary:(NSDictionary *)forkdict wantChecksum:(BOOL)checksum nserror:(NSError *_Nullable __autoreleasing *_Nullable)errorptr
@@ -702,18 +703,18 @@ outputTarget:(id)target selector:(SEL)selector argument:(id)argument
 				return [path.stringByDeletingLastPathComponent stringByAppendingPathComponent:
 						[@"._" stringByAppendingString:path.lastPathComponent]];
 				break;
-				
+
 			case XADForkStyleVisibleAppleDouble:
 				return [path stringByAppendingPathExtension:@"rsrc"];
 				break;
-				
+
 			case XADForkStyleHFVExplorerAppleDouble:
 				// TODO: is this path generation correct?
 				// FIXME: this is not correct: HFVExplorer requires non-ascii characters to be percent-encoded.
 				return [path.stringByDeletingLastPathComponent stringByAppendingPathComponent:
 						[@"%" stringByAppendingString:path.lastPathComponent]];
 				break;
-				
+
 			default:
 				break;
 		}
@@ -747,10 +748,10 @@ outputTarget:(id)target selector:(SEL)selector argument:(id)argument
 	{
 		NSString *path=[self unarchiver:unarchiver pathForExtractingEntryWithDictionary:dict];
 		if(path) *pathptr=path;
-        #pragma clang diagnostic push
-        #pragma clang diagnostic ignored "-Wdeprecated"
+		#pragma clang diagnostic push
+		#pragma clang diagnostic ignored "-Wdeprecated"
 		return [(NSObject<XADUnarchiverDelegate>*)self unarchiver:unarchiver shouldExtractEntryWithDictionary:dict to:*pathptr];
-        #pragma clang diagnostic pop
+		#pragma clang diagnostic pop
 	}
 	else return YES;
 }
@@ -764,14 +765,14 @@ outputTarget:(id)target selector:(SEL)selector argument:(id)argument
 	// Kludge to handle old-style interface.
 	if([self respondsToSelector:@selector(unarchiver:linkDestinationForEntryWithDictionary:from:)])
 	{
-        #pragma clang diagnostic push
-        #pragma clang diagnostic ignored "-Wdeprecated"
+		#pragma clang diagnostic push
+		#pragma clang diagnostic ignored "-Wdeprecated"
 		return [(NSObject<XADUnarchiverDelegate>*)self unarchiver:unarchiver linkDestinationForEntryWithDictionary:
 		[NSMutableDictionary dictionaryWithObjectsAndKeys:
 			link,XADLinkDestinationKey,
 			@YES,XADIsLinkKey,
 		nil] from:path];
-        #pragma clang diagnostic pop
+		#pragma clang diagnostic pop
 	}
 	else return link.string;
 }
