@@ -1621,7 +1621,7 @@ name:(NSString *)name { return nil; }
 		CFStringRef possibleOSUTI = UTTypeCreatePreferredIdentifierForTag(kUTTagClassOSType, strOSType, baseUTI);
 		CFRelease(strOSType);
 		if (possibleOSUTI && UTTypeIsDeclared(possibleOSUTI)) {
-            return CFBridgingRelease(possibleOSUTI);
+			return CFBridgingRelease(possibleOSUTI);
 		}
 		if (possibleOSUTI) {
 			CFRelease(possibleOSUTI);
