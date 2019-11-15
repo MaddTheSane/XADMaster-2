@@ -755,7 +755,7 @@ NSString *const XADFinderFlags=@"XADFinderFlags";
 
 -(CSHandle *)handleForEntry:(NSInteger)n
 {
-	return [self handleForEntry:n error:NULL];
+	return [self handleForEntry:n nserror:NULL];
 }
 
 -(CSHandle *)handleForEntry:(NSInteger)n error:(XADError *)error
@@ -775,7 +775,7 @@ NSString *const XADFinderFlags=@"XADFinderFlags";
 
 -(CSHandle *)resourceHandleForEntry:(NSInteger)n
 {
-	return [self resourceHandleForEntry:n error:NULL];
+	return [self resourceHandleForEntry:n nserror:NULL];
 }
 
 -(CSHandle *)resourceHandleForEntry:(NSInteger)n error:(XADError *)error
@@ -1279,9 +1279,19 @@ fileFraction:(double)fileprogress estimatedTotalFraction:(double)totalprogress
 -(CSHandle *)resourceHandleForEntry:(NSInteger)n nserror:(NSError *_Nullable __autoreleasing *_Nullable)error
 {
 	NSDictionary *resdict=[self resourceForkParserDictionaryForEntry:n];
-	if(!resdict) return nil;
+	if(!resdict) {
+		if (error) {
+			*error = [NSError errorWithDomain:XADErrorDomain code:XADErrorEmpty userInfo:nil];
+		}
+		return nil;
+	}
 	NSNumber *isdir=resdict[XADIsDirectoryKey];
-	if(isdir&&isdir.boolValue) return nil;
+	if(isdir&&isdir.boolValue) {
+		if (error) {
+			*error = [NSError errorWithDomain:XADErrorDomain code:XADErrorFileDirectory userInfo:nil];
+		}
+		return nil;
+	}
 	
 	@try
 	{ return [parser handleForEntryWithDictionary:resdict wantChecksum:YES]; }

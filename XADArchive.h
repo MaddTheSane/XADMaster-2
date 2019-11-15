@@ -180,13 +180,13 @@ immediateExtractionTo:(NSString *)destination subArchives:(BOOL)sub nserror:(NSE
 -(BOOL)entryIsEncrypted:(NSInteger)n;
 -(BOOL)entryIsArchive:(NSInteger)n;
 -(BOOL)entryHasResourceFork:(NSInteger)n;
--(NSString *)commentForEntry:(NSInteger)n;
+-(nullable NSString *)commentForEntry:(NSInteger)n;
 -(NSDictionary<NSFileAttributeKey,id> *)attributesOfEntry:(NSInteger)n;
 -(NSDictionary<NSFileAttributeKey,id> *)attributesOfEntry:(NSInteger)n withResourceFork:(BOOL)resfork;
--(CSHandle *)handleForEntry:(NSInteger)n NS_SWIFT_UNAVAILABLE("Use error-throwing type instead");
+-(nullable CSHandle *)handleForEntry:(NSInteger)n NS_SWIFT_UNAVAILABLE("Use error-throwing type instead");
 -(nullable CSHandle *)handleForEntry:(NSInteger)n error:(nullable XADError *)error NS_REFINED_FOR_SWIFT;
 -(nullable CSHandle *)handleForEntry:(NSInteger)n nserror:(NSError *_Nullable __autoreleasing *_Nullable)error;
--(CSHandle *)resourceHandleForEntry:(NSInteger)n NS_SWIFT_UNAVAILABLE("Use error-throwing type instead");
+-(nullable CSHandle *)resourceHandleForEntry:(NSInteger)n NS_SWIFT_UNAVAILABLE("Use error-throwing type instead");
 -(nullable CSHandle *)resourceHandleForEntry:(NSInteger)n error:(nullable XADError *)error NS_REFINED_FOR_SWIFT;
 -(nullable CSHandle *)resourceHandleForEntry:(NSInteger)n nserror:(NSError *_Nullable __autoreleasing *_Nullable)error;
 -(nullable NSData *)contentsOfEntry:(NSInteger)n NS_REFINED_FOR_SWIFT;
