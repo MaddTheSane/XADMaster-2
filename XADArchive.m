@@ -1410,6 +1410,7 @@ fileFraction:(double)fileprogress estimatedTotalFraction:(double)totalprogress
 	// ...if it's available
 	if ([self respondsToSelector:@selector(archive:nameDecodingDidFailForEntry:bytes:)]) {
 		NSMutableData *terminateddata=[[NSMutableData alloc] initWithData:data];
+		[terminateddata increaseLengthBy:1]; // append a 0 byte
 		#pragma clang diagnostic push
 		#pragma clang diagnostic ignored "-Wdeprecated"
 		XADAction action=[(id<XADArchiveDelegate>)self archive:archive nameDecodingDidFailForEntry:n bytes:terminateddata.bytes];
