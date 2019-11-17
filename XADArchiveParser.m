@@ -1628,7 +1628,7 @@ name:(NSString *)name { return nil; }
 		}
 	}
 #endif
-	NSString *lastPathComp = [dict[XADFileNameKey] lastPathComponent].pathExtension;
+	NSString *lastPathComp = [[dict[XADFileNameKey] string] lastPathComponent].pathExtension;
 	CFStringRef possibleOSUTI = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, (CFStringRef)(lastPathComp), baseUTI);
 	if (possibleOSUTI == NULL || !UTTypeIsDeclared(possibleOSUTI)) {
 		if (possibleOSUTI) {
