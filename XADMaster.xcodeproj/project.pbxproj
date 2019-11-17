@@ -2080,7 +2080,7 @@
 		1B06D5430DDA623800D9C000 /* hook_stream.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = hook_stream.c; sourceTree = "<group>"; };
 		1B06D5460DDA623800D9C000 /* functions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = functions.h; sourceTree = "<group>"; };
 		1B06D5470DDA623800D9C000 /* privdefs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = privdefs.h; sourceTree = "<group>"; };
-		1B06D5480DDA623800D9C000 /* version.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = version.h; sourceTree = "<group>"; };
+		1B06D5480DDA623800D9C000 /* version.h */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.c.h; path = version.h; sourceTree = "<group>"; };
 		1B06D5490DDA623800D9C000 /* xadmaster.h */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 2; lastKnownFileType = sourcecode.c.h; path = xadmaster.h; sourceTree = "<group>"; usesTabs = 0; };
 		1B06D54A0DDA623800D9C000 /* info.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = info.c; sourceTree = "<group>"; };
 		1B06D54B0DDA623800D9C000 /* lgpl.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = lgpl.txt; sourceTree = "<group>"; };
