@@ -10,11 +10,11 @@ import Foundation
 
 extension XADStringProtocol {
 	public func canDecode(with encoding: String.Encoding) -> Bool {
-		return __canDecode(withEncoding: encoding.rawValue)
+		return canDecode(withEncoding: encoding.rawValue)
 	}
 	
 	public func string(with encoding: String.Encoding) -> String? {
-		return __string(withEncoding: encoding.rawValue)
+		return string(withEncoding: encoding.rawValue)
 	}
 	
 	public var encoding: String.Encoding? {
