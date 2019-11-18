@@ -25,6 +25,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface XADArchiveParser (Descriptions)
 
++ (nullable NSString *)descriptionOfValueInDictionary:(NSDictionary<XADArchiveKeys,id> *)dict key:(XADArchiveKeys)key;
++ (NSString *)descriptionOfKey:(XADArchiveKeys)key;
++ (NSArray<XADArchiveKeys> *)descriptiveOrderingOfKeysInDictionary:(NSDictionary<XADArchiveKeys,id> *)dict;
+
 -(nullable NSString *)descriptionOfValueInDictionary:(NSDictionary<XADArchiveKeys,id> *)dict key:(XADArchiveKeys)key;
 -(NSString *)descriptionOfKey:(XADArchiveKeys)key;
 -(NSArray<XADArchiveKeys> *)descriptiveOrderingOfKeysInDictionary:(NSDictionary<XADArchiveKeys,id> *)dict;

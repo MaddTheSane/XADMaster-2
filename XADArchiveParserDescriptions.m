@@ -25,6 +25,11 @@
 
 -(NSString *)descriptionOfValueInDictionary:(NSDictionary *)dict key:(NSString *)key
 {
+	return [self.class descriptionOfValueInDictionary:dict key:key];
+}
+
++(NSString *)descriptionOfValueInDictionary:(NSDictionary *)dict key:(NSString *)key
+{
 	id object=dict[key];
 	if(!object) return nil;
 
@@ -85,6 +90,11 @@
 }
 
 -(NSString *)descriptionOfKey:(NSString *)key
+{
+	return [self.class descriptionOfKey:key];
+}
+
++(NSString *)descriptionOfKey:(NSString *)key
 {
 	static NSDictionary *descriptions=nil;
 	if(!descriptions) descriptions=[[NSDictionary alloc] initWithObjectsAndKeys:
@@ -158,6 +168,11 @@
 static NSComparisonResult OrderKeys(id first,id second,void *context);
 
 -(NSArray *)descriptiveOrderingOfKeysInDictionary:(NSDictionary *)dict
+{
+	return [self.class descriptiveOrderingOfKeysInDictionary:dict];
+}
+
++(NSArray *)descriptiveOrderingOfKeysInDictionary:(NSDictionary *)dict
 {
 	static NSDictionary *ordering=nil;
 	if(!ordering) ordering=[[NSDictionary alloc] initWithObjectsAndKeys:

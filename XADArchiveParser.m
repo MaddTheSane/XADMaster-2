@@ -174,7 +174,7 @@ static int maxheader=0;
 	if(hasinitialized) return;
 	hasinitialized=YES;
 
-	parserclasses=[[NSMutableArray arrayWithObjects:
+	parserclasses=[[NSMutableArray alloc] initWithObjects:
 		// Common formats
 		[XADZipParser class],
 		[XADRARParser class],
@@ -248,15 +248,15 @@ static int maxheader=0;
 
 		// LibXAD
 		[XADLibXADParser class],
-	nil] retain];
+	nil];
 
     // These classes can detect themselves incorrectly if one archive is placed in another
-    parsersWithFloatingSignaturesClasses = [[NSArray arrayWithObjects:
+    parsersWithFloatingSignaturesClasses = [[NSArray alloc] initWithObjects:
         [XADZipSFXParser class],
         [XADEmbeddedRARParser class],
         [XADEmbeddedRAR5Parser class],
      nil
-    ] retain];
+    ];
 
 	for(Class class in parserclasses)
 	{
