@@ -19,7 +19,7 @@ extension XADStringProtocol {
 	
 	public var encoding: String.Encoding? {
 		let enc = __encoding
-		guard enc == 0 else {
+		guard enc != 0 else {
 			return nil
 		}
 		return String.Encoding(rawValue: enc)
