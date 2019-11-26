@@ -161,7 +161,10 @@ NSString *const XADExceptionReasonKey=@"XADExceptionReason";
     if (!nonLocDes) {
         return nil;
     }
-    NSString *locDes = [[NSBundle bundleForClass:[XADException class]] localizedStringForKey:nonLocDes value:nonLocDes table:@"XADErrors"];
+    NSString *locDes = [[NSBundle mainBundle] localizedStringForKey:nonLocDes value:nil table:@"XADErrors"];
+	if (!locDes) {
+		locDes = [[NSBundle bundleForClass:[XADException class]] localizedStringForKey:nonLocDes value:nonLocDes table:@"XADErrors"];
+	}
 
     return locDes;
 }
