@@ -126,14 +126,14 @@ XADEXPORT
 @property (NS_NONATOMIC_IOSONLY, readonly, copy) XADStringEncodingName encodingName;
 @property (NS_NONATOMIC_IOSONLY, readonly) float confidence;
 
-@property (NS_NONATOMIC_IOSONLY, readonly, retain, nullable) XADStringSource *source;
+@property (NS_NONATOMIC_IOSONLY, readonly, strong, nullable) XADStringSource *source;
 
 -(BOOL)hasASCIIPrefix:(NSString *)asciiprefix;
 -(XADString *)XADStringByStrippingASCIIPrefixOfLength:(NSInteger)length;
 
 #ifdef __APPLE__
--(BOOL)canDecodeWithEncoding:(NSStringEncoding)encoding NS_REFINED_FOR_SWIFT;
--(nullable NSString *)stringWithEncoding:(NSStringEncoding)encoding NS_REFINED_FOR_SWIFT;
+-(BOOL)canDecodeWithEncoding:(NSStringEncoding)encoding;
+-(nullable NSString *)stringWithEncoding:(NSStringEncoding)encoding;
 @property (NS_NONATOMIC_IOSONLY, readonly) NSStringEncoding encoding NS_REFINED_FOR_SWIFT;
 #endif
 
