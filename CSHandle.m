@@ -281,7 +281,7 @@ CSReadValueImpl(uint32_t,readID,CSUInt32BE)
 	}
 	while(actual!=0);
 
-	return [NSData dataWithData:data];
+	return [data copy];
 }
 
 -(NSData *)readDataOfLength:(int)length
