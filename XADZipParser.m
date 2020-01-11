@@ -288,8 +288,8 @@
 
         // Parse comment data
 		NSData *commentdata=nil;
-		if(commentlength) commentdata=[fh readDataOfLength:commentlength];
-
+		if(cdr.commentlength) commentdata=[fh readDataOfLength:cdr.commentlength];
+        
 		off_t next=fh.offsetInFile;
 
 		// Some idiotic compressors write files with more than 65535 files without
