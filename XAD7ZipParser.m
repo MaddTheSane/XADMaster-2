@@ -405,7 +405,7 @@ static void FindAttribute(CSHandle *handle,int attribute)
 	NSInteger numnames=array.count;
 	for(NSInteger i=0;i<numnames;i++)
 	{
-		NSMutableString *name=[NSMutableString string];
+		NSMutableString *name=[NSMutableString stringWithCapacity:100];
 
 		for(;;)
 		{
