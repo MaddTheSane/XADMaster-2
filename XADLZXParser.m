@@ -23,7 +23,9 @@
 #import "XADCRCHandle.h"
 #import "NSDateXAD.h"
 
-
+#if !__has_feature(objc_arc)
+#error this file needs to be compiled with Automatic Reference Counting (ARC)
+#endif
 
 @implementation XADLZXParser
 
@@ -187,7 +189,7 @@
 	switch(method)
 	{
 		case 0: return handle;
-		case 2: return [[[XADLZXHandle alloc] initWithHandle:handle length:length] autorelease];
+		case 2: return [[XADLZXHandle alloc] initWithHandle:handle length:length];
 		default: return nil;
 	}
 }

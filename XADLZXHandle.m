@@ -21,23 +21,20 @@
 #import "XADLZXHandle.h"
 #import "XADException.h"
 
+#if !__has_feature(objc_arc)
+#error this file needs to be compiled with Automatic Reference Counting (ARC)
+#endif
+
 @implementation XADLZXHandle
 
 -(id)initWithHandle:(CSHandle *)handle length:(off_t)length
 {
-	if((self=[super initWithInputBufferForHandle:[[[XADLZXSwapHandle alloc] initWithHandle:handle] autorelease]
+	if((self=[super initWithInputBufferForHandle:[[XADLZXSwapHandle alloc] initWithHandle:handle]
 	length:length windowSize:65536]))
 	{
 		maincode=offsetcode=nil;
 	}
 	return self;
-}
-
--(void)dealloc
-{
-	[maincode release];
-	[offsetcode release];
-	[super dealloc];
 }
 
 -(void)resetLZSSHandle
@@ -97,8 +94,6 @@
 
 -(void)readBlockHeaderAtPosition:(off_t)pos
 {
-	[maincode release];
-	[offsetcode release];
 	maincode=offsetcode=nil;
 
 	blocktype=CSInputNextBitStringLE(input,3);
@@ -176,12 +171,9 @@
 			for(int j=0;j<n;j++) lengths[i+j]=length;
 			i+=n;
 		}
-
-		[precode release];
 	}
 	@catch(id e)
 	{
-		[precode release];
 		@throw;
 	}
 }

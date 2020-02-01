@@ -22,6 +22,10 @@
 #import "CSMemoryHandle.h"
 #import "XADException.h"
 
+#if !__has_feature(objc_arc)
+#error this file needs to be compiled with Automatic Reference Counting (ARC)
+#endif
+
 static NSData *PowerPackerUnpack(NSData *packeddata,int unpackedlength);
 
 @implementation XADPowerPackerParser
