@@ -21,6 +21,9 @@
 #import "XADQuantumHandle.h"
 #import "XADException.h"
 
+#if !__has_feature(objc_arc)
+#error this file needs to be compiled with Automatic Reference Counting (ARC)
+#endif
 
 static void InitQuantumCoder(QuantumCoder *self,CSInputBuffer *input);
 static uint16_t GetQuantumFrequency(QuantumCoder *self,uint16_t totfreq);
@@ -56,7 +59,6 @@ static void UpdateQuantumModel(QuantumModel *model,int index);
 -(void)dealloc
 {
 	CleanupLZSS(&lzss);
-	[super dealloc];
 }
 
 -(void)resetCABBlockHandle

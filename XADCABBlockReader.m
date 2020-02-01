@@ -21,6 +21,10 @@
 #import "XADCABBlockReader.h"
 #import "XADException.h"
 
+#if !__has_feature(objc_arc)
+#error this file needs to be compiled with Automatic Reference Counting (ARC)
+#endif
+
 @implementation XADCABBlockReader
 @synthesize handle = parent;
 @synthesize compressedLength = complen;
@@ -30,17 +34,11 @@
 {
 	if((self=[super init]))
 	{
-		parent=[handle retain];
+		parent=handle;
 		extbytes=reserved;
 		numfolders=0;
 	}
 	return self;
-}
-
--(void)dealloc
-{
-	[parent release];
-	[super dealloc];
 }
 
 

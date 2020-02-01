@@ -24,6 +24,10 @@
 #import "XADChecksumHandle.h"
 #import "NSDateXAD.h"
 
+#if !__has_feature(objc_arc)
+#error this file needs to be compiled with Automatic Reference Counting (ARC)
+#endif
+
 @implementation XADCrunchParser
 
 +(NSMutableDictionary *)parseWithHandle:(CSHandle *)fh endOffset:(off_t)end parser:(XADArchiveParser *)parser
@@ -107,8 +111,8 @@
 	BOOL old=(version2&0xf0)==0x10;
 	BOOL haschecksum=errordetection==0;
 
-	if(type==0xfe) handle=[[[XADCrunchZHandle alloc] initWithHandle:handle old:old hasChecksum:haschecksum] autorelease];
-	else handle=[[[XADCrunchYHandle alloc] initWithHandle:handle old:old hasChecksum:haschecksum] autorelease];
+	if(type==0xfe) handle=[[XADCrunchZHandle alloc] initWithHandle:handle old:old hasChecksum:haschecksum];
+	else handle=[[XADCrunchYHandle alloc] initWithHandle:handle old:old hasChecksum:haschecksum];
 
 	return handle;
 }

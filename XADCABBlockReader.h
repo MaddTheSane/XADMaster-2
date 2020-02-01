@@ -39,7 +39,7 @@
 -(void)addFolderAtOffset:(off_t)startoffs numberOfBlocks:(int)numblocks;
 -(void)scanLengths;
 
-@property (NS_NONATOMIC_IOSONLY, readonly, retain) CSHandle *handle;
+@property (NS_NONATOMIC_IOSONLY, readonly, strong) CSHandle *handle;
 @property (NS_NONATOMIC_IOSONLY, readonly) off_t compressedLength;
 @property (NS_NONATOMIC_IOSONLY, readonly) off_t uncompressedLength;
 

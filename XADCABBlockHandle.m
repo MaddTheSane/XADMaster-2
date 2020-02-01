@@ -21,21 +21,19 @@
 #import "XADCABBlockHandle.h"
 #import "XADException.h"
 
+#if !__has_feature(objc_arc)
+#error this file needs to be compiled with Automatic Reference Counting (ARC)
+#endif
+
 @implementation XADCABBlockHandle
 
 -(id)initWithBlockReader:(XADCABBlockReader *)blockreader
 {
 	if((self=[super initWithParentHandle:[blockreader handle] length:[blockreader uncompressedLength]]))
 	{
-		blocks=[blockreader retain];
+		blocks=blockreader;
 	}
 	return self;
-}
-
--(void)dealloc
-{
-	[blocks release];
-	[super dealloc];
 }
 
 -(void)resetBlockStream

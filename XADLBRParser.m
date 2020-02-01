@@ -26,6 +26,10 @@
 #import "XADCRCHandle.h"
 #import "NSDateXAD.h"
 
+#if !__has_feature(objc_arc)
+#error this file needs to be compiled with Automatic Reference Counting (ARC)
+#endif
+
 @implementation XADLBRParser
 
 +(int)requiredHeaderSize { return 128; }

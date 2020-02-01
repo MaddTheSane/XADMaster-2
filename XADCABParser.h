@@ -21,8 +21,6 @@
 #import "XADArchiveParser.h"
 
 @interface XADCABParser:XADArchiveParser
-{
-}
 
 +(int)requiredHeaderSize;
 +(BOOL)recognizeFileWithHandle:(CSHandle *)handle firstBytes:(NSData *)data name:(NSString *)name;
@@ -36,8 +34,6 @@
 @end
 
 @interface XADCABSFXParser:XADCABParser
-{
-}
 
 +(int)requiredHeaderSize;
 +(BOOL)recognizeFileWithHandle:(CSHandle *)handle firstBytes:(NSData *)data

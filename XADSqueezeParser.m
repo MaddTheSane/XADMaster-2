@@ -24,6 +24,10 @@
 #import "XADChecksumHandle.h"
 #import "NSDateXAD.h"
 
+#if !__has_feature(objc_arc)
+#error this file needs to be compiled with Automatic Reference Counting (ARC)
+#endif
+
 @implementation XADSqueezeParser
 
 +(NSMutableDictionary *)parseWithHandle:(CSHandle *)fh endOffset:(off_t)end parser:(XADArchiveParser *)parser
@@ -77,11 +81,11 @@
 {
 	int sum=[dict[@"SqueezeChecksum"] intValue];
 
-	handle=[[[XADSqueezeHandle alloc] initWithHandle:handle] autorelease];
-	handle=[[[XADRLE90Handle alloc] initWithHandle:handle] autorelease];
+	handle=[[XADSqueezeHandle alloc] initWithHandle:handle];
+	handle=[[XADRLE90Handle alloc] initWithHandle:handle];
 
-	if(checksum) handle=[[[XADChecksumHandle alloc] initWithHandle:handle
-	length:CSHandleMaxLength correctChecksum:sum mask:0xffff] autorelease];
+	if(checksum) handle=[[XADChecksumHandle alloc] initWithHandle:handle
+	length:CSHandleMaxLength correctChecksum:sum mask:0xffff];
 
 	return handle;
 }

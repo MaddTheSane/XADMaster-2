@@ -23,6 +23,10 @@
 #import "XADCRCHandle.h"
 #import "NSDateXAD.h"
 
+#if !__has_feature(objc_arc)
+#error this file needs to be compiled with Automatic Reference Counting (ARC)
+#endif
+
 @implementation XADZooParser
 
 +(int)requiredHeaderSize { return 0x22; }
@@ -232,11 +236,11 @@
 		break;
 
 		case 1:
-			handle=[[[XADZooMethod1Handle alloc] initWithHandle:handle length:length] autorelease];
+			handle=[[XADZooMethod1Handle alloc] initWithHandle:handle length:length];
 		break;
 
 		case 2:
-			handle=[[[XADLZHStaticHandle alloc] initWithHandle:handle length:length windowBits:13] autorelease];
+			handle=[[XADLZHStaticHandle alloc] initWithHandle:handle length:length windowBits:13];
 		break;
 
 		default:
@@ -269,7 +273,6 @@
 -(void)dealloc
 {
 	FreeLZW(lzw);
-	[super dealloc];
 }
 
 -(void)resetByteStream

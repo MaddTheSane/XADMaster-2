@@ -21,6 +21,10 @@
 #import "XADMSLZXHandle.h"
 #import "XADException.h"
 
+#if !__has_feature(objc_arc)
+#error this file needs to be compiled with Automatic Reference Counting (ARC)
+#endif
+
 @implementation XADMSLZXHandle
 
 -(id)initWithBlockReader:(XADCABBlockReader *)blockreader windowBits:(int)windowbits
@@ -44,11 +48,6 @@
 -(void)dealloc
 {
 	CleanupLZSS(&lzss);
-
-	[maincode release];
-	[lengthcode release];
-	[offsetcode release];
-	[super dealloc];
 }
 
 -(void)resetCABBlockHandle
@@ -209,9 +208,6 @@
 
 -(void)readBlockHeaderAtPosition:(off_t)pos
 {
-	[maincode release];
-	[lengthcode release];
-	[offsetcode release];
 	maincode=lengthcode=offsetcode=nil;
 
 	if(blocktype==3) CSInputSkipTo16BitBoundary(input);
@@ -308,11 +304,9 @@
 			i+=n;
 		}
 
-		[precode release];
 	}
 	@catch(id e)
 	{
-		[precode release];
 		@throw;
 	}
 }

@@ -21,6 +21,10 @@
 #import "XADCrunchHandles.h"
 #import "Checksums.h"
 
+#if !__has_feature(objc_arc)
+#error this file needs to be compiled with Automatic Reference Counting (ARC)
+#endif
+
 #define xadIOPutFuncRLE90TYPE2 ((xadPTR) 0x80000000)
 /* xx9000 --> xx90 */
 /* xx90yy --> xx(yy times) */

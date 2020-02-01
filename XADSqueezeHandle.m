@@ -21,6 +21,10 @@
 #import "XADSqueezeHandle.h"
 #import "XADException.h"
 
+#if !__has_feature(objc_arc)
+#error this file needs to be compiled with Automatic Reference Counting (ARC)
+#endif
+
 @implementation XADSqueezeHandle
 
 -(id)initWithHandle:(CSHandle *)handle
@@ -35,12 +39,6 @@
 		code=nil;
 	}
 	return self;
-}
-
--(void)dealloc
-{
-	[code release];
-	[super dealloc];
 }
 
 
@@ -76,7 +74,6 @@ static void BuildCodeFromTree(XADPrefixCode *code,int *tree,int node,int numnode
 
 	for(int i=0;i<numnodes;i++) nodes[i]=CSInputNextInt16LE(input);
 
-	[code release];
 	code=[XADPrefixCode new];
 
 	[code startBuildingTree];
