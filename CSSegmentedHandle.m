@@ -76,7 +76,7 @@ NSString *const CSSizeOfSegmentUnknownException=@"CSSizeOfSegmentUnknownExceptio
 		NSInteger last=0;
 		for(NSInteger i=0;i<count;i++)
 		{
-			[array addObject:[NSNumber numberWithLongLong:segmentends[i]-last]];
+			[array addObject:@(segmentends[i]-last)];
 			last=segmentends[i];
 		}
 		segmentsizes=[array copy];

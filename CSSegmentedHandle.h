@@ -20,6 +20,8 @@
  */
 #import "CSHandle.h"
 
+NS_ASSUME_NONNULL_BEGIN
+
 #define CSSegmentedHandle XADSegmentedHandle
 
 XADEXTERN NSExceptionName const CSNoSegmentsException;
@@ -40,7 +42,7 @@ XADEXPORT
 -(instancetype)initAsCopyOf:(CSSegmentedHandle *)other;
 
 // Public methods
-@property (NS_NONATOMIC_IOSONLY, readonly, strong) CSHandle *currentHandle;
+@property (NS_NONATOMIC_IOSONLY, readonly, strong, nullable) CSHandle *currentHandle;
 @property (NS_NONATOMIC_IOSONLY, readonly, copy) NSArray<NSNumber*> *segmentSizes;
 
 // Implemented by this class
@@ -52,7 +54,7 @@ XADEXPORT
 -(void)seekToEndOfFile;
 -(int)readAtMost:(int)num toBuffer:(void *)buffer;
 
-@property (NS_NONATOMIC_IOSONLY, readonly, copy) NSString *name;
+@property (NS_NONATOMIC_IOSONLY, readonly, copy, nullable) NSString *name;
 
 // Implemented by subclasses
 @property (NS_NONATOMIC_IOSONLY, readonly) NSInteger numberOfSegments;
@@ -66,3 +68,5 @@ XADEXPORT
 -(void)_raiseSizeUnknownForSegment:(NSInteger)i;
 
 @end
+
+NS_ASSUME_NONNULL_END

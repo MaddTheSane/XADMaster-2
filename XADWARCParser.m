@@ -39,12 +39,12 @@
 	CSHandle *fh=self.handle;
 
 	NSMutableArray *recordarray=[NSMutableArray array];
-	NSMutableDictionary *records=[NSMutableDictionary dictionary];
+	NSMutableDictionary<NSString*,id> *records=[NSMutableDictionary dictionary];
 
 	// Read all WARC records into memory, along with the HTTP headers
 	// for application/http records.
 
-	NSMutableDictionary *lastrecord=nil;
+	NSMutableDictionary<NSString*,id> *lastrecord=nil;
 	while(!fh.atEndOfFile)
 	{
 		NSAutoreleasePool *pool=[NSAutoreleasePool new];

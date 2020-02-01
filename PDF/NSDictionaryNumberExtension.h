@@ -33,7 +33,7 @@ NS_ASSUME_NONNULL_BEGIN
 -(double)doubleValueForKey:(NSString *)key default:(double)def;
 
 -(NSString *)stringForKey:(NSString *)key default:(NSString *)def;
--(NSArray *)arrayForKey:(NSString *)key;
+-(nullable NSArray *)arrayForKey:(NSString *)key;
 
 @end
 

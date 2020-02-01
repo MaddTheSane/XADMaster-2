@@ -20,6 +20,8 @@
  */
 #import "CSSegmentedHandle.h"
 
+NS_ASSUME_NONNULL_BEGIN
+
 #define CSMultiHandle XADMultiHandle
 
 XADEXPORT
@@ -28,8 +30,8 @@ XADEXPORT
     NSArray<CSHandle*> *handles;
 }
 
-+(CSHandle *)handleWithHandleArray:(NSArray<CSHandle*> *)handlearray;
-+(CSHandle *)handleWithHandles:(CSHandle *)firsthandle,... NS_REQUIRES_NIL_TERMINATION;
++(nullable CSHandle *)handleWithHandleArray:(NSArray<CSHandle*> *)handlearray;
++(nullable CSHandle *)handleWithHandles:(CSHandle *)firsthandle,... NS_REQUIRES_NIL_TERMINATION;
 
 // Initializers
 -(instancetype)initWithHandles:(NSArray<CSHandle*> *)handlearray;
@@ -39,8 +41,10 @@ XADEXPORT
 @property (NS_NONATOMIC_IOSONLY, readonly, copy) NSArray<CSHandle*> *handles;
 
 // Implemented by this class
--(NSInteger)numberOfSegments;
+@property (NS_NONATOMIC_IOSONLY, readonly) NSInteger numberOfSegments;
 -(off_t)segmentSizeAtIndex:(NSInteger)index;
 -(CSHandle *)handleAtIndex:(NSInteger)index;
 
 @end
+
+NS_ASSUME_NONNULL_END
