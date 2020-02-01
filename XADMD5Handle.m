@@ -51,12 +51,6 @@ typedef MD5_CTX XADMD5;
 	return self;
 }
 
--(void)dealloc
-{
-	[digest release];
-	[super dealloc];
-}
-
 -(void)resetStream
 {
 	XADMD5_Init(&context);

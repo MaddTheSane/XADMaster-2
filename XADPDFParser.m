@@ -63,15 +63,9 @@ static NSData *CreateNewJPEGHeaderWithColourProfile(NSData *fileheader,NSData *p
 	return self;
 }
 
--(void)dealloc
-{
-	[parser release];
-	[super dealloc];
-}
-
 -(void)parse
 {
-	parser=[[PDFParser parserWithHandle:self.handle] retain];
+	parser=[PDFParser parserWithHandle:self.handle];
 	[parser setPasswordRequestAction:@selector(needsPassword:) target:self];
 
 	[parser parse];
@@ -121,7 +115,7 @@ static NSData *CreateNewJPEGHeaderWithColourProfile(NSData *fileheader,NSData *p
 	}
 
 	// Sort images in page order.
-	[images sortUsingFunction:SortPages context:order];
+	[images sortUsingFunction:SortPages context:(__bridge void * _Nullable)(order)];
 
 	// Output images.
 	enumerator=[images objectEnumerator];
@@ -436,9 +430,9 @@ static NSData *CreateNewJPEGHeaderWithColourProfile(NSData *fileheader,NSData *p
 		{
 			int components=[dict[@"PDFTIFFExpandedComponents"] intValue];
 
-			handle=[[[XAD8BitPaletteExpansionHandle alloc] initWithHandle:handle
+			handle=[[XAD8BitPaletteExpansionHandle alloc] initWithHandle:handle
 			length:stream.imageWidth*stream.imageHeight*components
-			numberOfChannels:components palette:palette] autorelease];
+			numberOfChannels:components palette:palette];
 		}
 
 		return [CSMultiHandle handleWithHandles:
@@ -459,7 +453,7 @@ static NSData *CreateNewJPEGHeaderWithColourProfile(NSData *fileheader,NSData *p
 
 static NSComparisonResult SortPages(id first,id second,void *context)
 {
-	NSDictionary *order=(NSDictionary *)context;
+	NSDictionary *order=(__bridge NSDictionary *)context;
 	NSNumber *firstpage=order[[first reference]];
 	NSNumber *secondpage=order[[second reference]];
 	if(firstpage == nil && secondpage == nil) return NSOrderedSame;
@@ -643,16 +637,10 @@ numberOfChannels:(int)numberofchannels palette:(NSData *)palettedata
 {
 	if((self=[super initWithInputBufferForHandle:handle length:length]))
 	{
-		palette=[palettedata retain];
+		palette=palettedata;
 		numchannels=numberofchannels;
 	}
 	return self;
-}
-
--(void)dealloc
-{
-	[palette release];
-	[super dealloc];
 }
 
 -(void)resetByteStream

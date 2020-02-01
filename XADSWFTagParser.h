@@ -94,7 +94,7 @@ XADEXPORT
 @property (NS_NONATOMIC_IOSONLY, readonly) int frame;
 @property (NS_NONATOMIC_IOSONLY, readonly) double time;
 
-@property (NS_NONATOMIC_IOSONLY, readonly, retain) XADHandle *handle;
+@property (NS_NONATOMIC_IOSONLY, readonly, strong) XADHandle *handle;
 @property (NS_NONATOMIC_IOSONLY, readonly, copy) XADHandle *tagHandle;
 @property (NS_NONATOMIC_IOSONLY, readonly, copy) NSData *tagContents;
 

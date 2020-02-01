@@ -52,7 +52,7 @@ XADEXPORT
 -(BOOL)parseAppleDoubleWithDictionary:(NSMutableDictionary<XADArchiveKeys,id> *)dict
 name:(XADPath *)name retainPosition:(BOOL)retainpos;
 
-@property (NS_NONATOMIC_IOSONLY, retain) XADPath *previousFilename;
+@property (NS_NONATOMIC_IOSONLY, strong) XADPath *previousFilename;
 -(XADPath *)topOfDittoDirectoryStack;
 -(void)pushDittoDirectory:(XADPath *)directory;
 -(void)popDittoDirectoryStackUntilCanonicalPrefixFor:(XADPath *)path;

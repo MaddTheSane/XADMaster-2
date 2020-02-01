@@ -45,15 +45,12 @@ static ISzAlloc allocator={Alloc,Free};
 		}
 	}
 
-	[self release];
 	return nil;
 }
 
 -(void)dealloc
 {
 	LzmaDec_Free(&lzma,&allocator);
-
-	[super dealloc];
 
 }
 

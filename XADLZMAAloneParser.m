@@ -94,10 +94,10 @@
 	NSNumber *size=dictionary[XADFileSizeKey];
 	[handle seekToFileOffset:13];
 
-	if(size != nil) return [[[XADLZMAHandle alloc] initWithHandle:handle length:size.unsignedLongLongValue
-	propertyData:dictionary[@"LZMAProperties"]] autorelease];
-	else return [[[XADLZMAHandle alloc] initWithHandle:handle
-	propertyData:dictionary[@"LZMAProperties"]] autorelease];
+	if(size != nil) return [[XADLZMAHandle alloc] initWithHandle:handle length:size.unsignedLongLongValue
+	propertyData:dictionary[@"LZMAProperties"]];
+	else return [[XADLZMAHandle alloc] initWithHandle:handle
+	propertyData:dictionary[@"LZMAProperties"]];
 
 }
 

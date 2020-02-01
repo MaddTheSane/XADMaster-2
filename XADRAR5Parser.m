@@ -132,14 +132,6 @@ static inline BOOL IsZeroHeaderBlock(RAR5HeaderBlock block) { return IsZeroBlock
 	return self;
 }
 
--(void)dealloc
-{
-	[headerkey release];
-	[cryptocache release];
-	[solidstreams release];
-	[super dealloc];
-}
-
 - (void)readUntilSignature {
     CSHandle * signatureSearchingHandle = [[self handle] subHandleToEndOfFileFrom:0];
     NSData * data = [signatureSearchingHandle readDataOfLengthAtMost:RAR5MaximumSFXHeader];
@@ -254,8 +246,8 @@ static inline BOOL IsZeroHeaderBlock(RAR5HeaderBlock block) { return IsZeroBlock
 						//uint32_t extracrc=[handle readUInt32LE];
 					}
 
-					headerkey=[[self encryptionKeyForPassword:[self password]
-					salt:salt strength:strength passwordCheck:passcheck] retain];
+					headerkey=[self encryptionKeyForPassword:[self password]
+					salt:salt strength:strength passwordCheck:passcheck];
 
 					[self skipBlock:block];
 				}
@@ -268,7 +260,6 @@ static inline BOOL IsZeroHeaderBlock(RAR5HeaderBlock block) { return IsZeroBlock
 					{
 						[[self currentHandle] seekToEndOfFile];
 						[[self handle] skipBytes:8];
-						[headerkey release];
 						headerkey=nil;
 					}
 					else
@@ -657,7 +648,7 @@ inputParts:(NSArray *)parts isCorrupted:(BOOL)iscorrupted
 	{
 		NSData *iv=[fh readDataOfLength:16];
 		block.outerstart=fh.offsetInFile;
-		fh=[[[XADRARAESHandle alloc] initWithHandle:fh RAR5Key:headerkey IV:iv] autorelease];
+		fh=[[XADRARAESHandle alloc] initWithHandle:fh RAR5Key:headerkey IV:iv];
 	}
 
 	block.fh=fh;
@@ -805,7 +796,7 @@ inputParts:(NSArray *)parts isCorrupted:(BOOL)iscorrupted
 {
 	NSNumber *index=obj;
 	NSArray *stream=[solidstreams objectAtIndex:[index integerValue]];
-	return [[[XADRAR50Handle alloc] initWithRARParser:self files:stream] autorelease];
+	return [[XADRAR50Handle alloc] initWithRARParser:self files:stream];
 }
 
 -(CSInputBuffer *)inputBufferWithDictionary:(NSDictionary *)dict
@@ -816,7 +807,7 @@ inputParts:(NSArray *)parts isCorrupted:(BOOL)iscorrupted
 -(CSHandle *)inputHandleWithDictionary:(NSDictionary *)dict
 {
 	NSArray *parts=[dict objectForKey:@"RAR5InputParts"];
-	CSHandle *handle=[[[XADRARInputHandle alloc] initWithHandle:[self handle] parts:parts] autorelease];
+	CSHandle *handle=[[XADRARInputHandle alloc] initWithHandle:[self handle] parts:parts];
 
 	NSNumber *encryptnum=[dict objectForKey:XADIsEncryptedKey];
 	if(encryptnum && [encryptnum boolValue])
@@ -829,8 +820,8 @@ inputParts:(NSArray *)parts isCorrupted:(BOOL)iscorrupted
 		NSData *key=[self encryptionKeyForPassword:[self password]
 		salt:salt strength:strength.intValue passwordCheck:passcheck];
 
-		return [[[XADRARAESHandle alloc] initWithHandle:handle
-		length:[handle fileSize] RAR5Key:key IV:iv] autorelease];
+		return [[XADRARAESHandle alloc] initWithHandle:handle
+		length:[handle fileSize] RAR5Key:key IV:iv];
 	}
 	else
 	{

@@ -237,12 +237,12 @@ static NSComparisonResult OrderKeys(id first,id second,void *context);
 		@702,XADDiskLabelKey,
 		nil];
 
-	return [dict.allKeys sortedArrayUsingFunction:OrderKeys context:ordering];
+	return [dict.allKeys sortedArrayUsingFunction:OrderKeys context:(__bridge void * _Nullable)(ordering)];
 }
 
 static NSComparisonResult OrderKeys(id first,id second,void *context)
 {
-	NSDictionary *ordering=context;
+	NSDictionary *ordering=(__bridge NSDictionary *)(context);
 	NSNumber *firstorder=ordering[first];
 	NSNumber *secondorder=ordering[second];
 
@@ -266,9 +266,7 @@ NSString *XADHumanReadableFileSize(uint64_t size)
 	formatter.includesActualByteCount = YES;
 	formatter.adaptive = YES;
 	formatter.zeroPadsFractionDigits = YES;
-	NSString *strFormat = [formatter stringFromByteCount:size];
-	[formatter release];
-	return strFormat;
+	return [formatter stringFromByteCount:size];
 #else
 	if(size<1000) return [NSString localizedStringWithFormat:
 	NSLocalizedString(@"%lld bytes",@"Format string for human-redable sizes <1000"),
@@ -285,9 +283,7 @@ NSString *XADShortHumanReadableFileSize(uint64_t size)
 	NSByteCountFormatter *formatter = [[NSByteCountFormatter alloc] init];
 	formatter.adaptive = YES;
 	formatter.zeroPadsFractionDigits = YES;
-	NSString *strFormat = [formatter stringFromByteCount:size];
-	[formatter release];
-	return strFormat;
+	return [formatter stringFromByteCount:size];
 #else
 	if(size<1000)
 	{
@@ -419,7 +415,7 @@ NSString *XADHumanReadableObject(id object)
 NSString *XADHumanReadableDate(NSDate *date)
 {
 	#ifndef __COCOTRON__
-	NSDateFormatter *formatter=[[NSDateFormatter new] autorelease];
+	NSDateFormatter *formatter=[NSDateFormatter new];
 	formatter.formatterBehavior = NSDateFormatterBehavior10_4;
 	formatter.dateStyle = NSDateFormatterFullStyle;
 	formatter.timeStyle = NSDateFormatterMediumStyle;

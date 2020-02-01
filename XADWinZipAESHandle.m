@@ -28,20 +28,13 @@
 	off_t actuallength=length-keylength/2-12;
 	if(self=[super initWithParentHandle:handle length:actuallength])
 	{
-		password=[passdata retain];
+		password=passdata;
 		keybytes=keylength;
 		startoffs=handle.offsetInFile;
 
 		hmac_done=hmac_correct=NO;
 	}
 	return self;
-}
-
--(void)dealloc
-{
-	[password release];
-
-	[super dealloc];
 }
 
 static void DeriveKey(NSData *password,NSData *salt,int iterations,uint8_t *keybuffer,int keylength)

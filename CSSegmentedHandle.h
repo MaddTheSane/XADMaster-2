@@ -32,7 +32,7 @@ XADEXPORT
 	NSInteger currindex;
 	CSHandle *currhandle;
 	off_t *segmentends;
-	NSArray *segmentsizes;
+	NSArray<NSNumber*> *segmentsizes;
 }
 
 // Initializers
@@ -40,7 +40,7 @@ XADEXPORT
 -(instancetype)initAsCopyOf:(CSSegmentedHandle *)other;
 
 // Public methods
-@property (NS_NONATOMIC_IOSONLY, readonly) CSHandle *currentHandle;
+@property (NS_NONATOMIC_IOSONLY, readonly, strong) CSHandle *currentHandle;
 @property (NS_NONATOMIC_IOSONLY, readonly, copy) NSArray<NSNumber*> *segmentSizes;
 
 // Implemented by this class

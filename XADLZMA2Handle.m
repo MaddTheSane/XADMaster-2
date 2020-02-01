@@ -48,16 +48,12 @@ static ISzAlloc allocator={Alloc,Free};
 		}
 	}
 
-	[self release];
 	return nil;
 }
 
 -(void)dealloc
 {
 	Lzma2Dec_Free(&lzma,&allocator);
-
-	[super dealloc];
-
 }
 
 -(void)setSeekBackAtEOF:(BOOL)seekateof { seekback=seekateof; }

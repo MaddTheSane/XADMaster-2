@@ -189,7 +189,7 @@ static void CalculateSillyTable(int *table,int param)
 		case 2: handle=[CSZlibHandle deflateHandleWithHandle:handle length:size]; break;
 		case 3:
 		{
-			handle=[[[XADDeflateHandle alloc] initWithHandle:handle length:size] autorelease];
+			handle=[[XADDeflateHandle alloc] initWithHandle:handle length:size];
 
 			int order[19];
 			CalculateSillyTable(order,[dict[XADFileSizeKey] intValue]%16);

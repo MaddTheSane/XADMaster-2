@@ -32,12 +32,6 @@
 	return self;
 }
 
--(void)dealloc
-{
-	[lengthcode release];
-	[super dealloc];
-}
-
 -(void)resetLZSSHandle
 {
 	nextblock=0;
@@ -93,7 +87,7 @@
 
 -(void)readBlockAtPosition:(off_t)pos
 {
-	NSAutoreleasePool *pool=[NSAutoreleasePool new];
+	@autoreleasepool {
 
 	if(blocksize<=65536)
 	{
@@ -156,7 +150,6 @@
 	if(flags&0x40)
 	{
 		uncompressed=YES;
-		[pool release];
 		return;
 	}
 
@@ -204,10 +197,9 @@
 
 	CSInputSeekToBufferOffset(input,lengthstart);
 
-	[lengthcode release];
-	lengthcode=[[self readCode] retain];
+	lengthcode=[self readCode];
 
-	[pool release];
+	}
 }
 
 -(XADPrefixCode *)readCode

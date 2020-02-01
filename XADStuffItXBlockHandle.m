@@ -38,7 +38,6 @@
 -(void)dealloc
 {
 	free(buffer);
-	[super dealloc];
 }
 
 -(void)resetBlockStream

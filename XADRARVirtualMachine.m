@@ -57,7 +57,6 @@ uint32_t CSInputNextRARVMNumber(CSInputBuffer *input)
 -(void)dealloc
 {
 	//CleanupRARVirutalMachine(&vm);
-	[super dealloc];
 }
 
 -(uint8_t *)memory { return vm.memory; }
@@ -122,19 +121,9 @@ uint32_t CSInputNextRARVMNumber(CSInputBuffer *input)
 		globalbackup=[NSMutableData new];
 
 		if([self parseByteCode:bytes length:length]) return self;
-
-		[self release];
 	}
 
 	return nil;
-}
-
--(void)dealloc
-{
-	[opcodes release];
-	[staticdata release];
-	[globalbackup release];
-	[super dealloc];
 }
 
 -(BOOL)parseByteCode:(const uint8_t *)bytes length:(NSInteger)length
@@ -163,7 +152,7 @@ uint32_t CSInputNextRARVMNumber(CSInputBuffer *input)
 
 		for(int i=0;i<length;i++) databytes[i]=CSInputNextBitString(input,8);
 
-		staticdata=[data retain];
+		staticdata=data;
 	}
 
 	// Read instructions.
@@ -312,7 +301,7 @@ value:(uint32_t *)valueptr byteMode:(BOOL)bytemode isRelativeJump:(BOOL)isrel cu
 {
 	if((self=[super init]))
 	{
-		programcode=[code retain];
+		programcode=code;
 
 		if(data)
 		{
@@ -325,13 +314,6 @@ value:(uint32_t *)valueptr byteMode:(BOOL)bytemode isRelativeJump:(BOOL)isrel cu
 		else memset(initialregisters,0,sizeof(initialregisters));
 	}
 	return self;
-}
-
--(void)dealloc
-{
-	[programcode release];
-	[globaldata release];
-	[super dealloc];
 }
 
 -(uint32_t)initialRegisterState:(NSInteger)n

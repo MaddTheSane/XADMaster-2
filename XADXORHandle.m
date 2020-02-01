@@ -26,7 +26,7 @@
 {
 	if((self=[super initWithParentHandle:handle]))
 	{
-		password=[passdata retain];
+		password=passdata;
 		passwordbytes=password.bytes;
 		passwordlength=password.length;
 	}
@@ -37,12 +37,6 @@
 {
 	[self _raiseNotSupported:_cmd];
 	return nil;
-}
-
--(void)dealloc
-{
-	[password release];
-	[super dealloc];
 }
 
 

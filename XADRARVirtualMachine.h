@@ -93,7 +93,7 @@ currentInstructionOffset:(NSInteger)instructionoffset;
 @property (readonly, assign) RAROpcode *opcodes NS_RETURNS_INNER_POINTER;
 @property (readonly) NSInteger numberOfOpcodes;
 @property (readonly, copy) NSData *staticData;
-@property (readonly, retain) NSMutableData *globalBackup;
+@property (readonly, strong) NSMutableData *globalBackup;
 @property (readonly) uint64_t fingerprint;
 
 -(NSString *)disassemble;
@@ -112,7 +112,7 @@ currentInstructionOffset:(NSInteger)instructionoffset;
 
 -(instancetype)initWithProgramCode:(XADRARProgramCode *)code globalData:(NSData *)data registers:(uint32_t *)registers;
 
-@property (readonly, retain) XADRARProgramCode *programCode;
+@property (readonly, strong) XADRARProgramCode *programCode;
 @property (readonly, copy) NSData *globalData;
 
 -(uint32_t)initialRegisterState:(NSInteger)n;

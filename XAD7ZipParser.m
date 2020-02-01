@@ -127,12 +127,6 @@ static void FindAttribute(CSHandle *handle,int attribute)
 	return self;
 }
 
--(void)dealloc
-{
-	[mainstreams release];
-	[super dealloc];
-}
-
 -(void)parseWithSeparateMacForks
 {
 	CSHandle *handle=self.handle;
@@ -221,7 +215,7 @@ static void FindAttribute(CSHandle *handle,int attribute)
 			break;
 
 			case 4: // MainStreamsInfo
-				mainstreams=[[self parseStreamsForHandle:fh] retain];
+				mainstreams=[self parseStreamsForHandle:fh];
 			break;
 
 			case 5: // FilesInfo
@@ -792,40 +786,40 @@ packedStreams:(NSArray *)packedstreams packedStreamIndex:(NSInteger *)packedstre
 		//case 0x02030200: return @"Swap2";
 		//case 0x02030400: return @"Swap4";
         // TODO: ??? Not sure where this 0x02040000 came from. Current 7z returns 0x03000000 for Delta decoder.
-		case 0x02040000: return [[[XADDeltaHandle alloc] initWithHandle:inhandle length:size propertyData:props] autorelease];
-        case 0x03000000: return [[[XADDeltaHandle alloc] initWithHandle:inhandle length:size propertyData:props] autorelease];
-		case 0x03010100: return [[[XADLZMAHandle alloc] initWithHandle:inhandle length:size propertyData:props] autorelease];
-		case 0x03030103: return [[[XAD7ZipBCJHandle alloc] initWithHandle:inhandle length:size propertyData:props] autorelease];
+		case 0x02040000: return [[XADDeltaHandle alloc] initWithHandle:inhandle length:size propertyData:props];
+        case 0x03000000: return [[XADDeltaHandle alloc] initWithHandle:inhandle length:size propertyData:props];
+		case 0x03010100: return [[XADLZMAHandle alloc] initWithHandle:inhandle length:size propertyData:props];
+		case 0x03030103: return [[XAD7ZipBCJHandle alloc] initWithHandle:inhandle length:size propertyData:props];
 		case 0x0303011b:
 		{
 			CSHandle *inhandle1=[self inHandleForFolder:folder coder:coder index:1];
 			CSHandle *inhandle2=[self inHandleForFolder:folder coder:coder index:2];
 			CSHandle *inhandle3=[self inHandleForFolder:folder coder:coder index:3];
 			if(!inhandle1||!inhandle2||!inhandle3) return nil;
-			return [[[XAD7ZipBCJ2Handle alloc] initWithHandle:inhandle callHandle:inhandle1
-			jumpHandle:inhandle2 rangeHandle:inhandle3 length:size] autorelease];
+			return [[XAD7ZipBCJ2Handle alloc] initWithHandle:inhandle callHandle:inhandle1
+			jumpHandle:inhandle2 rangeHandle:inhandle3 length:size];
 		}
-		case 0x03030205: return [[[XAD7ZipPPCHandle alloc] initWithHandle:inhandle length:size propertyData:props] autorelease];
+		case 0x03030205: return [[XAD7ZipPPCHandle alloc] initWithHandle:inhandle length:size propertyData:props];
 		//case 0x03030301: return [[[XAD7ZipAlphaHandle alloc] initWithHandle:inhandle length:size propertyData:props] autorelease];
-		case 0x03030401: return [[[XAD7ZipIA64Handle alloc] initWithHandle:inhandle length:size propertyData:props] autorelease];
-		case 0x03030501: return [[[XAD7ZipARMHandle alloc] initWithHandle:inhandle length:size propertyData:props] autorelease];
+		case 0x03030401: return [[XAD7ZipIA64Handle alloc] initWithHandle:inhandle length:size propertyData:props];
+		case 0x03030501: return [[XAD7ZipARMHandle alloc] initWithHandle:inhandle length:size propertyData:props];
 		//case 0x03030605: return [[[XAD7ZipM68kHandle alloc] initWithHandle:inhandle length:size propertyData:props] autorelease];
-		case 0x03030701: return [[[XAD7ZipThumbHandle alloc] initWithHandle:inhandle length:size propertyData:props] autorelease];
-		case 0x03030805: return [[[XAD7ZipSPARCHandle alloc] initWithHandle:inhandle length:size propertyData:props] autorelease];
+		case 0x03030701: return [[XAD7ZipThumbHandle alloc] initWithHandle:inhandle length:size propertyData:props];
+		case 0x03030805: return [[XAD7ZipSPARCHandle alloc] initWithHandle:inhandle length:size propertyData:props];
 		case 0x03040100:
 		{
 			if(props.length<5) return nil;
 			const uint8_t *bytes=props.bytes;
 			int maxorder=bytes[0];
 			int suballocsize=CSUInt32LE(&bytes[1]);
-			return [[[XAD7ZipPPMdHandle alloc] initWithHandle:inhandle length:size
-			maxOrder:maxorder subAllocSize:suballocsize] autorelease];
+			return [[XAD7ZipPPMdHandle alloc] initWithHandle:inhandle length:size
+			maxOrder:maxorder subAllocSize:suballocsize];
 		}
 		case 0x04010000: return inhandle;
-		case 0x04010100: return [[[XADZipShrinkHandle alloc] initWithHandle:inhandle length:size] autorelease];
+		case 0x04010100: return [[XADZipShrinkHandle alloc] initWithHandle:inhandle length:size];
 		//case 0x04010600: return @"Implode";
 		case 0x04010800: return [CSZlibHandle deflateHandleWithHandle:inhandle length:size];
-		case 0x04010900: return [[[XADDeflateHandle alloc] initWithHandle:inhandle length:size variant:XADDeflate64DeflateVariant] autorelease];
+		case 0x04010900: return [[XADDeflateHandle alloc] initWithHandle:inhandle length:size variant:XADDeflate64DeflateVariant];
 		case 0x04011200:
 		case 0x04020200: return [CSBzip2Handle bzip2HandleWithHandle:inhandle length:size];
 		//case 0x04030100: return @"RAR v1.5";
@@ -833,7 +827,7 @@ packedStreams:(NSArray *)packedstreams packedStreamIndex:(NSInteger *)packedstre
 		//case 0x04030300: return @"RAR v2.9";
 		//case 0x04040100: return @"ARJ";
 		//case 0x04040200: return @"ARJ v4";
-		case 0x04050000: [[[XADCompressHandle alloc] initWithHandle:inhandle length:size flags:((uint8_t *)props.bytes)[0]] autorelease];
+		case 0x04050000: return [[XADCompressHandle alloc] initWithHandle:inhandle length:size flags:((uint8_t *)props.bytes)[0]];
 		//case 0x04060000: return @"Lzh";
 		//case 0x04080000: return @"Cab";
 		//case 0x04090100: return @"DeflateNSIS";
@@ -846,9 +840,9 @@ packedStreams:(NSArray *)packedstreams packedStreamIndex:(NSInteger *)packedstre
 			NSData *iv=[XAD7ZipAESHandle IVForPropertyData:props];
 			if(logrounds<0||!salt||!iv) return nil;
 			NSData *key=[XAD7ZipAESHandle keyForPassword:self.password salt:salt logRounds:logrounds];
-			return [[[XAD7ZipAESHandle alloc] initWithHandle:inhandle length:size key:key IV:iv] autorelease];
+			return [[XAD7ZipAESHandle alloc] initWithHandle:inhandle length:size key:key IV:iv];
 		}
-		case 0x21000000: return [[[XADLZMA2Handle alloc] initWithHandle:inhandle length:size propertyData:props] autorelease];
+		case 0x21000000: return [[XADLZMA2Handle alloc] initWithHandle:inhandle length:size propertyData:props];
 		default: return nil;
 	}
 

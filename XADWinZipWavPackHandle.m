@@ -41,8 +41,6 @@ extern WavpackStreamReader inputreader;
 {
 	if(context) WavpackCloseFile(context);
 	free(buffer);
-
-	[super dealloc];
 }
 
 -(void)resetBlockStream

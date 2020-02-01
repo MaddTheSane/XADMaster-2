@@ -70,22 +70,14 @@ jumpHandle:(CSHandle *)jumphandle rangeHandle:(CSHandle *)rangehandle length:(of
 {
 	if((self=[super initWithInputBufferForHandle:handle length:length]))
 	{
-		calls=[callhandle retain];
-		jumps=[jumphandle retain];
-		ranges=[rangehandle retain];
+		calls=callhandle;
+		jumps=jumphandle;
+		ranges=rangehandle;
 		callstart=calls.offsetInFile;
 		jumpstart=jumps.offsetInFile;
 		rangestart=ranges.offsetInFile;
 	}
 	return self;
-}
-
--(void)dealloc
-{
-	[calls release];
-	[jumps release];
-	[ranges release];
-	[super dealloc];
 }
 
 -(void)resetByteStream

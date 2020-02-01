@@ -29,23 +29,15 @@
 	if(self=[super initWithParentHandle:handle length:[handle fileSize]])
 	{
 		startoffs=[parent offsetInFile];
-		key=[keydata retain];
+		key=keydata;
 		rc4=nil;
 	}
 	return self;
 }
 
--(void)dealloc
-{
-	[key release];
-	[rc4 release];
-	[super dealloc];
-}
-
 -(void)resetStream
 {
 	[parent seekToFileOffset:startoffs];
-	[rc4 release];
 	rc4=[(XADRC4Engine *)[XADRC4Engine alloc] initWithKey:key];
 }
 
@@ -66,7 +58,7 @@
 
 +(XADRC4Engine *)engineWithKey:(NSData *)key
 {
-	return [[(XADRC4Engine *)[[self class] alloc] initWithKey:key] autorelease];
+	return [(XADRC4Engine *)[[self class] alloc] initWithKey:key];
 }
 
 -(instancetype)initWithKey:(NSData *)key

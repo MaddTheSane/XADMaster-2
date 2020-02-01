@@ -43,7 +43,7 @@ startPosition:(off_t)startpos length:(int)length
 		default: class=[XADRAR30Filter class]; break;
 	}
 
-	return [[[class alloc] initWithProgramInvocation:program startPosition:startpos length:length] autorelease];
+	return [[class alloc] initWithProgramInvocation:program startPosition:startpos length:length];
 }
 
 -(id)initWithProgramInvocation:(XADRARProgramInvocation *)program
@@ -51,19 +51,13 @@ startPosition:(off_t)startpos length:(int)length
 {
 	if((self=[super init]))
 	{
-		invocation=[program retain];
+		invocation=program;
 		blockstartpos=startpos;
 		blocklength=length;
 
 		filteredblockaddress=filteredblocklength=0;
 	}
 	return self;
-}
-
--(void)dealloc
-{
-	[invocation release];
-	[super dealloc];
 }
 
 -(off_t)startPosition { return blockstartpos; }
@@ -237,8 +231,6 @@ startPosition:(off_t)startpos length:(int)length
 	RARDeltaFilter(memory,destmem,memlength,numchannels);
 
 	memcpy(memory,destmem,memlength);
-
-	[destdata release];
 }
 
 @end

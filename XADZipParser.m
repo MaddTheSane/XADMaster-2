@@ -108,13 +108,6 @@
 	return self;
 }
 
--(void)dealloc
-{
-	[prevdict release];
-	[prevname release];
-	[super dealloc];
-}
-
 -(void)findCentralDirectoryRecordOffset:(off_t *)centrOffset zip64Offset:(off_t *)zip64offs
 {
     // Default values
@@ -439,9 +432,7 @@
 	[fh seekToFileOffset:0];
 
 	while(self.shouldKeepParsing)
-	{
-		NSAutoreleasePool *pool=[NSAutoreleasePool new];
-
+	@autoreleasepool {
 		uint32_t localid;
 		@try { localid=[fh readID]; }
 		@catch(id e) { break; }
@@ -502,7 +493,6 @@ isLastEntry:NO];
 			break;
 
 			case 0x504b0102: // central record - stop scanning
-				[pool release];
 				goto end;
 			break;
 
@@ -518,8 +508,6 @@ isLastEntry:NO];
 				[self findNextEntry];
 			break;
 		}
-
-		[pool release];
 	}
 
 	end:
@@ -1048,15 +1036,13 @@ isLastEntry:(BOOL)islastentry
 
 -(void)rememberEntry:(NSMutableDictionary *)dict withName:(NSData *)namedata
 {
-	prevdict=[dict retain];
-	prevname=[namedata retain];
+	prevdict=dict;
+	prevname=namedata;
 }
 
 -(void)addRemeberedEntryAndForget
 {
 	[self addEntryWithDictionary:prevdict];
-	[prevdict release];
-	[prevname release];
 	prevdict=nil;
 	prevname=nil;
 }
@@ -1101,8 +1087,8 @@ isLastEntry:(BOOL)islastentry
 
 			if(version==2) wrapchecksum=YES;
 
-			fh=[[[XADWinZipAESHandle alloc] initWithHandle:fh length:compsize
-			password:self.encodedPassword keyLength:keybytes] autorelease];
+			fh=[[XADWinZipAESHandle alloc] initWithHandle:fh length:compsize
+			password:self.encodedPassword keyLength:keybytes];
 		}
 		else
 		{
@@ -1112,8 +1098,8 @@ isLastEntry:(BOOL)islastentry
 			if(flags&0x08) test=[dict[@"ZipLocalDate"] intValue]>>8;
 			else test=[dict[@"ZipCRC32"] unsignedIntValue]>>24;
 
-			fh=[[[XADZipCryptHandle alloc] initWithHandle:fh length:compsize
-			password:self.encodedPassword testByte:test] autorelease];
+			fh=[[XADZipCryptHandle alloc] initWithHandle:fh length:compsize
+			password:self.encodedPassword testByte:test];
 		}
 	}
 
@@ -1124,7 +1110,7 @@ isLastEntry:(BOOL)islastentry
 	{
 		if(wrapchecksum)
 		{
-			return [[[CSChecksumWrapperHandle alloc] initWithHandle:handle checksumHandle:fh] autorelease];
+			return [[CSChecksumWrapperHandle alloc] initWithHandle:handle checksumHandle:fh];
 		}
 		else
 		{
@@ -1142,35 +1128,35 @@ isLastEntry:(BOOL)islastentry
 	switch(method)
 	{
 		case 0: return parent;
-		case 1: return [[[XADZipShrinkHandle alloc] initWithHandle:parent length:size] autorelease];
-		case 6: return [[[XADZipImplodeHandle alloc] initWithHandle:parent length:size
-						largeDictionary:flags&0x02 hasLiterals:flags&0x04] autorelease];
+		case 1: return [[XADZipShrinkHandle alloc] initWithHandle:parent length:size];
+		case 6: return [[XADZipImplodeHandle alloc] initWithHandle:parent length:size
+						largeDictionary:flags&0x02 hasLiterals:flags&0x04];
 //		case 8: return [CSZlibHandle deflateHandleWithHandle:parent length:size];
 		// Leave out length, because some archivers don't bother writing zip64
 		// extensions for >4GB files, so size might be entirely wrong, and
 		// archivers are expected to just keep unarchving anyway.
 		case 8: return [CSZlibHandle deflateHandleWithHandle:parent];
 //		case 8: return [[[XADDeflateHandle alloc] initWithHandle:parent length:size] autorelease];
-		case 9: return [[[XADDeflateHandle alloc] initWithHandle:parent length:size variant:XADDeflate64DeflateVariant] autorelease];
+		case 9: return [[XADDeflateHandle alloc] initWithHandle:parent length:size variant:XADDeflate64DeflateVariant];
 		case 12: return [CSBzip2Handle bzip2HandleWithHandle:parent length:size];
 		case 14:
 		{
 			[parent skipBytes:2];
 			int len=[parent readUInt16LE];
 			NSData *props=[parent readDataOfLength:len];
-			return [[[XADLZMAHandle alloc] initWithHandle:parent length:size propertyData:props] autorelease];
+			return [[XADLZMAHandle alloc] initWithHandle:parent length:size propertyData:props];
 		}
 		break;
-		case 96: return [[[XADWinZipJPEGHandle alloc] initWithHandle:parent length:size] autorelease];
-		case 97: return [[[XADWinZipWavPackHandle alloc] initWithHandle:parent length:size] autorelease];
+		case 96: return [[XADWinZipJPEGHandle alloc] initWithHandle:parent length:size];
+		case 97: return [[XADWinZipWavPackHandle alloc] initWithHandle:parent length:size];
 		case 98:
 		{
 			uint16_t info=[parent readUInt16LE];
 			int maxorder=(info&0x0f)+1;
 			int suballocsize=(((info>>4)&0xff)+1)<<20;
 			int modelrestoration=info>>12;
-			return [[[XADPPMdVariantIHandle alloc] initWithHandle:parent length:size
-			maxOrder:maxorder subAllocSize:suballocsize modelRestorationMethod:modelrestoration] autorelease];
+			return [[XADPPMdVariantIHandle alloc] initWithHandle:parent length:size
+			maxOrder:maxorder subAllocSize:suballocsize modelRestorationMethod:modelrestoration];
 		}
 		break;
 		default:

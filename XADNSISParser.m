@@ -136,12 +136,6 @@ name:(NSString *)name propertiesToAdd:(NSMutableDictionary *)props
 	return self;
 }
 
--(void)dealloc
-{
-	[solidhandle release];
-	[super dealloc];
-}
-
 -(void)parse
 {
 	CSHandle *fh=self.handle;
@@ -1189,30 +1183,30 @@ stringStartOffset:(int)stringoffs stringEndOffset:(int)stringendoffs currentPath
 		break;
 
 		case NSISDeflateFormat:
-			return [[[XADDeflateHandle alloc] initWithHandle:fh length:length variant:XADNSISDeflateVariant] autorelease];
+			return [[XADDeflateHandle alloc] initWithHandle:fh length:length variant:XADNSISDeflateVariant];
 
 		case NSIS1Bzip2Format:
-			return [[[XADNSISBzip2Handle alloc] initWithHandle:fh length:length hasRandomizationBit:YES] autorelease];
+			return [[XADNSISBzip2Handle alloc] initWithHandle:fh length:length hasRandomizationBit:YES];
 
 		case NSIS2Bzip2Format:
-			return [[[XADNSISBzip2Handle alloc] initWithHandle:fh length:length hasRandomizationBit:NO] autorelease];
+			return [[XADNSISBzip2Handle alloc] initWithHandle:fh length:length hasRandomizationBit:NO];
 
 		case LZMAFormat:
 		{
 			NSData *propdata=[fh readDataOfLength:5];
-			return [[[XADLZMAHandle alloc] initWithHandle:fh propertyData:propdata] autorelease];
+			return [[XADLZMAHandle alloc] initWithHandle:fh propertyData:propdata];
 		}
 
 		case FilteredLZMAFormat:
 		{
 			uint8_t filter=[fh readUInt8];
 			NSData *propdata=[fh readDataOfLength:5];
-			CSHandle *handle=[[[XADLZMAHandle alloc] initWithHandle:fh propertyData:propdata] autorelease];
+			CSHandle *handle=[[XADLZMAHandle alloc] initWithHandle:fh propertyData:propdata];
 
 			switch(filter)
 			{
 				case 0: return handle;
-				case 1: return [[[XAD7ZipBCJHandle alloc] initWithHandle:handle length:length] autorelease];
+				case 1: return [[XAD7ZipBCJHandle alloc] initWithHandle:handle length:length];
 				default: [XADException raiseNotSupportedException]; return nil;
 			}
 		}
@@ -1232,7 +1226,7 @@ stringStartOffset:(int)stringoffs stringEndOffset:(int)stringendoffs currentPath
 		uint32_t blocklen=[handle readUInt32LE];
 		if(blocklen==headerlength)
 		{
-			solidhandle=[handle retain];
+			solidhandle=handle;
 			detectedformat=format;
 		}
 	}

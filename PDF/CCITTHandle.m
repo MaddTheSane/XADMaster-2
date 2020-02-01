@@ -145,13 +145,6 @@ static int ReadLengthWithCodeTable(CSInputBuffer *input,XADPrefixCode *prefixcod
 	return self;
 }
 
--(void)dealloc
-{
-	[whitecode release];
-	[blackcode release];
-	[super dealloc];
-}
-
 -(void)startNewLine
 {
 	colour=1;
@@ -220,12 +213,8 @@ void FindNextOldChangeOfColorAndLargerThan(CCITTFaxT6Handle *self,int column,int
 
 -(void)dealloc
 {
-	[maincode release];
-	[whitecode release];
-	[blackcode release];
 	free(prevchanges);
 	free(currchanges);
-	[super dealloc];
 }
 
 -(void)resetByteStream

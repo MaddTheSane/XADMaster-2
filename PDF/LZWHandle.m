@@ -38,7 +38,6 @@ NSString *const LZWInvalidCodeException=@"LZWInvalidCodeException";
 -(void)dealloc
 {
 	FreeLZW(lzw);
-	[super dealloc];
 }
 
 -(void)clearTable

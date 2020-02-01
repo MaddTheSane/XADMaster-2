@@ -32,7 +32,7 @@
 	NSInteger count=[patharray count];
 	if(count==0) return nil;
 	else if(count==1) return [CSFileHandle fileHandleForReadingAtPath:[patharray objectAtIndex:0]];
-	else return [[[self alloc] initWithPaths:patharray] autorelease];
+	else return [[self alloc] initWithPaths:patharray];
 }
 
 +(CSHandle *)handleWithPaths:(NSString *)firstpath,...
@@ -63,15 +63,9 @@
 {
 	if(self=[super initAsCopyOf:other])
 	{
-		paths=[other->paths retain];
+		paths=other->paths;
 	}
 	return self;
-}
-
--(void)dealloc
-{
-	[paths release];
-	[super dealloc];
 }
 
 -(NSInteger)numberOfSegments { return [paths count]; }
@@ -103,9 +97,9 @@
 -(void)_raiseError
 {
 	int ourErr = errno;
-	[[[[NSException alloc] initWithName:CSFileErrorException
+	[[[NSException alloc] initWithName:CSFileErrorException
 	reason:[NSString stringWithFormat:@"Error while attempting to read file \"%@\": %s.",[self name],strerror(ourErr)]
-	userInfo:[NSDictionary dictionaryWithObject:@(ourErr) forKey:@"ErrNo"]] autorelease] raise];
+	userInfo:[NSDictionary dictionaryWithObject:@(ourErr) forKey:@"ErrNo"]] raise];
 }
 
 @end

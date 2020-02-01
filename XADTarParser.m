@@ -87,7 +87,6 @@
 {
 	NSString *readString = [[NSString alloc] initWithUTF8String:buffer];
 	NSScanner* scanner = [NSScanner scannerWithString:readString];
-	[readString release];
 	double returnValue;
 	if([scanner scanDouble:&returnValue] == YES) {
 		return( returnValue );
@@ -99,7 +98,6 @@
 {
 	NSString *readString = [[NSString alloc] initWithUTF8String:buffer];
 	NSScanner* scanner = [NSScanner scannerWithString:readString];
-	[readString release];
 	long long returnValue;
 	if([scanner scanLongLong:&returnValue] == YES) {
 		return( returnValue );
@@ -112,7 +110,6 @@
 	NSString *readString = [[NSString alloc] initWithData:[buffer subdataWithRange:range] encoding:NSASCIIStringEncoding];
 	if(!readString) return 0;
 	NSScanner* scanner = [NSScanner scannerWithString:readString];
-	[readString release];
 	long long returnValue;
 	if([scanner scanLongLong:&returnValue] == YES) {
 		return( returnValue );
@@ -178,12 +175,6 @@
 	unsignedChecksum += 8 * ' ';
 
 	return( checksum == signedChecksum || checksum == unsignedChecksum );
-}
-
--(void)dealloc
-{
-	[currentGlobalHeader release];
-	[super dealloc];
 }
 
 -(void)parseSparseHeadersFromData:(NSData*)header numHeaders:(int)num toDict:(NSMutableDictionary *)dict
@@ -430,8 +421,7 @@
 		// POSIX.2001 global header.
 		case 'g': {
 			// Read in the header and store for parsing
-			[currentGlobalHeader release];
-			currentGlobalHeader = [[handle readDataOfLength:(int)size] retain];
+			currentGlobalHeader = [handle readDataOfLength:(int)size];
 			[handle seekToFileOffset:offset];
 
 			// Parse next header.
@@ -547,9 +537,7 @@
 	int tarFormat = -1;
 
 	while(self.shouldKeepParsing)
-	{
-		NSAutoreleasePool *pool = [NSAutoreleasePool new];
-
+	@autoreleasepool {
 		// Read next header.
 		if(handle.atEndOfFile) break;
 		NSData *header = [handle readDataOfLength:512];
@@ -567,7 +555,6 @@
 		}
 		if( isArchiverOver )
 		{
-			[pool release];
 			break;
 		}
 
@@ -600,8 +587,6 @@
 			[self parseUstarTarHeader:header toDict:dict];
 			[self addTarEntryWithDictionaryAndSeek:dict];
 		}
-
-		[pool release];
 	}
 }
 

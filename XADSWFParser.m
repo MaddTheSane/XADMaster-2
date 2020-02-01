@@ -55,16 +55,9 @@
 	return self;
 }
 
--(void)dealloc
-{
-	[parser release];
-	[dataobjects release];
-	[super dealloc];
-}
-
 -(void)parse
 {
-	parser=[[XADSWFTagParser parserWithHandle:self.handle] retain];
+	parser=[XADSWFTagParser parserWithHandle:self.handle];
 
 	[parser parseHeader];
 

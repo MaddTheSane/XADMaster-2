@@ -35,7 +35,6 @@
 -(void)dealloc
 {
 	FreeWinZipJPEGDecompressor(decompressor);
-	[super dealloc];
 }
 
 

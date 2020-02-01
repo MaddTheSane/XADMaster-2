@@ -51,12 +51,6 @@
 	return self;
 }
 
--(void)dealloc
-{
-	[lengthcode release];
-	[super dealloc];
-}
-
 -(void)resetLZSSHandle
 {
 	extralength=0;

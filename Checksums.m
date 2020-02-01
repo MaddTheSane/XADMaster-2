@@ -75,15 +75,9 @@
 {
 	if((self=[super initWithParentHandle:handle]))
 	{
-		checksum=[checksumhandle retain];
+		checksum=checksumhandle;
 	}
 	return self;
-}
-
--(void)dealloc
-{
-	[checksum release];
-	[super dealloc];
 }
 
 -(off_t)fileSize { return parent.fileSize; }

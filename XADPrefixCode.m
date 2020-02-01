@@ -150,13 +150,13 @@ int CSInputNextSymbolUsingCodeLE(CSInputBuffer *buf,XADPrefixCode *code)
 
 
 
-+(XADPrefixCode *)prefixCode { return [[self new] autorelease]; }
++(XADPrefixCode *)prefixCode { return [self new]; }
 
 +(XADPrefixCode *)prefixCodeWithLengths:(const int *)lengths numberOfSymbols:(int)numsymbols
 maximumLength:(int)maxlength shortestCodeIsZeros:(BOOL)zeros
 {
-	return [[[self alloc] initWithLengths:lengths numberOfSymbols:numsymbols
-	maximumLength:maxlength shortestCodeIsZeros:zeros] autorelease];
+	return [[self alloc] initWithLengths:lengths numberOfSymbols:numsymbols
+	maximumLength:maxlength shortestCodeIsZeros:zeros];
 }
 
 -(instancetype)init
@@ -215,8 +215,8 @@ maximumLength:(int)maxcodelength shortestCodeIsZeros:(BOOL)zeros
 		}
 		@catch (id e)
 		{
-			[self release];
 			@throw;
+			return nil;
 		}
 	}
 
@@ -229,8 +229,6 @@ maximumLength:(int)maxcodelength shortestCodeIsZeros:(BOOL)zeros
 	if(!isstatic) free(tree);
 	free(table1);
 	free(table2);
-	[stack release];
-	[super dealloc];
 }
 
 -(void)addValue:(int)value forCodeWithHighBitFirst:(uint32_t)code length:(int)length

@@ -36,7 +36,6 @@
 -(void)dealloc
 {
 	FreeLZW(lzw);
-	[super dealloc];
 }
 
 -(void)resetByteStream

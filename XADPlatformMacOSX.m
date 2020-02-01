@@ -59,7 +59,6 @@ struct ResourceOutputArguments
 {
 	free(data);
 	data = NULL;
-	[super dealloc];
 }
 
 - (BOOL)isEqual:(id)other
@@ -277,17 +276,16 @@ preservePermissions:(BOOL)preservepermissions
 	NSAppleEventDescriptor *commentdesc=[NSAppleEventDescriptor descriptorWithString:comment];
 
 	NSURL *fileURL = [NSURL fileURLWithPath:path];
-	NSString *fileString = [fileURL.absoluteString retain];
+	NSString *fileString = fileURL.absoluteString;
 	const char *fileCStr = fileString.fileSystemRepresentation;
 
 	AEDesc filedesc;
 	AEInitializeDesc(&filedesc);
-	if(AECoercePtr(typeFileURL,fileCStr,strlen(fileCStr),typeAlias,&filedesc)!=noErr) {[fileString release]; return;}
+	if(AECoercePtr(typeFileURL,fileCStr,strlen(fileCStr),typeAlias,&filedesc)!=noErr) {return;}
 
 	AEDesc builtevent,replyevent;
 	AEInitializeDesc(&builtevent);
 	AEInitializeDesc(&replyevent);
-	[fileString release];
 
 	static OSType findersignature='MACS';
 
@@ -418,7 +416,7 @@ preservePermissions:(BOOL)preservepermissions
 				void *currentValue = malloc((size_t) currentValueSize);
 				currentValueSize = getxattr(filePath.fileSystemRepresentation, currentAttribute, currentValue, (size_t) currentValueSize, 0, XATTR_NOFOLLOW);
 
-				container = [[NSQuarantineInformationContainer new] autorelease];
+				container = [NSQuarantineInformationContainer new];
 				container->data = currentValue;
 				container->size = (size_t) currentValueSize;
 			}

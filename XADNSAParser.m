@@ -101,7 +101,7 @@ static NSMutableData *MakeBMPContainer(int width,int height,uint32_t length,int 
 
 		case 2:
 			//return handle;
-			return [[[XADNSALZSSHandle alloc] initWithHandle:handle length:length] autorelease];
+			return [[XADNSALZSSHandle alloc] initWithHandle:handle length:length];
 
 		case 4:
 			return [CSBzip2Handle bzip2HandleWithHandle:handle length:length];

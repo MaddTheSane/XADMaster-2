@@ -127,19 +127,19 @@
 	{
 		case 'G':
 			return [XADCRCHandle IEEECRC32HandleWithHandle:
-			[[[XADPPMdVariantGHandle alloc] initWithHandle:handle maxOrder:maxorder subAllocSize:suballocsize<<20] autorelease]
+			[[XADPPMdVariantGHandle alloc] initWithHandle:handle maxOrder:maxorder subAllocSize:suballocsize<<20]
 			length:13745624 correctCRC:0xc1c1c00a conditioned:YES];
 
 		case 'H':
 			return [XADCRCHandle IEEECRC32HandleWithHandle:
-			[[[XADPPMdVariantHHandle alloc] initWithHandle:handle maxOrder:maxorder subAllocSize:suballocsize<<20] autorelease]
+			[[XADPPMdVariantHHandle alloc] initWithHandle:handle maxOrder:maxorder subAllocSize:suballocsize<<20]
 //			length:20259 correctCRC:0xb4e8f7a1 conditioned:YES];
 			length:13745624 correctCRC:0xc1c1c00a conditioned:YES];
 
 		case 'I':
 			return [XADCRCHandle IEEECRC32HandleWithHandle:
-			[[[XADPPMdVariantIHandle alloc] initWithHandle:handle maxOrder:maxorder subAllocSize:suballocsize<<20
-			modelRestorationMethod:[dict[@"PPMdModelRestoration"] intValue]] autorelease]
+			[[XADPPMdVariantIHandle alloc] initWithHandle:handle maxOrder:maxorder subAllocSize:suballocsize<<20
+			modelRestorationMethod:[dict[@"PPMdModelRestoration"] intValue]]
 //			length:8559 correctCRC:0xb193cc7d conditioned:YES];
 			length:13745624 correctCRC:0xc1c1c00a conditioned:YES];
 

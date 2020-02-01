@@ -92,8 +92,8 @@ static NSData *ConvertTiledIconToPNG(uint8_t *tiledata,uint16_t *palette);
 		NSString *basename=self.name.stringByDeletingPathExtension;
 		if(homebrew) basename=[NSString stringWithFormat:@"%@ (Homebrew)",basename];
 		else basename=[NSString stringWithFormat:@"%@ (%@ by %@)",basename,
-		[[[NSString alloc] initWithData:gamecode encoding:NSISOLatin1StringEncoding] autorelease],
-		[[[NSString alloc] initWithData:makercode encoding:NSISOLatin1StringEncoding] autorelease]];
+		[[NSString alloc] initWithData:gamecode encoding:NSISOLatin1StringEncoding],
+		[[NSString alloc] initWithData:makercode encoding:NSISOLatin1StringEncoding]];
 
 		basepath=[self XADPathWithUnseparatedString:basename];
 	}

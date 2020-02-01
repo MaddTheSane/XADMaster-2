@@ -60,13 +60,6 @@ static const int offsetcodes[0x40]=
 	return self;
 }
 
--(void)dealloc
-{
-	[maincode release];
-	[offsetcode release];
-	[super dealloc];
-}
-
 static void BuildCodeFromTree(XADPrefixCode *code,int *tree,int node,int numnodes,int depth)
 {
 	if(depth>64) [XADException raiseDecrunchException];
@@ -97,7 +90,6 @@ static void BuildCodeFromTree(XADPrefixCode *code,int *tree,int node,int numnode
 	memset(nodes, 0, numnodes * sizeof(int));
 	for(int i=0;i<numnodes;i++) nodes[i]=CSInputNextBitStringLE(input,codelength);
 
-	[maincode release];
 	maincode=[XADPrefixCode new];
 
 	[maincode startBuildingTree];

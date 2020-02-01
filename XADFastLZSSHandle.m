@@ -55,7 +55,6 @@
 -(void)dealloc
 {
 	CleanupLZSS(&lzss);
-	[super dealloc];
 }
 
 -(void)resetStream

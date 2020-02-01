@@ -35,15 +35,8 @@
 	return self;
 }
 
--(void)dealloc
-{
-	[currhandle release];
-	[super dealloc];
-}
-
 -(void)resetStream
 {
-	[currhandle release];
 	currhandle=nil;
 }
 
@@ -88,7 +81,7 @@
 			switch(buf[1])
 			{
 				case 0:
-					currhandle=[[parent subHandleOfLength:size] retain];
+					currhandle=[parent subHandleOfLength:size];
 					currinput=NULL;
 				break;
 
@@ -129,7 +122,6 @@
 		if(actual==0)
 		{
 			if(currinput) CSInputSynchronizeFileOffset(currinput);
-			[currhandle release];
 			currhandle=nil;
 		}
 		bytes+=actual;

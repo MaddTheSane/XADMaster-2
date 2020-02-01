@@ -158,7 +158,7 @@ immediateExtractionTo:(NSString *)destination subArchives:(BOOL)sub nserror:(NSE
 
 @property (NS_NONATOMIC_IOSONLY, readonly) XADError lastError;
 -(void)clearLastError;
-@property (NS_NONATOMIC_IOSONLY, readonly, copy) NSString * _Nullable describeLastError;
+@property (NS_NONATOMIC_IOSONLY, readonly, copy, nullable) NSString *describeLastError;
 -(nullable NSString *)describeError:(XADError)error;
 +(nullable NSString *)describeError:(XADError)error;
 

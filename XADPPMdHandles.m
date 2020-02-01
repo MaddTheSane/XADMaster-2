@@ -44,7 +44,6 @@
 -(void)dealloc
 {
 	FreeSubAllocatorVariantG(alloc);
-	[super dealloc];
 }
 
 -(void)resetByteStream
@@ -88,7 +87,6 @@
 -(void)dealloc
 {
 	FreeSubAllocatorVariantH(alloc);
-	[super dealloc];
 }
 
 -(void)resetByteStream { StartPPMdModelVariantH(&model,(PPMdReadFunction *)CSInputNextByte,input,alloc,max,NO); }
@@ -126,7 +124,6 @@
 -(void)dealloc
 {
 	FreeSubAllocatorVariantI(alloc);
-	[super dealloc];
 }
 
 -(void)resetByteStream
@@ -167,7 +164,6 @@
 -(void)dealloc
 {
 	FreeSubAllocatorBrimstone(alloc);
-	[super dealloc];
 }
 
 -(void)resetByteStream

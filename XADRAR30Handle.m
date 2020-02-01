@@ -29,7 +29,7 @@
 	if((self=[super initWithParentHandle:[parentparser handle]]))
 	{
 		parser=parentparser;
-		files=[filearray retain];
+		files=filearray;
 
 		InitializeLZSS(&lzss,0x400000);
 
@@ -47,17 +47,8 @@
 
 -(void)dealloc
 {
-	[files release];
 	CleanupLZSS(&lzss);
-	[maincode release];
-	[offsetcode release];
-	[lowoffsetcode release];
-	[lengthcode release];
 	FreeSubAllocatorVariantH(alloc);
-	[vm release];
-	[filtercode release];
-	[stack release];
-	[super dealloc];
 }
 
 -(void)resetBlockStream
@@ -398,10 +389,10 @@
 
 -(void)allocAndParseCodes
 {
-	[maincode release]; maincode=nil;
-	[offsetcode release]; offsetcode=nil;
-	[lowoffsetcode release]; lowoffsetcode=nil;
-	[lengthcode release]; lengthcode=nil;
+	maincode=nil;
+	offsetcode=nil;
+	lowoffsetcode=nil;
+	lengthcode=nil;
 
 	CSInputSkipToByteBoundary(input);
 
@@ -491,12 +482,9 @@
 				for(int j=0;j<n && i<299+60+17+28;j++) lengthtable[i++]=0;
 			}
 		}
-
-		[precode release];
 	}
 	@catch(id e)
 	{
-		[precode release];
 		@throw;
 	}
 
@@ -618,7 +606,7 @@
 		uint8_t bytecode[length];
 		for(int i=0;i<length;i++) bytecode[i]=CSInputNextBitString(filterinput,8);
 
-		code=[[[XADRARProgramCode alloc] initWithByteCode:bytecode length:length] autorelease];
+		code=[[XADRARProgramCode alloc] initWithByteCode:bytecode length:length];
 		if(!code) [XADException raiseIllegalDataException];
 
 		[filtercode addObject:code];
@@ -645,8 +633,8 @@
 	}
 
 	// Create an invocation and set register and memory parameters.
-	XADRARProgramInvocation *invocation=[[[XADRARProgramInvocation alloc]
-	initWithProgramCode:code globalData:data registers:registers] autorelease];
+	XADRARProgramInvocation *invocation=[[XADRARProgramInvocation alloc]
+	initWithProgramCode:code globalData:data registers:registers];
 
 	for(int i=0;i<7;i++) [invocation setGlobalValueAtOffset:i*4 toValue:registers[i]];
 	[invocation setGlobalValueAtOffset:0x1c toValue:blocklength];

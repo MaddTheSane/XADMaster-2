@@ -63,7 +63,6 @@
 -(void)dealloc
 {
 	free( regions );
-	[super dealloc];
 }
 
 // Find which region some offset is in.

@@ -49,7 +49,7 @@ NSString *const PDFMD5FinishedException=@"PDFMD5FinishedException";
 	BOOL done;
 }
 
-+(PDFMD5Engine *)engine { return [[[self class] new] autorelease]; }
++(PDFMD5Engine *)engine { return [[self class] new]; }
 
 +(NSData *)digestForData:(NSData *)data { return [self digestForBytes:data.bytes length:(int)data.length]; }
 
@@ -58,7 +58,6 @@ NSString *const PDFMD5FinishedException=@"PDFMD5FinishedException";
 	PDFMD5Engine *md5=[[self class] new];
 	[md5 updateWithBytes:bytes length:length];
 	NSData *res=[md5 digest];
-	[md5 release];
 	return res;
 }
 
@@ -125,7 +124,7 @@ NSString *const PDFMD5FinishedException=@"PDFMD5FinishedException";
 {
 	if(self=[super initWithParentHandle:handle])
 	{
-		key=[keydata retain];
+		key=keydata;
 
 		iv=[parent copyDataOfLength:16];
 		startoffs=parent.offsetInFile;
@@ -144,12 +143,9 @@ NSString *const PDFMD5FinishedException=@"PDFMD5FinishedException";
 
 -(void)dealloc
 {
-	[key release];
-	[iv release];
 #if (defined(USE_COMMON_CRYPTO) && USE_COMMON_CRYPTO) && TARGET_OS_OSX
 	CFRelease(aeskey);
 #endif
-	[super dealloc];
 }
 
 -(void)resetBlockStream

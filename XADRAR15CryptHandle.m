@@ -29,15 +29,9 @@ static inline uint16_t ror16(uint16_t val,int n) { return (val>>n)|(val<<(16-n))
 {
 	if((self=[super initWithInputBufferForHandle:handle length:length]))
 	{
-		password=[passdata retain];
+		password=passdata;
 	}
 	return self;
-}
-
--(void)dealloc
-{
-	[password release];
-	[super dealloc];
 }
 
 

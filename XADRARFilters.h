@@ -35,7 +35,6 @@ startPosition:(off_t)startpos length:(int)length;
 
 -(id)initWithProgramInvocation:(XADRARProgramInvocation *)program
 startPosition:(off_t)startpos length:(int)length;
--(void)dealloc;
 
 -(off_t)startPosition;
 -(int)length;

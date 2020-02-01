@@ -34,7 +34,7 @@
 	NSInteger idatstart;
 }
 
-+(XADPNGWriter *)PNGWriter { return [[self new] autorelease]; }
++(XADPNGWriter *)PNGWriter { return [self new]; }
 
 -(id)init
 {
@@ -50,9 +50,6 @@
 -(void)dealloc
 {
 	if(streaminited) deflateEnd(&zs);
-
-	[data release];
-	[super dealloc];
 }
 
 -(NSData *)data { return data; }

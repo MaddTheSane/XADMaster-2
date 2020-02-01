@@ -134,7 +134,6 @@ static off_t ActualOffsetToSkip(XADSkipHandle *self,off_t pos)
 -(void)dealloc
 {
 	free(regions);
-	[super dealloc];
 }
 
 

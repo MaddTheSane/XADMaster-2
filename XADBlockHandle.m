@@ -51,7 +51,6 @@
 -(void)dealloc
 {
 	free(blockoffsets);
-	[super dealloc];
 }
 
 

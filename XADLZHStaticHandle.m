@@ -33,13 +33,6 @@
 	return self;
 }
 
--(void)dealloc
-{
-	[literalcode release];
-	[distancecode release];
-	[super dealloc];
-}
-
 -(void)resetLZSSHandle
 {
 	blocksize=0;
@@ -53,8 +46,6 @@
 		blocksize=CSInputNextBitString(input,16);
 		blockpos=0;
 
-		[literalcode release];
-		[distancecode release];
 		literalcode=nil;
 		distancecode=nil;
 
@@ -120,8 +111,6 @@
 	int num=CSInputNextBitString(input,9);
 	if(num==0)
 	{
-		[metacode release];
-
 		int val=CSInputNextBitString(input,9);
 		XADPrefixCode *code=[XADPrefixCode new];
 		[code addValue:val forCodeWithHighBitFirst:0 length:0];
@@ -149,8 +138,6 @@
 			}
 			else codelengths[n++]=c-2;
 		}
-
-		[metacode release];
 
 		return [[XADPrefixCode alloc] initWithLengths:codelengths numberOfSymbols:num maximumLength:16 shortestCodeIsZeros:YES];
 	}

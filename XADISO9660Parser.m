@@ -117,12 +117,6 @@ name:(NSString *)name propertiesToAdd:(NSMutableDictionary *)props
 	return self;
 }
 
--(void)dealloc;
-{
-	[fh release];
-	[super dealloc];
-}
-
 
 
 
@@ -140,11 +134,11 @@ name:(NSString *)name propertiesToAdd:(NSMutableDictionary *)props
 	}
 	else if(blockoffset!=0)
 	{
-		fh=[[self.handle nonCopiedSubHandleToEndOfFileFrom:blockoffset] retain];
+		fh=[self.handle nonCopiedSubHandleToEndOfFileFrom:blockoffset];
 	}
 	else
 	{
-		fh=[self.handle retain];
+		fh=self.handle;
 	}
 
 	if(!ishighsierra)

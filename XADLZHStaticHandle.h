@@ -29,12 +29,11 @@
 }
 
 -(instancetype)initWithHandle:(CSHandle *)handle length:(off_t)length windowBits:(int)bits;
--(void)dealloc;
 
 -(void)resetLZSSHandle;
 -(int)nextLiteralOrOffset:(int *)offset andLength:(int *)length atPosition:(off_t)pos;
 
--(XADPrefixCode *)allocAndParseCodeOfWidth:(int)bits specialIndex:(int)specialindex;
--(XADPrefixCode *)allocAndParseLiteralCode;
+-(XADPrefixCode *)allocAndParseCodeOfWidth:(int)bits specialIndex:(int)specialindex NS_RETURNS_RETAINED;
+-(XADPrefixCode *)allocAndParseLiteralCode NS_RETURNS_RETAINED;
 
 @end

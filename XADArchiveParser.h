@@ -161,8 +161,8 @@ propertiesToAdd:(NSMutableDictionary<XADArchiveKeys,id> *)props;
 
 -(instancetype)init NS_DESIGNATED_INITIALIZER;
 
-@property (nonatomic, retain) XADHandle *handle;
-@property (NS_NONATOMIC_IOSONLY, retain, nullable) XADResourceFork *resourceFork;
+@property (nonatomic, strong) XADHandle *handle;
+@property (NS_NONATOMIC_IOSONLY, strong, nullable) XADResourceFork *resourceFork;
 @property (NS_NONATOMIC_IOSONLY, copy) NSString *name;
 @property (NS_NONATOMIC_IOSONLY, copy) NSString *filename;
 @property (NS_NONATOMIC_IOSONLY, copy) NSArray<NSString*> *allFilenames;
@@ -209,13 +209,13 @@ regex:(XADRegex *)regex firstFileExtension:(nullable NSString *)firstext;
 @property (NS_NONATOMIC_IOSONLY, readonly) BOOL shouldKeepParsing;
 
 -(CSHandle *)handleAtDataOffsetForDictionary:(NSDictionary<XADArchiveKeys,id> *)dict;
-@property (NS_NONATOMIC_IOSONLY, readonly, retain) XADSkipHandle *skipHandle;
+@property (NS_NONATOMIC_IOSONLY, readonly, strong) XADSkipHandle *skipHandle;
 -(CSHandle *)zeroLengthHandleWithChecksum:(BOOL)checksum;
 -(nullable CSHandle *)subHandleFromSolidStreamForEntryWithDictionary:(NSDictionary<XADArchiveKeys,id> *)dict;
 
 @property (NS_NONATOMIC_IOSONLY, readonly) BOOL hasVolumes;
 @property (NS_NONATOMIC_IOSONLY, readonly, copy) NSArray<NSNumber*> *volumeSizes;
-@property (NS_NONATOMIC_IOSONLY, readonly, retain) CSHandle *currentHandle;
+@property (NS_NONATOMIC_IOSONLY, readonly, strong) CSHandle *currentHandle;
 
 -(void)setObject:(id)object forPropertyKey:(XADArchiveKeys)key;
 -(void)addPropertiesFromDictionary:(NSDictionary<XADArchiveKeys,id> *)dict;

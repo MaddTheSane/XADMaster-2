@@ -24,6 +24,7 @@ NSString *const CSNoSegmentsException=@"CSNoSegmentsException";
 NSString *const CSSizeOfSegmentUnknownException=@"CSSizeOfSegmentUnknownException";
 
 @implementation CSSegmentedHandle
+@synthesize currentHandle=currhandle;
 
 -(id)init
 {
@@ -50,17 +51,14 @@ NSString *const CSSizeOfSegmentUnknownException=@"CSSizeOfSegmentUnknownExceptio
 		segmentends=malloc(size);
 		memcpy(segmentends,other->segmentends,size);
 
-		segmentsizes=[other->segmentsizes retain];
+		segmentsizes=[other->segmentsizes copy];
 	}
 	return self;
 }
 
 -(void)dealloc
 {
-	[currhandle release];
 	free(segmentends);
-	[segmentsizes release];
-	[super dealloc];
 }
 
 -(CSHandle *)currentHandle
@@ -202,9 +200,7 @@ NSString *const CSSizeOfSegmentUnknownException=@"CSSizeOfSegmentUnknownExceptio
 	if(currindex!=newindex)
 	{
 		currindex=newindex;
-		[currhandle release];
-		currhandle=nil;
-		currhandle=[[self handleAtIndex:newindex] retain];
+		currhandle=[self handleAtIndex:newindex];
 	}
 }
 

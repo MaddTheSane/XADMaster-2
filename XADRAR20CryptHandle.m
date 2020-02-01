@@ -28,15 +28,9 @@
 	if((self=[super initWithParentHandle:handle length:length]))
 	{
 		startoffs=[handle offsetInFile];
-		password=[passdata retain];
+		password=passdata;
 	}
 	return self;
-}
-
--(void)dealloc
-{
-	[password release];
-	[super dealloc];
 }
 
 -(void)resetBlockStream

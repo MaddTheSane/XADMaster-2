@@ -53,8 +53,8 @@ NS_ASSUME_NONNULL_BEGIN
 -(instancetype)initWithDictionary:(NSDictionary *)dictionary fileHandle:(CSHandle *)filehandle
 offset:(off_t)offset reference:(PDFObjectReference *)reference parser:(PDFParser *)owner;
 
-@property (NS_NONATOMIC_IOSONLY, readonly, retain) NSDictionary *dictionary;
-@property (NS_NONATOMIC_IOSONLY, readonly, retain) PDFObjectReference *reference;
+@property (NS_NONATOMIC_IOSONLY, readonly, strong) NSDictionary *dictionary;
+@property (NS_NONATOMIC_IOSONLY, readonly, strong) PDFObjectReference *reference;
 
 @property (NS_NONATOMIC_IOSONLY, readonly, getter=isImage) BOOL image;
 @property (NS_NONATOMIC_IOSONLY, readonly, getter=isJPEGImage) BOOL JPEGImage;
@@ -70,10 +70,10 @@ offset:(off_t)offset reference:(PDFObjectReference *)reference parser:(PDFParser
 
 @property (NS_NONATOMIC_IOSONLY, readonly) PDFImageType imagePaletteType;
 @property (NS_NONATOMIC_IOSONLY, readonly) NSInteger numberOfImagePaletteComponents;
-@property (NS_NONATOMIC_IOSONLY, readonly, retain, nullable) NSString *imagePaletteColourSpaceName;
+@property (NS_NONATOMIC_IOSONLY, readonly, copy, nullable) NSString *imagePaletteColourSpaceName;
 @property (NS_NONATOMIC_IOSONLY, readonly) NSInteger numberOfImagePaletteColours;
--(nullable NSData *)imagePaletteData;
--(nullable id)_paletteColourSpaceObject;
+@property (NS_NONATOMIC_IOSONLY, readonly, strong, nullable) NSData *imagePaletteData;
+@property (NS_NONATOMIC_IOSONLY, readonly, strong, nullable) id _paletteColourSpaceObject;
 
 -(PDFImageType)_typeForColourSpaceObject:(id)colourspace;
 -(NSInteger)_numberOfComponentsForColourSpaceObject:(id)colourspace;

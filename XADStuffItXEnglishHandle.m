@@ -43,8 +43,8 @@ extern const uint8_t StuffItXEnglishDictionary[];
 	if(!pointers)
 	{
 		CSHandle *mem=[CSMemoryHandle memoryHandleForReadingBuffer:StuffItXEnglishDictionary length:CompressedSize];
-		CSHandle *ppmd=[[[XADPPMdVariantIHandle alloc] initWithHandle:mem
-		length:UncompressedSize maxOrder:16 subAllocSize:16*1024*1024 modelRestorationMethod:0] autorelease];
+		CSHandle *ppmd=[[XADPPMdVariantIHandle alloc] initWithHandle:mem
+		length:UncompressedSize maxOrder:16 subAllocSize:16*1024*1024 modelRestorationMethod:0];
 
 		NSData *dictionarywords=[ppmd copyDataOfLength:UncompressedSize];
 

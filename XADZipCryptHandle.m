@@ -42,16 +42,10 @@ static uint8_t DecryptByte(XADZipCryptHandle *self)
 {
 	if((self=[super initWithInputBufferForHandle:handle length:length-12]))
 	{
-		password=[passdata retain];
+		password=passdata;
 		test=testbyte;
 	}
 	return self;
-}
-
--(void)dealloc
-{
-	[password release];
-	[super dealloc];
 }
 
 

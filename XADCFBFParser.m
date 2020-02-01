@@ -38,7 +38,6 @@
 {
 	free(sectable);
 	free(minisectable);
-	[super dealloc];
 }
 
 +(int)requiredHeaderSize { return 512; }
@@ -296,17 +295,17 @@
 
 	if(size>=minsize)
 	{
-		XADBlockHandle *bh=[[[XADBlockHandle alloc] initWithHandle:handle length:size blockSize:secsize] autorelease];
+		XADBlockHandle *bh=[[XADBlockHandle alloc] initWithHandle:handle length:size blockSize:secsize];
 		[bh setBlockChain:sectable numberOfBlocks:numsectors firstBlock:first headerSize:512];
 
 		return bh;
 	}
 	else
 	{
-		XADBlockHandle *bh=[[[XADBlockHandle alloc] initWithHandle:handle blockSize:secsize] autorelease];
+		XADBlockHandle *bh=[[XADBlockHandle alloc] initWithHandle:handle blockSize:secsize];
 		[bh setBlockChain:sectable numberOfBlocks:numsectors firstBlock:firstminisector headerSize:512];
 
-		XADBlockHandle *mbh=[[[XADBlockHandle alloc] initWithHandle:bh length:size blockSize:minisecsize] autorelease];
+		XADBlockHandle *mbh=[[XADBlockHandle alloc] initWithHandle:bh length:size blockSize:minisecsize];
 		[mbh setBlockChain:minisectable numberOfBlocks:numminisectors firstBlock:first headerSize:0];
 
 		return mbh;

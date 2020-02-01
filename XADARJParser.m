@@ -244,7 +244,7 @@ static NSData *ReadNullTerminatedString(CSHandle *fh);
 
 		for(int i=0;i<passlength;i++) passbytes[i]+=mod;
 
-		handle=[[[XADXORHandle alloc] initWithHandle:handle password:passdata] autorelease];
+		handle=[[XADXORHandle alloc] initWithHandle:handle password:passdata];
 
 		// TODO: Handle GOST-40 and GOST-256
 	}
@@ -257,11 +257,11 @@ static NSData *ReadNullTerminatedString(CSHandle *fh);
 		case 1: // LZH compression
 		case 2:
 		case 3:
-			handle=[[[XADLZHStaticHandle alloc] initWithHandle:handle length:size windowBits:15] autorelease];
+			handle=[[XADLZHStaticHandle alloc] initWithHandle:handle length:size windowBits:15];
 		break;
 
 		case 4: // Fast compression
-			handle=[[[XADARJFastestHandle alloc] initWithHandle:handle length:size] autorelease];
+			handle=[[XADARJFastestHandle alloc] initWithHandle:handle length:size];
 		break;
 
 		default:

@@ -85,7 +85,7 @@ XADEXTERN XADStringEncodingName const XADMacOSCroatianStringEncodingName NS_SWIF
 @property (NS_NONATOMIC_IOSONLY, readonly, copy) XADStringEncodingName encodingName;
 @property (NS_NONATOMIC_IOSONLY, readonly) float confidence;
 
-@property (NS_NONATOMIC_IOSONLY, readonly, retain, nullable) XADStringSource *source;
+@property (NS_NONATOMIC_IOSONLY, readonly, strong, nullable) XADStringSource *source;
 
 #ifdef __APPLE__
 -(BOOL)canDecodeWithEncoding:(NSStringEncoding)encoding;
@@ -180,7 +180,7 @@ XADEXPORT
 @property (NS_NONATOMIC_IOSONLY, readonly) BOOL hasAnalyzedData;
 @property (NS_NONATOMIC_IOSONLY, readonly, copy) XADStringEncodingName encodingName;
 @property (NS_NONATOMIC_IOSONLY, readonly) float confidence;
-@property (NS_NONATOMIC_IOSONLY, readonly, retain, nullable) UniversalDetector *detector;
+@property (NS_NONATOMIC_IOSONLY, readonly, strong, nullable) UniversalDetector *detector;
 
 @property (NS_NONATOMIC_IOSONLY, readwrite, copy, nullable) XADStringEncodingName fixedEncodingName;
 @property (NS_NONATOMIC_IOSONLY, readonly) BOOL hasFixedEncoding;

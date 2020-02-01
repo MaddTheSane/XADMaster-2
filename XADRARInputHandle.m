@@ -36,15 +36,9 @@
 
 	if((self=[super initWithParentHandle:handle length:totallength]))
 	{
-		parts=[partarray retain];
+		parts=partarray;
 	}
 	return self;
-}
-
--(void)dealloc
-{
-	[parts release];
-	[super dealloc];
 }
 
 -(void)resetStream

@@ -105,7 +105,7 @@ static const NSString *DateFormat=@"Date";
 
 	//NSLog(@"%@",[[[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding] autorelease]);
 
-	NSXMLParser *xml=[[[NSXMLParser alloc] initWithData:data] autorelease];
+	NSXMLParser *xml=[[NSXMLParser alloc] initWithData:data];
 	xml.delegate = self;
 	[xml parse];
 
@@ -538,7 +538,7 @@ destinationDictionary:(NSMutableDictionary *)dest
 		CSHandle *handle=[self.handle nonCopiedSubHandleFrom:offset.longLongValue+heapoffset
 		length:length.longLongValue];
 
-		return [[[XADGzipHandle alloc] initWithHandle:handle] autorelease];
+		return [[XADGzipHandle alloc] initWithHandle:handle];
 	}
 	else
 	{
@@ -562,7 +562,7 @@ length:(NSNumber *)length size:(NSNumber *)size checksum:(NSData *)checksum chec
 		else if([encodingstyle isEqual:@"application/octet-stream"]);  // octe-stream, also copy
 		else if([encodingstyle isEqual:@"application/x-gzip"]) handle=[CSZlibHandle zlibHandleWithHandle:handle length:sizeval];
 		else if([encodingstyle isEqual:@"application/x-bzip2"]) handle=[CSBzip2Handle bzip2HandleWithHandle:handle length:sizeval];
-		else if([encodingstyle isEqual:@"application/x-xz"]) handle=[[[XADXZHandle alloc] initWithHandle:handle length:sizeval] autorelease];
+		else if([encodingstyle isEqual:@"application/x-xz"]) handle=[[XADXZHandle alloc] initWithHandle:handle length:sizeval];
 		else if([encodingstyle isEqual:@"application/x-lzma"])
 		{
 			int first=[handle readUInt8];
@@ -578,7 +578,7 @@ length:(NSNumber *)length size:(NSNumber *)size checksum:(NSData *)checksum chec
 				[handle seekToFileOffset:0];
 				NSData *props=[handle readDataOfLength:5];
 				uint64_t streamsize=[handle readUInt64LE];
-				handle=[[[XADLZMAHandle alloc] initWithHandle:handle length:streamsize propertyData:props] autorelease];
+				handle=[[XADLZMAHandle alloc] initWithHandle:handle length:streamsize propertyData:props];
 			}
 		}
 		else return nil;
@@ -592,11 +592,11 @@ length:(NSNumber *)length size:(NSNumber *)size checksum:(NSData *)checksum chec
 	{
 		if([checksumstyle isEqual:@"MD5"])
 		{
-			return [[[XADMD5Handle alloc] initWithHandle:handle length:sizeval correctDigest:checksum] autorelease];
+			return [[XADMD5Handle alloc] initWithHandle:handle length:sizeval correctDigest:checksum];
 		}
 		else if([checksumstyle isEqual:@"SHA1"])
 		{
-			return [[[XADSHA1Handle alloc] initWithHandle:handle length:sizeval correctDigest:checksum] autorelease];
+			return [[XADSHA1Handle alloc] initWithHandle:handle length:sizeval correctDigest:checksum];
 		}
 	}
 

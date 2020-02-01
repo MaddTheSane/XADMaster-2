@@ -39,21 +39,13 @@ offset:(off_t)offset reference:(PDFObjectReference *)reference parser:(PDFParser
 {
 	if(self=[super init])
 	{
-		dict=[dictionary retain];
-		fh=[filehandle retain];
+		dict=dictionary;
+		fh=filehandle;
 		offs=offset;
-		ref=[reference retain];
+		ref=reference;
 		parser=owner;
 	}
 	return self;
-}
-
--(void)dealloc
-{
-	[dict release];
-	[fh release];
-	[ref release];
-	[super dealloc];
 }
 
 -(BOOL)isImage
@@ -484,20 +476,20 @@ offset:(off_t)offset reference:(PDFObjectReference *)reference parser:(PDFParser
 		int cols=[decodeparms intValueForKey:@"Columns" default:1728];
 		int white=[decodeparms intValueForKey:@"BlackIs1" default:NO]?0:1;
 
-		if(k==0) return [[[CCITTFaxT41DHandle alloc] initWithHandle:parent columns:cols white:white] autorelease];
+		if(k==0) return [[CCITTFaxT41DHandle alloc] initWithHandle:parent columns:cols white:white];
 		else if(k>0) return nil;
 //		else if(k>0) return [[[CCITTFaxT42DHandle alloc] initWithHandle:parent columns:cols white:white] autorelease];
-		else return [[[CCITTFaxT6Handle alloc] initWithHandle:parent columns:cols white:white] autorelease];
+		else return [[CCITTFaxT6Handle alloc] initWithHandle:parent columns:cols white:white];
 	}
 	else if([filtername isEqual:@"LZWDecode"])
 	{
 		int early=[decodeparms intValueForKey:@"EarlyChange" default:1];
 		return [self predictorHandleForDecodeParms:decodeparms
-		parentHandle:[[[LZWHandle alloc] initWithHandle:parent earlyChange:early] autorelease]];
+		parentHandle:[[LZWHandle alloc] initWithHandle:parent earlyChange:early]];
 	}
 	else if([filtername isEqual:@"ASCII85Decode"])
 	{
-		return [[[PDFASCII85Handle alloc] initWithHandle:parent] autorelease];
+		return [[PDFASCII85Handle alloc] initWithHandle:parent];
 	}
 	else if([filtername isEqual:@"Crypt"])
 	{
@@ -523,8 +515,8 @@ offset:(off_t)offset reference:(PDFObjectReference *)reference parser:(PDFParser
 	int comps=colors != nil ?colors.intValue:1;
 	int bpc=bitspercomponent != nil ?bitspercomponent.intValue:8;
 
-	if(pred==2) return [[[PDFTIFFPredictorHandle alloc] initWithHandle:parent columns:cols components:comps bitsPerComponent:bpc] autorelease];
-	else if(pred>=10&&pred<=15) return [[[PDFPNGPredictorHandle alloc] initWithHandle:parent columns:cols components:comps bitsPerComponent:bpc] autorelease];
+	if(pred==2) return [[PDFTIFFPredictorHandle alloc] initWithHandle:parent columns:cols components:comps bitsPerComponent:bpc];
+	else if(pred>=10&&pred<=15) return [[PDFPNGPredictorHandle alloc] initWithHandle:parent columns:cols components:comps bitsPerComponent:bpc];
 	else [NSException raise:@"PDFStreamPredictorException" format:@"PDF Predictor %d not supported",pred];
 	return nil;
 }
@@ -662,7 +654,6 @@ components:(int)components bitsPerComponent:(int)bitspercomp
 -(void)dealloc
 {
 	free(prevbuf);
-	[super dealloc];
 }
 
 -(void)resetByteStream

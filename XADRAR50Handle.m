@@ -32,7 +32,7 @@ static uint32_t ReadFilterInteger(CSInputBuffer *input);
 	if(self=[super initWithParentHandle:[parentparser handle]])
 	{
 		parser=parentparser;
-		files=[filearray retain];
+		files=filearray;
 
 		NSDictionary *dict=[files objectAtIndex:0];
 
@@ -55,15 +55,7 @@ static uint32_t ReadFilterInteger(CSInputBuffer *input);
 
 -(void)dealloc
 {
-	[files release];
 	CleanupLZSS(&lzss);
-	[maincode release];
-	[offsetcode release];
-	[lowoffsetcode release];
-	[lengthcode release];
-	[filters release];
-	[filterdata release];
-	[super dealloc];
 }
 
 -(void)resetBlockStream
@@ -81,7 +73,6 @@ static uint32_t ReadFilterInteger(CSInputBuffer *input);
 	memset(oldoffset,0,sizeof(oldoffset));
 
 	[filters removeAllObjects];
-	[filterdata release];
 	filterdata=nil;
 }
 
@@ -119,8 +110,7 @@ static uint32_t ReadFilterInteger(CSInputBuffer *input);
 		off_t actualend=[self expandToPosition:end];
 		if(actualend!=end) [XADException raiseIllegalDataException];
 
-		[filterdata release];
-		filterdata=[[NSMutableData dataWithLength:length] retain];
+		filterdata=[[NSMutableData alloc] initWithLength:length];
 		uint8_t *memory=[filterdata mutableBytes];
 
 		CopyBytesFromLZSSWindow(&lzss,memory,start,length);
@@ -192,20 +182,20 @@ static uint32_t ReadFilterInteger(CSInputBuffer *input);
 				case 0:
 				{
 					int numchannels=CSInputNextBitString(input,5)+1;
-					filter=[[[XADRAR50DeltaFilter alloc] initWithStart:start length:length numberOfChannels:numchannels] autorelease];
+					filter=[[XADRAR50DeltaFilter alloc] initWithStart:start length:length numberOfChannels:numchannels];
 				}
 				break;
 
 				case 1:
-					filter=[[[XADRAR50E8E9Filter alloc] initWithStart:start length:length handleE9:NO] autorelease];
+					filter=[[XADRAR50E8E9Filter alloc] initWithStart:start length:length handleE9:NO];
 				break;
 
 				case 2:
-					filter=[[[XADRAR50E8E9Filter alloc] initWithStart:start length:length handleE9:YES] autorelease];
+					filter=[[XADRAR50E8E9Filter alloc] initWithStart:start length:length handleE9:YES];
 				break;
 
 				case 3:
-					filter=[[[XADRAR50ARMFilter alloc] initWithStart:start length:length] autorelease];
+					filter=[[XADRAR50ARMFilter alloc] initWithStart:start length:length];
 				break;
 
 				default:
@@ -315,10 +305,10 @@ static uint32_t ReadFilterInteger(CSInputBuffer *input);
 
 -(void)allocAndParseCodes
 {
-	[maincode release]; maincode=nil;
-	[offsetcode release]; offsetcode=nil;
-	[lowoffsetcode release]; lowoffsetcode=nil;
-	[lengthcode release]; lengthcode=nil;
+	maincode=nil;
+	offsetcode=nil;
+	lowoffsetcode=nil;
+	lengthcode=nil;
 
 	XADPrefixCode *precode=nil;
 	@try
@@ -371,12 +361,9 @@ static uint32_t ReadFilterInteger(CSInputBuffer *input);
 				for(int j=0;j<n && i<306+64+16+44;j++) lengthtable[i++]=0;
 			}
 		}
-
-		[precode release];
 	}
 	@catch(id e)
 	{
-		[precode release];
 		@throw;
 	}
 

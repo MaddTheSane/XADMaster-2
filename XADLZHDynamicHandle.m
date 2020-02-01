@@ -41,12 +41,6 @@
 	return self;
 }
 
--(void)dealloc
-{
-	[distancecode release];
-	[super dealloc];
-}
-
 -(void)resetLZSSHandle
 {
 	int numleaves=314;

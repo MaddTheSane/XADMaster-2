@@ -51,12 +51,6 @@ typedef SHA_CTX XADSHA1;
 	return self;
 }
 
--(void)dealloc
-{
-	[digest release];
-	[super dealloc];
-}
-
 -(void)resetStream
 {
 	XADSHA1_Init(&context);

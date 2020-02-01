@@ -35,7 +35,7 @@ static void ResetTable(int *table,int *reverse);
 	if((self=[super initWithParentHandle:[parentparser handle] windowSize:0x10000]))
 	{
 		parser=parentparser;
-		files=[filearray retain];
+		files=filearray;
 
 		lengthcode1=[[XADPrefixCode alloc] initWithLengths:(int[256]){
 		2,2,3,4,4,5,5,6,6,6,6,7,7,7,7,7,8,8,8,8,9,9,9,9,10,10,10,10,10,10,10,10,12,12,
@@ -185,22 +185,6 @@ static void ResetTable(int *table,int *reverse);
 		[shortmatchcode3 addValue:13 forCodeWithHighBitFirst:0x27 length:6];
 	}
 	return self;
-}
-
--(void)dealloc
-{
-	[lengthcode1 release];
-	[lengthcode2 release];
-	[huffmancode0 release];
-	[huffmancode1 release];
-	[huffmancode2 release];
-	[huffmancode3 release];
-	[huffmancode4 release];
-	[shortmatchcode0 release];
-	[shortmatchcode1 release];
-	[shortmatchcode2 release];
-	[shortmatchcode3 release];
-	[super dealloc];
 }
 
 -(void)resetLZSSHandle

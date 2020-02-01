@@ -57,8 +57,8 @@
 
 	if(lha150r) // Handle obscured archives
 	{
-		return [[[XADXORHandle alloc] initWithHandle:handle
-		password:[NSData dataWithBytes:"BOA\017" length:4]] autorelease];
+		return [[XADXORHandle alloc] initWithHandle:handle
+		password:[NSData dataWithBytes:"BOA\017" length:4]];
 	}
 	else return handle;
 }

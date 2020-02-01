@@ -237,7 +237,7 @@ name:(NSString *)name
 	if(self.hasPassword)
 	{
 		NSData *passdata=self.encodedPassword;
-		handle=[[[XADXORHandle alloc] initWithHandle:handle password:passdata] autorelease];
+		handle=[[XADXORHandle alloc] initWithHandle:handle password:passdata];
 	}
 
 	switch(method&0x7f)
@@ -250,34 +250,34 @@ name:(NSString *)name
 		break;
 
 		case 0x03: // Packed
-			handle=[[[XADRLE90Handle alloc] initWithHandle:handle
-			length:length] autorelease];
+			handle=[[XADRLE90Handle alloc] initWithHandle:handle
+			length:length];
 		break;
 
 		case 0x04: // Squeezed+packed
-			handle=[[[XADSqueezeHandle alloc] initWithHandle:handle] autorelease];
+			handle=[[XADSqueezeHandle alloc] initWithHandle:handle];
 
-			handle=[[[XADRLE90Handle alloc] initWithHandle:handle
-			length:length] autorelease];
+			handle=[[XADRLE90Handle alloc] initWithHandle:handle
+			length:length];
 		break;
 
 		case 0x05: // Crunched
-			handle=[[[XADARCCrunchHandle alloc] initWithHandle:handle
-			length:length useFastHash:NO] autorelease];
+			handle=[[XADARCCrunchHandle alloc] initWithHandle:handle
+			length:length useFastHash:NO];
 		break;
 
 		case 0x06: // Crunched+packed
-			handle=[[[XADARCCrunchHandle alloc] initWithHandle:handle useFastHash:NO] autorelease];
+			handle=[[XADARCCrunchHandle alloc] initWithHandle:handle useFastHash:NO];
 
-			handle=[[[XADRLE90Handle alloc] initWithHandle:handle
-			length:length] autorelease];
+			handle=[[XADRLE90Handle alloc] initWithHandle:handle
+			length:length];
 		break;
 
 		case 0x07: // Crunched+packed (fast)
-			handle=[[[XADARCCrunchHandle alloc] initWithHandle:handle useFastHash:YES] autorelease];
+			handle=[[XADARCCrunchHandle alloc] initWithHandle:handle useFastHash:YES];
 
-			handle=[[[XADRLE90Handle alloc] initWithHandle:handle
-			length:length] autorelease];
+			handle=[[XADRLE90Handle alloc] initWithHandle:handle
+			length:length];
 		break;
 
 		case 0x08: // Crunched+packed (LZW)
@@ -285,29 +285,29 @@ name:(NSString *)name
 			int byte=[handle readUInt8];
 			if(byte!=0x0c) [XADException raiseIllegalDataException];
 
-			handle=[[[XADCompressHandle alloc] initWithHandle:handle
-			flags:0x8c] autorelease];
+			handle=[[XADCompressHandle alloc] initWithHandle:handle
+			flags:0x8c];
 
-			handle=[[[XADRLE90Handle alloc] initWithHandle:handle
-			length:length] autorelease];
+			handle=[[XADRLE90Handle alloc] initWithHandle:handle
+			length:length];
 		}
 		break;
 
 		case 0x09: // Squashed
-			handle=[[[XADCompressHandle alloc] initWithHandle:handle
-			length:length flags:0x8d] autorelease];
+			handle=[[XADCompressHandle alloc] initWithHandle:handle
+			length:length flags:0x8d];
 		break;
 
 		case 0x0a: // Crushed
-			handle=[[[XADARCCrushHandle alloc] initWithHandle:handle] autorelease];
+			handle=[[XADARCCrushHandle alloc] initWithHandle:handle];
 
-			handle=[[[XADRLE90Handle alloc] initWithHandle:handle
-			length:length] autorelease];
+			handle=[[XADRLE90Handle alloc] initWithHandle:handle
+			length:length];
 		break;
 
 		case 0x0b: // Distilled
-			handle=[[[XADARCDistillHandle alloc] initWithHandle:handle
-			length:length] autorelease];
+			handle=[[XADARCDistillHandle alloc] initWithHandle:handle
+			length:length];
 		break;
 
 		case 0x7f: // Compressed (untested)
@@ -316,8 +316,8 @@ name:(NSString *)name
 
 			int byte=[handle readUInt8];
 
-			handle=[[[XADCompressHandle alloc] initWithHandle:handle
-			length:length flags:byte|0x80] autorelease];
+			handle=[[XADCompressHandle alloc] initWithHandle:handle
+			length:length flags:byte|0x80];
 		}
 		break;
 
