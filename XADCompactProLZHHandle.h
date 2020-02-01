@@ -32,7 +32,7 @@
 -(instancetype)initWithHandle:(CSHandle *)handle blockSize:(int)blocklen;
 
 -(void)resetLZSSHandle;
--(XADPrefixCode *)allocAndParseCodeOfSize:(int)size;
+-(XADPrefixCode *)allocAndParseCodeOfSize:(int)size NS_RETURNS_RETAINED;
 -(int)nextLiteralOrOffset:(int *)offset andLength:(int *)length atPosition:(off_t)pos;
 
 @end

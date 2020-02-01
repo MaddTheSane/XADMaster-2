@@ -24,6 +24,9 @@
 
 #import "XADCRCHandle.h"
 
+#if !__has_feature(objc_arc)
+#error this file needs to be compiled with Automatic Reference Counting (ARC)
+#endif
 
 @implementation XADNowCompressParser
 
@@ -211,7 +214,7 @@
 
 -(CSHandle *)handleForSolidStreamWithObject:(id)obj wantChecksum:(BOOL)checksum
 {
-	return [[[XADNowCompressHandle alloc] initWithHandle:self.handle files:obj] autorelease];
+	return [[XADNowCompressHandle alloc] initWithHandle:self.handle files:obj];
 }
 
 -(NSString *)formatName

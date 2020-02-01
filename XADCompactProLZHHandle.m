@@ -22,6 +22,10 @@
 #import "XADCompactProLZHHandle.h"
 #import "XADException.h"
 
+#if !__has_feature(objc_arc)
+#error this file needs to be compiled with Automatic Reference Counting (ARC)
+#endif
+
 @implementation XADCompactProLZHHandle
 
 -(id)initWithHandle:(CSHandle *)handle blockSize:(int)blocklen
@@ -32,14 +36,6 @@
 		literalcode=lengthcode=offsetcode=nil;
 	}
 	return self;
-}
-
--(void)dealloc
-{
-	[literalcode release];
-	[lengthcode release];
-	[offsetcode release];
-	[super dealloc];
 }
 
 -(void)resetLZSSHandle
@@ -62,9 +58,6 @@
 				else CSInputSkipBytes(input,2);
 			}
 
-			[literalcode release];
-			[lengthcode release];
-			[offsetcode release];
 			literalcode=lengthcode=offsetcode=nil;
 			literalcode=[self allocAndParseCodeOfSize:256];
 			lengthcode=[self allocAndParseCodeOfSize:64];

@@ -22,6 +22,10 @@
 #import "XADException.h"
 #import "XADPrefixCode.h"
 
+#if !__has_feature(objc_arc)
+#error this file needs to be compiled with Automatic Reference Counting (ARC)
+#endif
+
 static int UnpackHuffman(uint8_t *sourcestart,uint8_t *sourceend,
 uint8_t *destinationstart,uint8_t *destinationend,int numvalues);
 static int UnpackLZSS(uint8_t *sourcestart,uint8_t *sourceend,
@@ -29,7 +33,7 @@ uint8_t *destinationstart,uint8_t *destinationend);
 static int UnpackNewLZSS(uint8_t *sourcestart,uint8_t *sourceend,
 uint8_t *destinationbase,uint8_t *destinationstart,uint8_t *destinationend);
 
-static XADPrefixCode *AllocAndReadCode(uint8_t *source,uint8_t *sourceend,int numentries,uint8_t **newsource);
+static XADPrefixCode *AllocAndReadCode(uint8_t *source,uint8_t *sourceend,int numentries,uint8_t **newsource) NS_RETURNS_RETAINED;
 static void WordAlign(uint8_t *start,uint8_t **curr);
 
 @implementation XADNowCompressHandle
@@ -38,7 +42,7 @@ static void WordAlign(uint8_t *start,uint8_t **curr);
 {
 	if(self=[super initWithParentHandle:handle])
 	{
-		files=[filesarray retain];
+		files=filesarray;
 
 		blocks=NULL;
 		maxblocks=0;
@@ -49,7 +53,6 @@ static void WordAlign(uint8_t *start,uint8_t **curr);
 -(void)dealloc
 {
 	free(blocks);
-	[super dealloc];
 }
 
 -(void)resetBlockStream
@@ -298,12 +301,11 @@ uint8_t *destinationstart,uint8_t *destinationend,int numvalues)
 	}
 	@catch(id e)
 	{
-		[code release];
+		code=nil;
 		CSInputBufferFree(buf);
 		@throw;
 	}
 
-	[code release];
 	CSInputBufferFree(buf);
 
 	return (int)(destination-destinationstart);
@@ -470,14 +472,12 @@ uint8_t *destinationbase,uint8_t *destinationstart,uint8_t *destinationend)
 	@catch(id e)
 	{
 		CSInputBufferFree(buf);
-		[maincode release];
-		[offsetcode release];
+		maincode = nil;
+		offsetcode = nil;
 		@throw;
 	}
 
 	CSInputBufferFree(buf);
-	[maincode release];
-	[offsetcode release];
 
 	return (int)(destination-destinationstart);
 }

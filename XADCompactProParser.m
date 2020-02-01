@@ -25,6 +25,10 @@
 #import "XADCRCHandle.h"
 #import "NSDateXAD.h"
 
+#if !__has_feature(objc_arc)
+#error this file needs to be compiled with Automatic Reference Counting (ARC)
+#endif
+
 @implementation XADCompactProParser
 
 +(int)requiredHeaderSize { return 8; }
@@ -210,7 +214,7 @@
 
 					@(fileoffs+resourcecomplen),XADDataOffsetKey,
 					@(datacomplen),XADDataLengthKey,
-					[NSNumber numberWithBool:(flags&4)?YES:NO],@"CompactProLZH",
+					@((flags&4)?YES:NO),@"CompactProLZH",
 					@(flags),@"CompactProFlags",
 					@(crc),crckey,
 					@(volume),@"CompactProVolume",
@@ -231,9 +235,9 @@
 	off_t size=[dict[XADFileSizeKey] longLongValue];
 
 	if([dict[@"CompactProLZH"] boolValue])
-	handle=[[[XADCompactProLZHHandle alloc] initWithHandle:handle blockSize:0x1fff0] autorelease];
+	handle=[[XADCompactProLZHHandle alloc] initWithHandle:handle blockSize:0x1fff0];
 
-	handle=[[[XADCompactProRLEHandle alloc] initWithHandle:handle length:size] autorelease];
+	handle=[[XADCompactProRLEHandle alloc] initWithHandle:handle length:size];
 
 	NSNumber *crc=dict[@"CompactProCRC32"];
 	if(checksum&&crc)

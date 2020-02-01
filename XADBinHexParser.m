@@ -23,6 +23,10 @@
 #import "CSMemoryHandle.h"
 #import "XADCRCSuffixHandle.h"
 
+#if !__has_feature(objc_arc)
+#error this file needs to be compiled with Automatic Reference Counting (ARC)
+#endif
+
 @implementation XADBinHexParser
 
 +(int)requiredHeaderSize { return 8192; }
@@ -51,7 +55,7 @@
 	if(bytes[offs]!=':') return NO;
 
 	CSMemoryHandle *mh=[CSMemoryHandle memoryHandleForReadingBuffer:(uint8_t *)bytes+offs length:(unsigned int)(length-offs)];
-	XADBinHexHandle *fh=[[[XADBinHexHandle alloc] initWithHandle:mh] autorelease];
+	XADBinHexHandle *fh=[[XADBinHexHandle alloc] initWithHandle:mh];
 	uint16_t crc=0;
 
 	uint8_t len=[fh readUInt8];
@@ -88,7 +92,7 @@
 
 	off_t start=handle.offsetInFile;
 
-	XADBinHexHandle *fh=[[[XADBinHexHandle alloc] initWithHandle:self.handle] autorelease];
+	XADBinHexHandle *fh=[[XADBinHexHandle alloc] initWithHandle:self.handle];
 
 	uint8_t namelen=[fh readUInt8];
 	if(namelen>63) [XADException raiseIllegalDataException];
@@ -149,7 +153,7 @@
 	CSHandle *handle=[self handleAtDataOffsetForDictionary:dict];
 	off_t size=[dict[XADFileSizeKey] unsignedLongValue];
 
-	XADBinHexHandle *fh=[[[XADBinHexHandle alloc] initWithHandle:handle] autorelease];
+	XADBinHexHandle *fh=[[XADBinHexHandle alloc] initWithHandle:handle];
 	[fh seekToFileOffset:[dict[@"BinHexDataOffset"] longLongValue]];
 
 	if(checksum) return [XADCRCSuffixHandle CCITTCRC16SuffixHandleWithHandle:[fh nonCopiedSubHandleOfLength:size]
