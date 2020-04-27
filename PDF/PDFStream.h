@@ -102,7 +102,7 @@ XADEXPORT
 @interface PDFASCII85Handle:CSByteStreamHandle
 {
 	uint32_t val;
-	BOOL finalbytes;
+	uint8_t finalbytes;
 }
 
 -(id)initWithHandle:(CSHandle *)handle;
