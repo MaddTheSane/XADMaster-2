@@ -7,8 +7,8 @@
 
 import Foundation
 
-extension XADHandle {
-	public func readLine(with encoding: String.Encoding) -> String? {
+public extension XADHandle {
+	@inlinable func readLine(with encoding: String.Encoding) -> String? {
 		return readLine(withEncoding: encoding.rawValue)
 	}
 }

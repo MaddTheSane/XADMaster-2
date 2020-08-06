@@ -8,16 +8,16 @@
 
 import Foundation
 
-extension XADStringProtocol {
-	public func canDecode(with encoding: String.Encoding) -> Bool {
+public extension XADStringProtocol {
+	func canDecode(with encoding: String.Encoding) -> Bool {
 		return canDecode(withEncoding: encoding.rawValue)
 	}
 	
-	public func string(with encoding: String.Encoding) -> String? {
+	func string(with encoding: String.Encoding) -> String? {
 		return string(withEncoding: encoding.rawValue)
 	}
 	
-	public var encoding: String.Encoding? {
+	var encoding: String.Encoding? {
 		let enc = __encoding
 		guard enc != 0 else {
 			return nil
@@ -26,12 +26,12 @@ extension XADStringProtocol {
 	}
 	
 	@available(*, deprecated, renamed: "canDecode(with:)")
-	public func canDecode(withEncoding encoding: String.Encoding) -> Bool {
+	func canDecode(withEncoding encoding: String.Encoding) -> Bool {
 		return canDecode(with: encoding)
 	}
 	
 	@available(*, deprecated, renamed: "string(with:)")
-	public func string(withEncoding encoding: String.Encoding) -> String? {
+	func string(withEncoding encoding: String.Encoding) -> String? {
 		return string(with: encoding)
 	}
 }
@@ -56,12 +56,12 @@ extension XADString {
 	}
 }
 
-extension XADStringEncodingName {
-	public init(forEncoding encoding: String.Encoding) {
+public extension XADStringEncodingName {
+	@inlinable init(forEncoding encoding: String.Encoding) {
 		self = XADString.encodingName(for: encoding)
 	}
 	
-	public var encoding: String.Encoding {
+	@inlinable var encoding: String.Encoding {
 		return XADString.encoding(for: self)
 	}
 }
