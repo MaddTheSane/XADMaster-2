@@ -6585,7 +6585,6 @@
 				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "@executable_path/../Frameworks";
-				MACOSX_DEPLOYMENT_TARGET = 10.9;
 				MODULEMAP_FILE = "XAD-whole.modulemap";
 				OTHER_CFLAGS = "";
 				OTHER_LDFLAGS = (
