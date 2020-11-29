@@ -63,6 +63,6 @@
 -(void)printSeparatorIfNeeded;
 
 -(NSString *)stringByEscapingString:(NSString *)string;
--(NSString *)stringByEncodingBytes:(const uint8_t *)bytes length:(int)length;
+-(NSString *)stringByEncodingBytes:(const uint8_t *)bytes length:(NSInteger)length;
 
 @end

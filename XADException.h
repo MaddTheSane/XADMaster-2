@@ -19,8 +19,8 @@
  * MA 02110-1301  USA
  */
 #import <Foundation/Foundation.h>
-#import <XADMaster/XADTypes.h>
-#import <XADMaster/ClangAnalyser.h>
+#import "XADTypes.h"
+#import "ClangAnalyser.h"
 
 NS_ASSUME_NONNULL_BEGIN
 

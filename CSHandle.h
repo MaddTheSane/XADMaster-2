@@ -20,8 +20,8 @@
  */
 #import <Foundation/Foundation.h>
 #include <stdint.h>
-#import <XADMaster/XADTypes.h>
-#import <XADMaster/ClangAnalyser.h>
+#import "XADTypes.h"
+#import "ClangAnalyser.h"
 
 
 #define CSHandleMaxLength 0x7fffffffffffffffll

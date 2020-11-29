@@ -236,7 +236,7 @@
 
 -(NSString *)stringByEscapingString:(NSString *)string
 {
-	int length=[string length];
+	NSInteger length=[string length];
 	NSMutableString *res=[NSMutableString stringWithCapacity:length];
 
 	for(int i=0;i<length;i++)
@@ -256,11 +256,11 @@
 	return res;
 }
 
--(NSString *)stringByEncodingBytes:(const uint8_t *)bytes length:(int)length
+-(NSString *)stringByEncodingBytes:(const uint8_t *)bytes length:(NSInteger)length
 {
 	NSMutableString *res=[NSMutableString stringWithCapacity:length*6];
 
-	for(int i=0;i<length;i++) [res appendFormat:@"\\u%04x",bytes[i]];
+	for(NSInteger i=0;i<length;i++) [res appendFormat:@"\\u%04x",bytes[i]];
 
 	return res;
 }
