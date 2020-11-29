@@ -129,6 +129,7 @@ XADEXPORT
 
 
 -(XADError)parse NS_REFINED_FOR_SWIFT;
+-(BOOL)parseWithError:(NSError**)error NS_SWIFT_NAME(parse());
 -(XADError)_setupSubArchiveForEntryWithDataFork:(NSDictionary<XADArchiveKeys,id> *)datadict resourceFork:(nullable NSDictionary<XADArchiveKeys,id> *)resourcedict;
 
 -(XADError)unarchive NS_REFINED_FOR_SWIFT;

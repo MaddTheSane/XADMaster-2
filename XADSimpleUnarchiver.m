@@ -280,8 +280,66 @@
 	}
 }
 
+-(BOOL)parseWithError:(NSError**)error
+{
+	if(entries.count) {
+		if (error) {
+			*error = [NSError errorWithDomain:XADErrorDomain code:XADErrorBadParameters userInfo:@{NSLocalizedDescriptionKey: @"You can not call parseAndUnarchive twice"}];
+		}
+		
+		return NO;
+	}
 
+	// Run parser to find archive entries.
+	parser.delegate = self;
+	BOOL parseSuccess=[parser parseWithError:error];
+	if (!parseSuccess) {
+		return NO;
+	}
 
+	if (extractsubarchives) {
+		// Check if we have a single entry, which is an archive.
+		if (entries.count==1) {
+			NSDictionary *entry=entries[0];
+			NSNumber *archnum=entry[XADIsArchiveKey];
+			BOOL isarc=archnum&&archnum.boolValue;
+			if(isarc) return [self _setupSubArchiveForEntryWithDataFork:entry resourceFork:nil];
+		}
+
+		// Check if we have two entries, which are data and resource forks
+		// of the same archive.
+		if (entries.count==2) {
+			NSDictionary *first=entries[0];
+			NSDictionary *second=entries[1];
+			XADPath *name1=first[XADFileNameKey];
+			XADPath *name2=second[XADFileNameKey];
+			NSNumber *archnum1=first[XADIsArchiveKey];
+			NSNumber *archnum2=second[XADIsArchiveKey];
+			BOOL isarc1=archnum1&&archnum1.boolValue;
+			BOOL isarc2=archnum2&&archnum2.boolValue;
+
+			if ([name1 isEqual:name2] && (isarc1||isarc2)) {
+				NSNumber *resnum=first[XADIsResourceForkKey];
+				NSDictionary *datafork,*resourcefork;
+				if (resnum&&resnum.boolValue) {
+					datafork=second;
+					resourcefork=first;
+				} else {
+					datafork=first;
+					resourcefork=second;
+				}
+
+				// TODO: Handle resource forks for archives that require them.
+				NSNumber *archnum=datafork[XADIsArchiveKey];
+				if(archnum&&archnum.boolValue) {
+					return [self _setupSubArchiveForEntryWithDataFork:datafork resourceFork:resourcefork error:error];
+				}
+			}
+		}
+	}
+
+	return YES;
+}
 
 -(XADError)parse
 {
@@ -356,6 +414,25 @@
 }
 
 
+-(BOOL)_setupSubArchiveForEntryWithDataFork:(NSDictionary *)datadict resourceFork:(NSDictionary *)resourcedict error:(NSError**)outError
+{
+	// Create unarchiver.
+	NSError *error = nil;
+	subunarchiver=[unarchiver unarchiverForEntryWithDictionary:datadict
+										resourceForkDictionary:resourcedict wantChecksum:YES nserror:&error];
+	if (!subunarchiver) {
+		if (outError) {
+			if (!error) {
+				*outError = [NSError errorWithDomain:XADErrorDomain code:XADErrorSubArchive userInfo:nil];
+			} else {
+				*outError = error;
+			}
+		}
+		
+		return NO;
+	}
+	return YES;
+}
 
 
 -(XADError)unarchive

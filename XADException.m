@@ -94,6 +94,7 @@ NSString *const XADExceptionReasonKey=@"XADExceptionReason";
 		} else if([name isEqual:CSFileErrorException]) {
 			if (usrInfo && [usrInfo objectForKey:@"ErrNo"]) {
 				int errNo = [usrInfo[@"ErrNo"] intValue];
+				[usrInfo removeObjectForKey:@"ErrNo"];
 				return [NSError errorWithDomain:NSPOSIXErrorDomain code:errNo userInfo:usrInfo];
 			}
 			return [NSError errorWithDomain:XADErrorDomain code:XADErrorUnknown userInfo:usrInfo];

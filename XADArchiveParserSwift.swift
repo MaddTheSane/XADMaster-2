@@ -21,7 +21,7 @@ extension XADPath {
 
 extension XADError: CustomStringConvertible {
 	public var description: String {
-		if let errDesc = XADDescribeError(code) {
+		if let errDesc = XADException.describe(code) {
 			return errDesc
 		} else if self.code == .none {
 			return "No Error"
