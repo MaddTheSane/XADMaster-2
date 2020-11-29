@@ -20,7 +20,8 @@
  */
 #import <Foundation/Foundation.h>
 #include <stdint.h>
-#import "XADTypes.h"
+#import <XADMaster/XADTypes.h>
+#import <XADMaster/ClangAnalyser.h>
 
 
 #define CSHandleMaxLength 0x7fffffffffffffffll
@@ -157,10 +158,10 @@ XADEXPORT
 -(void)writeData:(NSData *)data;
 
 //-(void)_raiseClosed;
--(void)_raiseMemory NS_SWIFT_UNAVAILABLE("Call throws exception");
--(void)_raiseEOF NS_SWIFT_UNAVAILABLE("Call throws exception");
--(void)_raiseNotImplemented:(SEL)selector NS_SWIFT_UNAVAILABLE("Call throws exception");
--(void)_raiseNotSupported:(SEL)selector NS_SWIFT_UNAVAILABLE("Call throws exception");
+-(void)_raiseMemory NS_SWIFT_UNAVAILABLE("Call throws exception") CLANG_ANALYZER_NORETURN;
+-(void)_raiseEOF NS_SWIFT_UNAVAILABLE("Call throws exception") CLANG_ANALYZER_NORETURN;
+-(void)_raiseNotImplemented:(SEL)selector NS_SWIFT_UNAVAILABLE("Call throws exception") CLANG_ANALYZER_NORETURN;
+-(void)_raiseNotSupported:(SEL)selector NS_SWIFT_UNAVAILABLE("Call throws exception") CLANG_ANALYZER_NORETURN;
 
 @property (NS_NONATOMIC_IOSONLY, readonly, copy, nullable) NSString *name;
 @property (NS_NONATOMIC_IOSONLY, strong, nullable) CSHandle *parentHandle;

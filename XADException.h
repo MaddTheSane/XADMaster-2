@@ -19,8 +19,8 @@
  * MA 02110-1301  USA
  */
 #import <Foundation/Foundation.h>
-#import "XADTypes.h"
-#import "ClangAnalyser.h"
+#import <XADMaster/XADTypes.h>
+#import <XADMaster/ClangAnalyser.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -67,7 +67,7 @@ typedef XAD_ERROR_ENUM(XADErrorDomain, XADError) {
 XADEXTERN NSExceptionName const XADExceptionName;
 XADEXTERN NSErrorUserInfoKey const XADExceptionReasonKey;
 
-NS_SWIFT_UNAVAILABLE("Exceptions aren't supported by Swift") XADEXPORT
+XADEXPORT
 @interface XADException:NSObject
 
 +(void)raiseUnknownException CLANG_ANALYZER_NORETURN;

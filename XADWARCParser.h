@@ -26,7 +26,7 @@
 +(BOOL)recognizeFileWithHandle:(CSHandle *)handle firstBytes:(NSData *)data name:(NSString *)name;
 
 -(void)parse;
--(NSMutableDictionary<NSString*,NSString*> *)parseHTTPHeadersWithHandle:(CSHandle *)handle;
+-(NSMutableDictionary<NSString*,id> *)parseHTTPHeadersWithHandle:(CSHandle *)handle;
 -(NSArray *)readHTTPHeadersWithHandle:(CSHandle *)handle;
 
 -(NSString *)getTargetURI:(NSDictionary *)record;

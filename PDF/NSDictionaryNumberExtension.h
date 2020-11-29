@@ -22,18 +22,18 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface NSDictionary (NumberExtension)
+@interface NSDictionary<KeyType, ObjectType> (NumberExtension)
 
--(int)intValueForKey:(NSString *)key default:(int)def;
--(unsigned int)unsignedIntValueForKey:(NSString *)key default:(unsigned int)def;
--(NSInteger)integerValueForKey:(NSString *)key default:(NSInteger)def;
--(NSUInteger)unsignedIntegerValueForKey:(NSString *)key default:(NSUInteger)def;
--(BOOL)boolValueForKey:(NSString *)key default:(BOOL)def;
--(float)floatValueForKey:(NSString *)key default:(float)def;
--(double)doubleValueForKey:(NSString *)key default:(double)def;
+-(int)intValueForKey:(KeyType)key default:(int)def;
+-(unsigned int)unsignedIntValueForKey:(KeyType)key default:(unsigned int)def;
+-(NSInteger)integerValueForKey:(KeyType)key default:(NSInteger)def;
+-(NSUInteger)unsignedIntegerValueForKey:(KeyType)key default:(NSUInteger)def;
+-(BOOL)boolValueForKey:(KeyType)key default:(BOOL)def;
+-(float)floatValueForKey:(KeyType)key default:(float)def;
+-(double)doubleValueForKey:(KeyType)key default:(double)def;
 
--(NSString *)stringForKey:(NSString *)key default:(NSString *)def;
--(NSArray *)arrayForKey:(NSString *)key;
+-(NSString *)stringForKey:(KeyType)key default:(NSString *)def;
+-(nullable NSArray *)arrayForKey:(KeyType)key;
 
 @end
 
