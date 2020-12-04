@@ -303,7 +303,7 @@
 			NSDictionary *entry=entries[0];
 			NSNumber *archnum=entry[XADIsArchiveKey];
 			BOOL isarc=archnum&&archnum.boolValue;
-			if(isarc) return [self _setupSubArchiveForEntryWithDataFork:entry resourceFork:nil];
+			if(isarc) return [self _setupSubArchiveForEntryWithDataFork:entry resourceFork:nil error:error];
 		}
 
 		// Check if we have two entries, which are data and resource forks
