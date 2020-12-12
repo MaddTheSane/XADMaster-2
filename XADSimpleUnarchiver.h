@@ -73,7 +73,7 @@ XADEXPORT
 
 @property (NS_NONATOMIC_IOSONLY, readonly, strong) XADArchiveParser *archiveParser;
 @property (NS_NONATOMIC_IOSONLY, readonly, strong) XADArchiveParser *outerArchiveParser;
-@property (NS_NONATOMIC_IOSONLY, readonly, strong) XADArchiveParser *innerArchiveParser;
+@property (NS_NONATOMIC_IOSONLY, readonly, strong, nullable) XADArchiveParser *innerArchiveParser;
 @property (NS_NONATOMIC_IOSONLY, readonly, copy) NSArray<NSString*> *reasonsForInterest;
 
 @property (NS_NONATOMIC_IOSONLY, weak, nullable) id<XADSimpleUnarchiverDelegate> delegate;
@@ -131,6 +131,7 @@ XADEXPORT
 -(XADError)parse NS_REFINED_FOR_SWIFT;
 -(BOOL)parseWithError:(NSError**)error NS_SWIFT_NAME(parse());
 -(XADError)_setupSubArchiveForEntryWithDataFork:(NSDictionary<XADArchiveKeys,id> *)datadict resourceFork:(nullable NSDictionary<XADArchiveKeys,id> *)resourcedict;
+-(BOOL)_setupSubArchiveForEntryWithDataFork:(NSDictionary<XADArchiveKeys,id> *)datadict resourceFork:(nullable NSDictionary<XADArchiveKeys,id> *)resourcedict error:(NSError**)outError;
 
 -(XADError)unarchive NS_REFINED_FOR_SWIFT;
 -(XADError)_unarchiveRegularArchive;

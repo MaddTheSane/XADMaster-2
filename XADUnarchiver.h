@@ -106,6 +106,10 @@ deferDirectories:(BOOL)defer;
 -(XADError)runExtractorWithDictionary:(NSDictionary<XADArchiveKeys,id> *)dict
 outputTarget:(id)target selector:(SEL)sel argument:(id)arg;
 
+-(BOOL)runExtractorWithDictionary:(NSDictionary<XADArchiveKeys,id> *)dict outputHandle:(CSHandle *)handle error:(NSError**)outError;
+-(BOOL)runExtractorWithDictionary:(NSDictionary<XADArchiveKeys,id> *)dict
+outputTarget:(id)target selector:(SEL)sel argument:(id)arg error:(NSError**)outError;
+
 -(NSString *)adjustPathString:(NSString *)path forEntryWithDictionary:(NSDictionary<XADArchiveKeys,id> *)dict;
 
 @property (NS_NONATOMIC_IOSONLY, readonly) BOOL _shouldStop;

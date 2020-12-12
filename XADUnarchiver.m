@@ -690,6 +690,153 @@ outputTarget:(id)target selector:(SEL)selector argument:(id)argument
 	return XADErrorNone;
 }
 
+-(BOOL)runExtractorWithDictionary:(NSDictionary *)dict outputHandle:(CSHandle *)handle error:(NSError *__autoreleasing  _Nullable * _Nullable)outError
+{
+	return [self runExtractorWithDictionary:dict outputTarget:self
+	selector:@selector(_outputToHandle:bytes:length:) argument:handle error:outError];
+}
+
+-(BOOL)runExtractorWithDictionary:(NSDictionary<XADArchiveKeys,id> *)dict
+outputTarget:(id)target selector:(SEL)selector argument:(id)argument error:(NSError**)outError;
+{
+	XADError (*outputfunc)(id,SEL,id,uint8_t *,int);
+	outputfunc=(void *)[target methodForSelector:selector];
+
+	uint8_t *buf=NULL;
+
+	@try
+	{
+		// Send a progress report to show that we are starting.
+		if ([delegate respondsToSelector:@selector(unarchiver:extractionProgressForEntryWithDictionary:fileFraction:estimatedTotalFraction:)]) {
+			[delegate unarchiver:self extractionProgressForEntryWithDictionary:dict
+			fileFraction:0 estimatedTotalFraction:parser.handle.estimatedProgress];
+		}
+
+		// Try to find the size of this entry.
+		NSNumber *sizenum=dict[XADFileSizeKey];
+		off_t size=0;
+		if(sizenum != nil)
+		{
+			size=sizenum.longLongValue;
+
+			// If this file is empty, don't bother reading anything, just
+			// call the output function once with 0 bytes and return.
+			if(size==0) {
+				XADError error = outputfunc(target,selector,argument,(uint8_t *)"",0);
+				if (error == XADErrorNone) {
+					return YES;
+				} else if(outError) {
+					*outError = [NSError errorWithDomain:XADErrorDomain code:error userInfo:nil];
+				}
+				return NO;
+			}
+		}
+
+		// Create handle and start unpacking.
+		CSHandle *srchandle=[parser handleForEntryWithDictionary:dict wantChecksum:YES nserror:outError];
+		if(!srchandle) return NO;
+
+		off_t done=0;
+		double updatetime=0;
+
+		const int bufsize=0x40000;
+		buf=malloc(bufsize);
+		if(!buf) [XADException raiseOutOfMemoryException];
+
+		for(;;)
+		{
+			if(self._shouldStop) {
+				free(buf);
+				if (outError) {
+					*outError = [NSError errorWithDomain:XADErrorDomain code:XADErrorBreak userInfo:nil];
+				}
+				return NO;
+			}
+
+			// Read some data, and send it to the output function.
+			// Stop if no more data was available.
+			int actual=[srchandle readAtMost:bufsize toBuffer:buf];
+			if(actual)
+			{
+				XADError error=outputfunc(target,selector,argument,buf,actual);
+				if(error) {
+					if (outError) {
+						*outError = [NSError errorWithDomain:XADErrorDomain code:error userInfo:nil];
+					}
+					return NO;
+				}
+			}
+			else break;
+
+			done+=actual;
+
+			// Occasionally, send a progress message.
+			double currtime=[XADPlatform currentTimeInSeconds];
+			if(currtime-updatetime>updateinterval)
+			{
+				updatetime=currtime;
+
+				double progress;
+				if(sizenum != nil) progress=(double)done/(double)size;
+				else progress=srchandle.estimatedProgress;
+
+				if ([delegate respondsToSelector:@selector(unarchiver:extractionProgressForEntryWithDictionary:fileFraction:estimatedTotalFraction:)]) {
+					[delegate unarchiver:self extractionProgressForEntryWithDictionary:dict
+					fileFraction:progress estimatedTotalFraction:parser.handle.estimatedProgress];
+				}
+			}
+		}
+
+		// Check if the file has already been marked as corrupt, and
+		// give up without testing checksum if so.
+		NSNumber *iscorrupt=dict[XADIsCorruptedKey];
+		if(iscorrupt&&iscorrupt.boolValue) {
+			if (outError) {
+				*outError = [NSError errorWithDomain:XADErrorDomain code:XADErrorDecrunch userInfo:nil];
+			}
+			return NO;
+		}
+
+		// If the file has a checksum, check it. Otherwise, if it has a
+		// size, check that the size ended up correct.
+		if(srchandle.hasChecksum)
+		{
+			if(!srchandle.checksumCorrect) {
+				if (outError) {
+					*outError = [NSError errorWithDomain:XADErrorDomain code:XADErrorChecksum userInfo:nil];
+				}
+				return NO;
+			}
+		}
+		else
+		{
+			if(sizenum&&done!=size) {
+				if (outError) {
+					*outError = [NSError errorWithDomain:XADErrorDomain code:XADErrorDecrunch userInfo:nil]; // kind of hacky
+				}
+				return NO;
+			}
+		}
+
+		// Send a final progress report.
+		if ([delegate respondsToSelector:@selector(unarchiver:extractionProgressForEntryWithDictionary:fileFraction:estimatedTotalFraction:)]) {
+			[delegate unarchiver:self extractionProgressForEntryWithDictionary:dict
+			fileFraction:1 estimatedTotalFraction:parser.handle.estimatedProgress];
+		}
+	}
+	@catch(id e)
+	{
+		if (outError) {
+			*outError = [XADException parseExceptionReturningNSError:e];
+		}
+		return NO;
+	}
+
+	free(buf);
+
+	return YES;
+}
+
 -(NSString *)adjustPathString:(NSString *)path forEntryWithDictionary:(NSDictionary *)dict
 {
 	// If we are unpacking a resource fork, we may need to modify the path.
