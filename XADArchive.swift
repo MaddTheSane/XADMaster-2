@@ -22,10 +22,11 @@ extension XADArchive {
 		}
 	}
 	
-	@nonobjc open func contents(ofEntry n: Int) throws -> Data {
-		guard let dat = __contents(ofEntry: n) else {
-			throw XADError(lastError)
+	@nonobjc open func resourceHandle(forEntry n: Int) throws -> XADHandle? {
+		do {
+			return try __resourceHandle(forEntry: n)
+		} catch XADError.empty {
+			return nil
 		}
-		return dat
 	}
 }

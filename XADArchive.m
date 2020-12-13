@@ -816,6 +816,29 @@ NSString *const XADFinderFlags=@"XADFinderFlags";
 	return nil;
 }
 
+-(nullable NSData *)contentsOfEntry:(NSInteger)n error:(NSError**)error
+{
+	NSDictionary *dict=[self dataForkParserDictionaryForEntry:n];
+	if(!dict) return [NSData data]; // Special case for files with only a resource fork
+
+	@try
+	{
+		CSHandle *handle=[parser handleForEntryWithDictionary:dict wantChecksum:YES];
+		if(!handle) [XADException raiseDecrunchException];
+		NSData *data=[handle remainingFileContents];
+		if(handle.hasChecksum&&!handle.checksumCorrect) [XADException raiseChecksumException];
+
+		return data;
+	}
+	@catch(id e)
+	{
+		lasterror=[XADException parseException:e];
+		if (error) {
+			*error = [XADException parseExceptionReturningNSError:e];
+		}
+	}
+	return nil;
+}
 
 
 
@@ -1325,15 +1348,16 @@ fileFraction:(double)fileprogress estimatedTotalFraction:(double)totalprogress
 	if((self=[self init]))
 	{
 		delegate=del;
+		NSError *tmpErr = nil;
 		
-		parser=[XADArchiveParser archiveParserForPath:file nserror:error];
+		parser=[XADArchiveParser archiveParserForPath:file nserror:&tmpErr];
 		if(parser)
 		{
 			XADError tmpErr = 0;
 			if([self _parseWithErrorPointer:&tmpErr]) return self;
 			if(error) *error=[NSError errorWithDomain:XADErrorDomain code:tmpErr userInfo:nil];
 		}
-		else if(error) *error=[NSError errorWithDomain:XADErrorDomain code:XADErrorDataFormat userInfo:nil];
+		else if(error) *error=[NSError errorWithDomain:XADErrorDomain code:XADErrorDataFormat userInfo:@{NSUnderlyingErrorKey: tmpErr}];
 	}
 	
 	return nil;
@@ -1348,8 +1372,9 @@ fileFraction:(double)fileprogress estimatedTotalFraction:(double)totalprogress
 	if((self=[self init]))
 	{
 		delegate=del;
+		NSError *tmpErr = nil;
 		
-		parser=[XADArchiveParser archiveParserForHandle:[CSMemoryHandle memoryHandleForReadingData:data] name:@""];
+		parser=[XADArchiveParser archiveParserForHandle:[CSMemoryHandle memoryHandleForReadingData:data] resourceFork:nil name:@"" nserror:&tmpErr];
 		if(parser)
 		{
 			XADError tmpErr = XADErrorNone;
@@ -1358,7 +1383,7 @@ fileFraction:(double)fileprogress estimatedTotalFraction:(double)totalprogress
 				*error = [NSError errorWithDomain:XADErrorDomain code:tmpErr userInfo:nil];
 			}
 		}
-		else if(error) *error=[NSError errorWithDomain:XADErrorDomain code:XADErrorDataFormat userInfo:nil];
+		else if(error) *error=[NSError errorWithDomain:XADErrorDomain code:XADErrorDataFormat userInfo:@{NSUnderlyingErrorKey: tmpErr}];
 	}
 	return nil;
 }

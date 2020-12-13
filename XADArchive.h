@@ -188,8 +188,9 @@ immediateExtractionTo:(NSString *)destination subArchives:(BOOL)sub nserror:(NSE
 -(nullable CSHandle *)handleForEntry:(NSInteger)n nserror:(NSError *_Nullable __autoreleasing *_Nullable)error;
 -(nullable CSHandle *)resourceHandleForEntry:(NSInteger)n NS_SWIFT_UNAVAILABLE("Use error-throwing type instead");
 -(nullable CSHandle *)resourceHandleForEntry:(NSInteger)n error:(nullable XADError *)error NS_REFINED_FOR_SWIFT;
--(nullable CSHandle *)resourceHandleForEntry:(NSInteger)n nserror:(NSError *_Nullable __autoreleasing *_Nullable)error;
+-(nullable CSHandle *)resourceHandleForEntry:(NSInteger)n nserror:(NSError *_Nullable __autoreleasing *_Nullable)error NS_REFINED_FOR_SWIFT;
 -(nullable NSData *)contentsOfEntry:(NSInteger)n NS_REFINED_FOR_SWIFT;
+-(nullable NSData *)contentsOfEntry:(NSInteger)n error:(NSError**)error NS_SWIFT_NAME(contents(ofEntry:));
 //-(NSData *)resourceContentsOfEntry:(int)n;
 
 -(BOOL)extractTo:(NSString *)destination;
