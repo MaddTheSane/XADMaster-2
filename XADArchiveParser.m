@@ -1611,18 +1611,22 @@ name:(NSString *)name { return nil; }
 	}
 
 	CFStringRef baseUTI = kUTTypeData;
+	BOOL needsRelease = NO;
 	if (dict[XADIsDirectoryKey] != nil && [dict[XADIsDirectoryKey] boolValue]) {
 		baseUTI = kUTTypeDirectory;
 	}
 	
 #if TARGET_OS_OSX
-	if (dict[XADFileTypeKey] != nil && [dict[XADFileTypeKey] unsignedIntValue] != 0) {
+	if (dict[XADFileTypeKey] != nil && [dict[XADFileTypeKey] unsignedIntValue] != 0
+		// To my knowledge, no directory has an OSType
+		&& baseUTI != kUTTypeDirectory) {
 		NSNumber *numOSType = dict[XADFileTypeKey];
 		CFStringRef strOSType = UTCreateStringForOSType(numOSType.unsignedIntValue);
 		CFStringRef possibleOSUTI = UTTypeCreatePreferredIdentifierForTag(kUTTagClassOSType, strOSType, baseUTI);
 		CFRelease(strOSType);
 		if (possibleOSUTI && UTTypeIsDeclared(possibleOSUTI)) {
-			return CFBridgingRelease(possibleOSUTI);
+			baseUTI = CFRetain(possibleOSUTI);
+			needsRelease = YES;
 		}
 		if (possibleOSUTI) {
 			CFRelease(possibleOSUTI);
@@ -1635,7 +1639,14 @@ name:(NSString *)name { return nil; }
 		if (possibleOSUTI) {
 			CFRelease(possibleOSUTI);
 		}
-		return (NSString*)baseUTI;
+		if (needsRelease) {
+			return CFBridgingRelease(baseUTI);
+		} else {
+			return (NSString*)baseUTI;
+		}
+	}
+	if (needsRelease) {
+		CFRetain(baseUTI);
 	}
 	return CFBridgingRelease(possibleOSUTI);
 }

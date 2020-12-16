@@ -119,7 +119,7 @@
 	return dict;
 }
 
--(NSDictionary *)_parseMapFromHandle:(CSHandle *)handle withDataObjects:(NSMutableDictionary<NSNumber*,NSData*> *)dataobjects
+-(NSDictionary *)_parseMapFromHandle:(CSHandle *)handle withDataObjects:(NSDictionary<NSNumber*,NSData*> *)dataobjects
 {
 	[handle skipBytes:ResourceMapHeader];
 	/*int forkattributes=*/[handle readUInt16BE];

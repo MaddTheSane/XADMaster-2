@@ -824,9 +824,21 @@ NSString *const XADFinderFlags=@"XADFinderFlags";
 	@try
 	{
 		CSHandle *handle=[parser handleForEntryWithDictionary:dict wantChecksum:YES];
-		if(!handle) [XADException raiseDecrunchException];
+		if(!handle) {
+			lasterror = XADErrorDecrunch;
+			if (error) {
+				*error = [NSError errorWithDomain:XADErrorDomain code:XADErrorDecrunch userInfo:nil];
+			}
+			return nil;
+		}
 		NSData *data=[handle remainingFileContents];
-		if(handle.hasChecksum&&!handle.checksumCorrect) [XADException raiseChecksumException];
+		if(handle.hasChecksum&&!handle.checksumCorrect) {
+			lasterror = XADErrorChecksum;
+			if (error) {
+				*error = [NSError errorWithDomain:XADErrorDomain code:XADErrorChecksum userInfo:nil];
+			}
+			return nil;
+		}
 
 		return data;
 	}

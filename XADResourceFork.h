@@ -41,7 +41,7 @@ XADEXPORT
 -(nullable NSData *)resourceDataForType:(uint32_t)type identifier:(int16_t)identifier;
 
 -(nullable NSMutableDictionary<NSNumber*,NSData*> *)_parseResourceDataFromHandle:(CSHandle *)handle;
--(nullable NSDictionary<NSNumber*,NSDictionary<NSNumber*,NSDictionary<NSString*,id>*>*> *)_parseMapFromHandle:(CSHandle *)handle withDataObjects:(NSMutableDictionary<NSNumber*,NSData*> *)dataobjects;
+-(nullable NSDictionary<NSNumber*,NSDictionary<NSNumber*,NSDictionary<NSString*,id>*>*> *)_parseMapFromHandle:(CSHandle *)handle withDataObjects:(NSDictionary<NSNumber*,NSData*> *)dataobjects;
 -(nullable NSDictionary<NSNumber*, NSMutableDictionary<NSString*, id>*> *)_parseReferencesFromHandle:(CSHandle *)handle count:(int)count;
 
 @end
