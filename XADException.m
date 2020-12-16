@@ -30,6 +30,24 @@ NSString *const XADExceptionReasonKey=@"XADExceptionReason";
 
 @implementation XADException
 
+#ifdef __APPLE__
++ (void)initialize
+{
+	static dispatch_once_t onceToken;
+	dispatch_once(&onceToken, ^{
+		[NSError setUserInfoValueProviderForDomain:XADErrorDomain provider:^id _Nullable(NSError * _Nonnull err, NSErrorUserInfoKey  _Nonnull userInfoKey) {
+			if ([userInfoKey isEqualToString:NSLocalizedDescriptionKey]) {
+				return [XADException localizedDescribeXADError:(XADError)err.code];
+			} else if ([userInfoKey isEqualToString:NSDebugDescriptionErrorKey]) {
+				return [XADException describeXADError:(XADError)err.code];
+			}
+			
+			return nil;
+		}];
+	});
+}
+#endif
+
 +(void)raiseUnknownException  { [self raiseExceptionWithXADError:XADErrorUnknown]; }
 +(void)raiseInputException  { [self raiseExceptionWithXADError:XADErrorInput]; }
 +(void)raiseOutputException  { [self raiseExceptionWithXADError:XADErrorOutput]; }
