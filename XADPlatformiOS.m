@@ -41,6 +41,8 @@
 				if (err.userInfo[XADExceptionReasonKey]) {
 					return err.userInfo[XADExceptionReasonKey];
 				}
+			} else if ([userInfoKey isEqualToString:NSDebugDescriptionErrorKey]) {
+				return [XADException describeXADError:(XADError)err.code];
 			}
 			return nil;
 		}];
