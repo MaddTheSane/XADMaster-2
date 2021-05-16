@@ -9,6 +9,7 @@
 import Foundation
 
 extension XADPath {
+	/// Deprecated, use `sanitizedPathString(with:)` instead.
 	@available(*, deprecated, renamed: "sanitizedPathString(with:)")
 	open func sanitizedPathString(withEncoding encoding: String.Encoding) -> String {
 		return sanitizedPathString(with: encoding)
@@ -32,9 +33,8 @@ extension XADError: CustomStringConvertible {
 
 extension XADArchiveParser {
 	/// Tests the checksum of the archive.
-	/// - returns: `true` if the checksum is valid,
-	/// `false` otherwise.
-	/// - throws: if the checksum couldn't be checked for whatever reason.
+	/// - returns: `true` if the checksum is valid, `false` otherwise.
+	/// - throws: If the checksum couldn't be checked for whatever reason.
 	@nonobjc open func testChecksum() throws -> Bool {
 		do {
 			try __testChecksum()
@@ -50,6 +50,7 @@ extension XADArchiveParser {
 		}
 	}
 	
+	/// Deprecated, use `testChecksum() throws` instead.
 	@available(*, deprecated, renamed: "testChecksum()")
 	@nonobjc open func testChecksumWithoutExceptions() throws {
 		if try testChecksum() == false {
@@ -58,6 +59,7 @@ extension XADArchiveParser {
 		}
 	}
 	
+	/// Deprecated, use `parse() throws` instead.
 	@available(*, deprecated, renamed: "parse()")
 	@nonobjc open func parseWithoutExceptions() throws {
 		try parse()

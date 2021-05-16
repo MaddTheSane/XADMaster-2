@@ -22,6 +22,10 @@ extension XADArchive {
 		}
 	}
 	
+	/// Gets the resource fork handle for the specified entry.
+	/// - returns: The data handle, or `nil` if there's no resource fork data.
+	/// - throws: On failure.
+	/// - parameter n: The entry number.
 	@nonobjc open func resourceHandle(forEntry n: Int) throws -> XADHandle? {
 		do {
 			return try __resourceHandle(forEntry: n)
