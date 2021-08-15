@@ -98,6 +98,39 @@
 	return XADErrorNone;
 }
 
+-(BOOL)parseAndUnarchiveWithError:(NSError**)outErr
+{
+	id olddelegate=parser.delegate;
+
+	parser.delegate = self;
+	BOOL success=[parser parseWithError:outErr];
+	parser.delegate = olddelegate;
+	if(!success) return NO;
+
+	if(self._shouldStop) {
+		if (outErr) {
+			*outErr = [NSError errorWithDomain:XADErrorDomain code:XADErrorBreak userInfo:nil];
+		}
+		return NO;
+	}
+
+	
+	XADError error=[self finishExtractions];
+	if(error) {
+		if (outErr) {
+			*outErr = [NSError errorWithDomain:XADErrorDomain code:error userInfo:nil];
+		}
+		return NO;
+	}
+
+	success=[parser testChecksumWithError:outErr];
+	if(!success) {
+		return NO;
+	}
+
+	return YES;
+}
+
 -(void)archiveParser:(XADArchiveParser *)parser foundEntryWithDictionary:(NSDictionary *)dict
 {
 	//if([self _shouldStop]) return; // Unnecessary - XADArchiveParser handles it.
@@ -273,7 +306,8 @@
 	}
 }
 
-
+// TODO: Create extractEntryWithDictionary:as:forceDirectories:error: with an NSError value.
+// -(BOOL)extractEntryWithDictionary:(NSDictionary<XADArchiveKeys,id> *)dict as:(nullable NSString *)path forceDirectories:(BOOL)force error:(NSError**)outErr
 
 
 static NSComparisonResult SortDirectoriesByDepthAndResource(id entry1,id entry2,void *context)
@@ -487,6 +521,37 @@ resourceForkDictionary:(NSDictionary *)forkdict wantChecksum:(BOOL)checksum erro
 	return error;
 }
 
+-(BOOL)_extractArchiveEntryWithDictionary:(NSDictionary *)dict to:(NSString *)destpath name:(NSString *)filename error:(NSError**)outError
+{
+	XADUnarchiver *subunarchiver=[self unarchiverForEntryWithDictionary:dict wantChecksum:YES nserror:outError];
+	if(!subunarchiver)
+	{
+		if (outError) {
+			if (*outError) {
+				//Do nothing
+			} else {
+				*outError = [NSError errorWithDomain:XADErrorDomain code:XADErrorSubArchive userInfo:nil];
+			}
+		}
+		return NO;
+	}
+
+	subunarchiver.destination = destpath;
+
+	[delegate unarchiver:self willExtractArchiveEntryWithDictionary:dict
+	withUnarchiver:subunarchiver to:destpath];
+
+	NSError *tmpErr;
+	BOOL success=[subunarchiver parseAndUnarchiveWithError:&tmpErr];
+
+	[delegate unarchiver:self didExtractArchiveEntryWithDictionary:dict
+	withUnarchiver:subunarchiver to:destpath nserror:tmpErr];
+	if (tmpErr && outError) {
+		*outError = tmpErr;
+	}
+
+	return success;
+}
 
 -(XADError)_extractResourceForkEntryWithDictionary:(NSDictionary *)dict asAppleDoubleFile:(NSString *)destpath
 {
@@ -534,6 +599,55 @@ deferDirectories:(BOOL)defer
 
 	return [XADPlatform updateFileAttributesAtPath:path forEntryWithDictionary:dict
 	parser:parser preservePermissions:preservepermissions];
+}
+
+-(BOOL)_ensureDirectoryExists:(NSString *)path error:(NSError**)outError
+{
+	if(path.length==0) return YES;
+
+	NSFileManager *manager=[NSFileManager defaultManager];
+
+	BOOL isdir;
+	if([manager fileExistsAtPath:path isDirectory:&isdir])
+	{
+		if(isdir) return YES;
+
+		if(!delegate || ![delegate respondsToSelector:@selector(unarchiver:shouldDeleteFileAndCreateDirectory:)]) {
+			if (outError) {
+				*outError = [NSError errorWithDomain:XADErrorDomain code:XADErrorMakeDirectory userInfo:nil];
+			}
+			return NO;
+		}
+		if(![delegate unarchiver:self shouldDeleteFileAndCreateDirectory:path]) {
+			if (outError) {
+				*outError = [NSError errorWithDomain:XADErrorDomain code:XADErrorMakeDirectory userInfo:nil];
+			}
+			return NO;
+		}
+		if(![XADPlatform removeItemAtPath:path]) {
+			if (outError) {
+				*outError = [NSError errorWithDomain:XADErrorDomain code:XADErrorMakeDirectory userInfo:nil];
+			}
+			return NO;
+		}
+	}
+	else
+	{
+		BOOL success=[self _ensureDirectoryExists:path.stringByDeletingLastPathComponent error:outError];
+		if(!success) return NO;
+
+		if(delegate && [delegate respondsToSelector:@selector(unarchiver:shouldCreateDirectory:)]) {
+			if(![delegate unarchiver:self shouldCreateDirectory:path]) {
+				if (outError) {
+					*outError = [NSError errorWithDomain:XADErrorDomain code:XADErrorMakeDirectory userInfo:nil];
+				}
+				return NO;
+			}
+		}
+	}
+
+	return [manager createDirectoryAtPath:path
+			  withIntermediateDirectories:NO attributes:nil error:outError];
 }
 
 -(XADError)_ensureDirectoryExists:(NSString *)path
@@ -905,7 +1019,19 @@ outputTarget:(id)target selector:(SEL)selector argument:(id)argument error:(NSEr
 
 -(BOOL)unarchiver:(XADUnarchiver *)unarchiver shouldExtractArchiveEntryWithDictionary:(NSDictionary *)dict to:(NSString *)path { return NO; }
 -(void)unarchiver:(XADUnarchiver *)unarchiver willExtractArchiveEntryWithDictionary:(NSDictionary *)dict withUnarchiver:(XADUnarchiver *)subunarchiver to:(NSString *)path {}
--(void)unarchiver:(XADUnarchiver *)unarchiver didExtractArchiveEntryWithDictionary:(NSDictionary *)dict withUnarchiver:(XADUnarchiver *)subunarchiver to:(NSString *)path error:(XADError)error {}
+-(void)unarchiver:(XADUnarchiver *)unarchiver didExtractArchiveEntryWithDictionary:(NSDictionary *)dict withUnarchiver:(XADUnarchiver *)subunarchiver to:(NSString *)path error:(XADError)error
+{
+	if ([self respondsToSelector:@selector(unarchiver:didExtractArchiveEntryWithDictionary:withUnarchiver:to:nserror:)]) {
+		[(NSObject<XADUnarchiverDelegate>*)self unarchiver:unarchiver didExtractArchiveEntryWithDictionary:dict withUnarchiver:subunarchiver to:path nserror:error == XADErrorNone ? nil : [NSError errorWithDomain:XADErrorDomain code:error userInfo:nil]];
+	}
+}
+
+-(void)unarchiver:(XADUnarchiver *)unarchiver didExtractEntryWithDictionary:(NSDictionary<XADArchiveKeys,id> *)dict to:(NSString *)path error:(XADError)error
+{
+	if ([self respondsToSelector:@selector(unarchiver:didExtractEntryWithDictionary:to:nserror:)]) {
+		[(NSObject<XADUnarchiverDelegate>*)self unarchiver:unarchiver didExtractEntryWithDictionary:dict to:path nserror:error == XADErrorNone ? nil : [NSError errorWithDomain:XADErrorDomain code:error userInfo:nil]];
+	}
+}
 
 -(NSString *)unarchiver:(XADUnarchiver *)unarchiver destinationForLink:(XADString *)link from:(NSString *)path
 {
