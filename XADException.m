@@ -171,13 +171,3 @@ NSString *const XADExceptionReasonKey=@"XADExceptionReason";
 }
 
 @end
-
-extern NSString *XADDescribeError(XADError errnum)
-{
-	return [XADException describeXADError:errnum];
-}
-
-extern NSString *XADLocalizedDescribeError(XADError errnum)
-{
-    return [XADException localizedDescribeXADError:errnum];
-}

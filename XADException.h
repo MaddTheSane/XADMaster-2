@@ -90,9 +90,6 @@ XADEXPORT
 
 @end
 
-XADEXTERN NSString *__nullable XADDescribeError(XADError errnum);
-XADEXTERN NSString *__nullable XADLocalizedDescribeError(XADError errnum);
-
 static const XADError XADNoError API_DEPRECATED_WITH_REPLACEMENT("XADErrorNone", macosx(10.0, 10.8), ios(3.0, 8.0)) = XADErrorNone;
 static const XADError XADUnknownError API_DEPRECATED_WITH_REPLACEMENT("XADErrorUnknown", macosx(10.0, 10.8), ios(3.0, 8.0)) = XADErrorUnknown;
 static const XADError XADInputError API_DEPRECATED_WITH_REPLACEMENT("XADErrorInput", macosx(10.0, 10.8), ios(3.0, 8.0)) = XADErrorInput;

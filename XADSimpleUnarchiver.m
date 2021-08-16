@@ -221,9 +221,9 @@
 {
 	off_t total=0;
 
-	NSEnumerator *enumerator=[entries objectEnumerator];
-	NSDictionary *dict;
-	while((dict=[enumerator nextObject]))
+	NSEnumerator<NSDictionary<XADArchiveKeys, id> *>
+	*enumerator=[entries objectEnumerator];
+	for(NSDictionary<XADArchiveKeys, id> *dict in  enumerator)
 	{
 		NSNumber *num=dict[XADFileSizeKey];
 		if(num == nil)
@@ -284,7 +284,7 @@
 {
 	if(entries.count) {
 		if (error) {
-			*error = [NSError errorWithDomain:XADErrorDomain code:XADErrorBadParameters userInfo:@{NSLocalizedDescriptionKey: @"You can not call parseAndUnarchive twice"}];
+			*error = [NSError errorWithDomain:XADErrorDomain code:XADErrorBadParameters userInfo:@{NSLocalizedDescriptionKey: @"You can not call parseAndUnarchive twice", NSDebugDescriptionErrorKey: @"You can not call parseAndUnarchive twice"}];
 		}
 		
 		return NO;

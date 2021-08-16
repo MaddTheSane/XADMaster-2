@@ -51,13 +51,13 @@ XADEXPORT
 	NSMutableArray<NSArray*> *deferreddirectories,*deferredlinks;
 }
 
-+(nullable instancetype)unarchiverForArchiveParser:(XADArchiveParser *)archiveparser;
++(instancetype)unarchiverForArchiveParser:(XADArchiveParser *)archiveparser;
 +(nullable instancetype)unarchiverForPath:(NSString *)path NS_SWIFT_UNAVAILABLE("Call may throw exceptions, use `init(forPath:) throws` instead");
 +(nullable instancetype)unarchiverForPath:(NSString *)path error:(nullable XADError *)errorptr;
 +(nullable instancetype)unarchiverForPath:(NSString *)path nserror:(NSError *_Nullable __autoreleasing *_Nullable)errorptr;
 
 -(instancetype)init UNAVAILABLE_ATTRIBUTE;
--(instancetype)initWithArchiveParser:(XADArchiveParser *)archiveparser NS_DESIGNATED_INITIALIZER;
+-(instancetype)initWithArchiveParser:(XADArchiveParser *)archiveParser NS_DESIGNATED_INITIALIZER;
 
 @property (NS_NONATOMIC_IOSONLY, readonly, strong) XADArchiveParser *archiveParser;
 
@@ -67,7 +67,8 @@ XADEXPORT
 
 @property (NS_NONATOMIC_IOSONLY) XADForkStyle macResourceForkStyle;
 
-@property (NS_NONATOMIC_IOSONLY, setter=setPreserevesPermissions:) BOOL preservesPermissions;
+@property (NS_NONATOMIC_IOSONLY) BOOL preservesPermissions;
+-(void)setPreserevesPermissions:(BOOL)preserve API_DEPRECATED_WITH_REPLACEMENT("setPreservesPermissions", macosx(10.0, 10.8), ios(3.0, 8.0));
 
 @property (NS_NONATOMIC_IOSONLY) double updateInterval;
 
@@ -78,6 +79,7 @@ XADEXPORT
 -(XADError)extractEntryWithDictionary:(NSDictionary<XADArchiveKeys,id> *)dict forceDirectories:(BOOL)force NS_REFINED_FOR_SWIFT;
 -(XADError)extractEntryWithDictionary:(NSDictionary<XADArchiveKeys,id> *)dict as:(nullable NSString *)path NS_REFINED_FOR_SWIFT;
 -(XADError)extractEntryWithDictionary:(NSDictionary<XADArchiveKeys,id> *)dict as:(nullable NSString *)path forceDirectories:(BOOL)force NS_REFINED_FOR_SWIFT;
+-(BOOL)extractEntryWithDictionary:(NSDictionary<XADArchiveKeys,id> *)dict as:(nullable NSString *)path forceDirectories:(BOOL)force error:(NSError**)outErr;
 
 -(XADError)finishExtractions;
 -(XADError)_fixDeferredLinks;

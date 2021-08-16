@@ -306,8 +306,177 @@
 	}
 }
 
-// TODO: Create extractEntryWithDictionary:as:forceDirectories:error: with an NSError value.
-// -(BOOL)extractEntryWithDictionary:(NSDictionary<XADArchiveKeys,id> *)dict as:(nullable NSString *)path forceDirectories:(BOOL)force error:(NSError**)outErr
+// FIXME: Improve extractEntryWithDictionary:as:forceDirectories:error: with an NSError value.
+-(BOOL)extractEntryWithDictionary:(NSDictionary<XADArchiveKeys,id> *)dict as:(nullable NSString *)path forceDirectories:(BOOL)force error:(NSError**)outErr
+{
+	@autoreleasepool {
+
+	NSNumber *dirnum=dict[XADIsDirectoryKey];
+	NSNumber *linknum=dict[XADIsLinkKey];
+	NSNumber *resnum=dict[XADIsResourceForkKey];
+	NSNumber *archivenum=dict[XADIsArchiveKey];
+	BOOL isdir=dirnum&&dirnum.boolValue;
+	BOOL islink=linknum&&linknum.boolValue;
+	BOOL isres=resnum&&resnum.boolValue;
+	BOOL isarchive=archivenum&&archivenum.boolValue;
+
+	// If we were not given a path, pick one ourselves.
+	if(!path)
+	{
+		XADPath *name=dict[XADFileNameKey];
+		NSString *namestring=name.sanitizedPathString;
+
+		if(destination) path=[destination stringByAppendingPathComponent:namestring];
+		else path=namestring;
+
+		// Adjust path for resource forks.
+		path=[self adjustPathString:path forEntryWithDictionary:dict];
+	}
+
+	// Ask for permission and possibly a path, and report that we are starting.
+	if(delegate)
+	{
+		if(![delegate unarchiver:self shouldExtractEntryWithDictionary:dict suggestedPath:&path])
+		{
+			return YES;
+		}
+		if ([delegate respondsToSelector:@selector(unarchiver:willExtractEntryWithDictionary:to:)]) {
+			[delegate unarchiver:self willExtractEntryWithDictionary:dict to:path];
+		}
+	}
+
+	XADError error=0;
+	NSError *tmpErr = nil;
+	
+	BOOL okay=[self _ensureDirectoryExists:path.stringByDeletingLastPathComponent error:&tmpErr];
+	if(!okay) goto end;
+
+	// Attempt to extract embedded archives if requested.
+	if(isarchive&&delegate)
+	{
+		NSString *unarchiverpath=path.stringByDeletingLastPathComponent;
+
+		if([delegate unarchiver:self shouldExtractArchiveEntryWithDictionary:dict to:unarchiverpath])
+		{
+			okay=[self _extractArchiveEntryWithDictionary:dict to:unarchiverpath name:path.lastPathComponent error:&tmpErr];
+			// If extraction was attempted, and succeeded for failed, skip everything else.
+			// Otherwise, if the archive couldn't be opened, fall through and extract normally.
+			if(!okay && ([tmpErr.domain isEqualToString:XADErrorDomain] && tmpErr.code != XADErrorSubArchive)) goto end;
+		}
+	}
+
+	// Extract normally.
+	if(isres)
+	{
+		switch(forkstyle)
+		{
+			case XADForkStyleIgnored:
+			break;
+
+			case XADForkStyleMacOSX:
+				if(!isdir) {
+					error=[XADPlatform extractResourceForkEntryWithDictionary:dict unarchiver:self toPath:path];
+					if (error == XADErrorNone) {
+						okay = YES;
+						tmpErr = nil;
+					} else {
+						okay = NO;
+						tmpErr = [NSError errorWithDomain:XADErrorDomain code:error userInfo:nil];
+					}
+				}
+			break;
+
+			case XADForkStyleHiddenAppleDouble:
+			case XADForkStyleVisibleAppleDouble:
+			{
+				error=[self _extractResourceForkEntryWithDictionary:dict asAppleDoubleFile:path];
+				if (error == XADErrorNone) {
+					okay = YES;
+					tmpErr = nil;
+				} else {
+					okay = NO;
+					tmpErr = [NSError errorWithDomain:XADErrorDomain code:error userInfo:nil];
+				}
+			}
+			break;
+
+			case XADForkStyleHFVExplorerAppleDouble:
+				// We need to make sure there is an empty file for the data fork in all
+				// cases, so just try to recover the original filename and create an empty
+				// file there in case one doesn't exist, and this isn't a directory.
+				// Kludge in the same file attributes as the resource fork. If there is
+				// an actual data fork later, it will overwrite this file. There special-case
+				// code to avoid collision warnings.
+				if(![[NSFileManager defaultManager] fileExistsAtPath:path isDirectory:NULL] && !isdir)
+				{
+					NSString *dirpart=path.stringByDeletingLastPathComponent;
+					NSString *namepart=path.lastPathComponent;
+					if([namepart hasPrefix:@"%"])
+					{
+						NSString *originalname=[namepart substringFromIndex:1];
+						NSString *datapath=[dirpart stringByAppendingPathComponent:originalname];
+						[[NSData data] writeToFile:datapath atomically:NO];
+						[self _updateFileAttributesAtPath:datapath forEntryWithDictionary:dict deferDirectories:!force];
+					}
+				}
+				error=[self _extractResourceForkEntryWithDictionary:dict asAppleDoubleFile:path];
+				if (error == XADErrorNone) {
+					okay = YES;
+					tmpErr = nil;
+				} else {
+					okay = NO;
+					tmpErr = [NSError errorWithDomain:XADErrorDomain code:error userInfo:nil];
+				}
+			break;
+
+			default:
+				// TODO: better error
+				error=XADErrorBadParameters;
+				okay = NO;
+				tmpErr = [NSError errorWithDomain:XADErrorDomain code:XADErrorBadParameters userInfo:nil];
+
+			break;
+		}
+	}
+	else if(isdir)
+	{
+		error=[self _extractDirectoryEntryWithDictionary:dict as:path];
+	}
+	else if(islink)
+	{
+		error=[self _extractLinkEntryWithDictionary:dict as:path];
+	}
+	else
+	{
+		error=[self _extractFileEntryWithDictionary:dict as:path];
+	}
+
+	if(!error)
+	{
+		error=[self _updateFileAttributesAtPath:path forEntryWithDictionary:dict deferDirectories:!force];
+	}
+
+	if (error == XADErrorNone) {
+		okay = YES;
+		tmpErr = nil;
+	} else {
+		okay = NO;
+		tmpErr = [NSError errorWithDomain:XADErrorDomain code:error userInfo:nil];
+	}
+
+	// Report success or failure
+	end:
+	if(delegate && [delegate respondsToSelector:@selector(unarchiver:didExtractEntryWithDictionary:to:error:)])
+	{
+		[delegate unarchiver:self didExtractEntryWithDictionary:dict to:path nserror:okay ? nil : tmpErr];
+	}
+	if (outErr && tmpErr) {
+		*outErr = tmpErr;
+	}
+
+	return okay;
+	}
+}
 
 
 static NSComparisonResult SortDirectoriesByDepthAndResource(id entry1,id entry2,void *context)
@@ -992,6 +1161,11 @@ outputTarget:(id)target selector:(SEL)selector argument:(id)argument error:(NSEr
 		shouldstop=[delegate extractionShouldStopForUnarchiver:self];
 	}
 	return shouldstop;
+}
+
+-(void)setPreserevesPermissions:(BOOL)preserve
+{
+	self.preservesPermissions = preserve;
 }
 
 @end
