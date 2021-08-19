@@ -167,7 +167,7 @@ propertiesToAdd:(NSMutableDictionary<XADArchiveKeys,id> *)props;
 @property (NS_NONATOMIC_IOSONLY, copy) NSString *filename;
 @property (NS_NONATOMIC_IOSONLY, copy) NSArray<NSString*> *allFilenames;
 
-@property (NS_NONATOMIC_IOSONLY, assign, nullable) id<XADArchiveParserDelegate> delegate;
+@property (NS_NONATOMIC_IOSONLY, weak, nullable) id<XADArchiveParserDelegate> delegate;
 
 @property (NS_NONATOMIC_IOSONLY, readonly, copy) NSDictionary<XADArchiveKeys,id> *properties;
 @property (NS_NONATOMIC_IOSONLY, readonly, copy) NSString *currentFilename;

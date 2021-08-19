@@ -7,6 +7,7 @@
 //
 
 #import <XADMaster/xadmaster.h>
+#ifdef __OBJC__
 #import <XADMaster/Checksums.h>
 #import <XADMaster/CRC.h>
 #import <XADMaster/CSBlockStreamHandle.h>
@@ -20,7 +21,9 @@
 #import <XADMaster/CSStreamHandle.h>
 #import <XADMaster/CSSubHandle.h>
 #import <XADMaster/CSZlibHandle.h>
+#endif
 #import <XADMaster/LZW.h>
+#ifdef __OBJC__
 #import <XADMaster/XADArchive.h>
 #import <XADMaster/XADArchiveParser.h>
 #import <XADMaster/XADArchiveParserDescriptions.h>
@@ -35,3 +38,4 @@
 #import <XADMaster/XADSkipHandle.h>
 #import <XADMaster/XADString.h>
 #import <XADMaster/XADUnarchiver.h>
+#endif

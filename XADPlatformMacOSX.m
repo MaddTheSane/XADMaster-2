@@ -291,7 +291,7 @@ preservePermissions:(BOOL)preservepermissions
 	AEInitializeDesc(&replyevent);
 	[fileString release];
 
-	static OSType findersignature='MACS';
+	static const OSType findersignature='MACS';
 
 	OSErr err=AEBuildAppleEvent(kAECoreSuite,kAESetData,
 	typeApplSignature,&findersignature,sizeof(findersignature),

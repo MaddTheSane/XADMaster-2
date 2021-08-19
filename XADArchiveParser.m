@@ -79,6 +79,10 @@
 
 #include <dirent.h>
 
+#if !__has_feature(objc_arc)
+#error this file needs to be compiled with Automatic Reference Counting (ARC)
+#endif
+
 #if TARGET_OS_MAC && !TARGET_OS_OSX
 #include <MobileCoreServices/MobileCoreServices.h>
 #endif
@@ -393,7 +397,7 @@ resourceFork:(XADResourceFork *)fork name:(NSString *)name propertiesToAdd:(NSMu
 	Class parserclass=[self archiveParserClassForHandle:handle firstBytes:header
 	resourceFork:fork name:name propertiesToAdd:props];
 
-	XADArchiveParser *parser=[[parserclass new] autorelease];
+	XADArchiveParser *parser=[parserclass new];
 	parser.handle = handle;
 	parser.resourceFork = fork;
 	parser.name = name;
@@ -437,7 +441,7 @@ resourceFork:(XADResourceFork *)fork name:(NSString *)name propertiesToAdd:(NSMu
 			{
 				CSHandle *multihandle=[CSMultiFileHandle handleWithPathArray:volumes];
 
-				XADArchiveParser *parser=[[parserclass new] autorelease];
+				XADArchiveParser *parser=[parserclass new];
 				parser.handle = multihandle;
 				parser.resourceFork = fork;
 				parser.allFilenames = volumes;
@@ -464,7 +468,7 @@ resourceFork:(XADResourceFork *)fork name:(NSString *)name propertiesToAdd:(NSMu
 	props[XADVolumesKey] = @[filename];
 	[parser addPropertiesFromDictionary:props];
 
-	return [parser autorelease];
+	return parser;
 }
 
 +(XADArchiveParser *)archiveParserForPath:(NSString *)filename error:(XADError *)errorptr
@@ -553,7 +557,7 @@ resourceFork:(XADResourceFork *)fork name:(NSString *)name propertiesToAdd:(NSMu
 			{
 				CSHandle *multihandle=[CSMultiFileHandle handleWithPathArray:volumes];
 				
-				XADArchiveParser *parser=[[parserclass new] autorelease];
+				XADArchiveParser *parser=[parserclass new];
 				parser.handle = multihandle;
 				parser.resourceFork = fork;
 				parser.allFilenames = volumes;
@@ -580,7 +584,7 @@ resourceFork:(XADResourceFork *)fork name:(NSString *)name propertiesToAdd:(NSMu
 	props[XADVolumesKey] = @[filename];
 	[parser addPropertiesFromDictionary:props];
 	
-	return [parser autorelease];
+	return parser;
 }
 
 
@@ -616,27 +620,10 @@ resourceFork:(XADResourceFork *)fork name:(NSString *)name propertiesToAdd:(NSMu
 	return self;
 }
 
--(void)dealloc
-{
-	[sourcehandle release];
-	[skiphandle release];
-	[password release];
-	[passwordencodingname release];
-	[stringsource release];
-	[properties release];
-	[currsolidobj release];
-	[currsolidhandle release];
-	[firstsoliddict release];
-	[prevsoliddict release];
-	[resourcefork release];
-	[super dealloc];
-}
-
 
 -(void)setHandle:(CSHandle *)newhandle
 {
-	[sourcehandle autorelease];
-	sourcehandle=[newhandle retain];
+	sourcehandle=newhandle;
 
 	// If the handle is a CSStreamHandle, it can not seek, so treat
 	// this like a solid archive (for instance, .tar.gz). Also, it will
@@ -711,14 +698,11 @@ resourceFork:(XADResourceFork *)fork name:(NSString *)name propertiesToAdd:(NSMu
 
 -(void)setPassword:(NSString *)newpassword
 {
-	[password autorelease];
-	password=[newpassword copy];
+	password=newpassword;
 
 	// Make sure to invalidate any remaining solid handles, as they will need to change
 	// for the new password.
-	[currsolidobj release];
 	currsolidobj=nil;
-	[currsolidhandle release];
 	currsolidhandle=nil;
 }
 
@@ -991,11 +975,8 @@ regex:(XADRegex *)regex firstFileExtension:(NSString *)firstext
 
 	if(solidobj!=currsolidobj)
 	{
-		[currsolidobj release];
-		currsolidobj=[solidobj retain];
-		[currsolidhandle release];
-        currsolidhandle = nil;
-		currsolidhandle=[[self handleForSolidStreamWithObject:solidobj wantChecksum:YES] retain];
+		currsolidobj=solidobj;
+		currsolidhandle=[self handleForSolidStreamWithObject:solidobj wantChecksum:YES];
 	}
 
 	if(!currsolidhandle) return nil;
@@ -1143,25 +1124,20 @@ regex:(XADRegex *)regex firstFileExtension:(NSString *)firstext
 			prevsoliddict[XADNextSolidIndexKey] = dict[XADIndexKey];
 			prevsoliddict[XADNextSolidEntryKey] = [NSValue valueWithNonretainedObject:dict];
 
-			[prevsoliddict release];
-			prevsoliddict=[dict retain];
+			prevsoliddict=dict;
 		}
 		else
 		{
 			parsersolidobj=solidobj;
 
-			[firstsoliddict release];
-			[prevsoliddict release];
-			firstsoliddict=[dict retain];
-			prevsoliddict=[dict retain];
+			firstsoliddict=dict;
+			prevsoliddict=dict;
 		}
 	}
 	else if(parsersolidobj)
 	{
 		parsersolidobj=nil;
-		[firstsoliddict release];
 		firstsoliddict=nil;
-		[prevsoliddict release];
 		prevsoliddict=nil;
 	}
 
@@ -1312,8 +1288,6 @@ regex:(XADRegex *)regex firstFileExtension:(NSString *)firstext
 		[delegate archiveParser:self findsFileInterestingForReason:[NSString stringWithFormat:
 																	@"%@: %@", self.formatName, fullreason]];
 	}
-
-	[fullreason release];
 }
 
 
@@ -1634,7 +1608,7 @@ name:(NSString *)name { return nil; }
 	}
 #endif
 	NSString *lastPathComp = [[dict[XADFileNameKey] string] lastPathComponent].pathExtension;
-	CFStringRef possibleOSUTI = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, (CFStringRef)(lastPathComp), baseUTI);
+	CFStringRef possibleOSUTI = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, (__bridge CFStringRef)(lastPathComp), baseUTI);
 	if (possibleOSUTI == NULL || !UTTypeIsDeclared(possibleOSUTI)) {
 		if (possibleOSUTI) {
 			CFRelease(possibleOSUTI);
@@ -1642,7 +1616,7 @@ name:(NSString *)name { return nil; }
 		if (needsRelease) {
 			return CFBridgingRelease(baseUTI);
 		} else {
-			return (NSString*)baseUTI;
+			return (__bridge NSString*)baseUTI;
 		}
 	}
 	if (needsRelease) {

@@ -366,16 +366,16 @@ typedef CF_ENUM(xadUINT32, xadHookAccessCommands) {
 
 typedef CF_ENUM(xadUINT8, xadWeekDay) {
   //! monday is the first day and...
-  XADWeekDayMonday    = 1,
+  XADWeekDayMonday    = XADDAY_MONDAY,
   
-  XADWeekDayTuesday   = 2,
+  XADWeekDayTuesday   = XADDAY_TUESDAY,
   
-  XADWeekDayWednesday = 3,
-  XADWeekDayThursday  = 4,
-  XADWeekDayFriday    = 5,
-  XADWeekDaySaturday  = 6,
+  XADWeekDayWednesday = XADDAY_WEDNESDAY,
+  XADWeekDayThursday  = XADDAY_THURSDAY,
+  XADWeekDayFriday    = XADDAY_FRIDAY,
+  XADWeekDaySaturday  = XADDAY_SATURDAY,
   //! ...sunday the last day of a week
-  XADWeekDaySunday    = 7
+  XADWeekDaySunday    = XADDAY_SUNDAY
 };
   
 /*! Own date structure to cover all possible dates in a human friendly
@@ -762,7 +762,7 @@ struct xadSpecial
 {
   xadSpecialType     xfis_Type; /*!< XADSPECIALTYPE to define type of block (V11) */
   struct xadSpecial *xfis_Next; /*!< pointer to next entry */
-  union
+  union xadSpecialData
   {
     struct xadSpecialUnixDevice   xfis_UnixDevice;
     struct xadSpecialAmigaAddress xfis_AmigaAddress;

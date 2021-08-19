@@ -21,6 +21,10 @@
 #import "XADArchiveParserDescriptions.h"
 #import "XADRegex.h"
 
+#if !__has_feature(objc_arc)
+#error this file needs to be compiled with Automatic Reference Counting (ARC)
+#endif
+
 @implementation XADArchiveParser (Descriptions)
 
 -(NSString *)descriptionOfValueInDictionary:(NSDictionary *)dict key:(NSString *)key
@@ -237,12 +241,12 @@ static NSComparisonResult OrderKeys(id first,id second,void *context);
 		@702,XADDiskLabelKey,
 		nil];
 
-	return [dict.allKeys sortedArrayUsingFunction:OrderKeys context:ordering];
+	return [dict.allKeys sortedArrayUsingFunction:OrderKeys context:(__bridge void * _Nullable)(ordering)];
 }
 
 static NSComparisonResult OrderKeys(id first,id second,void *context)
 {
-	NSDictionary *ordering=context;
+	NSDictionary *ordering=(__bridge NSDictionary *)(context);
 	NSNumber *firstorder=ordering[first];
 	NSNumber *secondorder=ordering[second];
 
@@ -267,7 +271,6 @@ NSString *XADHumanReadableFileSize(uint64_t size)
 	formatter.adaptive = YES;
 	formatter.zeroPadsFractionDigits = YES;
 	NSString *strFormat = [formatter stringFromByteCount:size];
-	[formatter release];
 	return strFormat;
 #else
 	if(size<1000) return [NSString localizedStringWithFormat:
@@ -286,7 +289,6 @@ NSString *XADShortHumanReadableFileSize(uint64_t size)
 	formatter.adaptive = YES;
 	formatter.zeroPadsFractionDigits = YES;
 	NSString *strFormat = [formatter stringFromByteCount:size];
-	[formatter release];
 	return strFormat;
 #else
 	if(size<1000)
@@ -419,7 +421,7 @@ NSString *XADHumanReadableObject(id object)
 NSString *XADHumanReadableDate(NSDate *date)
 {
 	#ifndef __COCOTRON__
-	NSDateFormatter *formatter=[[NSDateFormatter new] autorelease];
+	NSDateFormatter *formatter=[NSDateFormatter new];
 	formatter.formatterBehavior = NSDateFormatterBehavior10_4;
 	formatter.dateStyle = NSDateFormatterFullStyle;
 	formatter.timeStyle = NSDateFormatterMediumStyle;

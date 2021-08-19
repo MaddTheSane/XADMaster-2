@@ -40,7 +40,7 @@ XADEXPORT
 	PDFEncryptionHandler *encryption;
 
 	SEL passwordaction;
-	id passwordtarget;
+	__unsafe_unretained id passwordtarget;
 
 	int currchar;
 }

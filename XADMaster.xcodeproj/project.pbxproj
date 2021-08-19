@@ -149,7 +149,7 @@
 		1B34A98011C2FE1C00396C26 /* XADString.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B06D5BA0DDA67E000D9C000 /* XADString.m */; settings = {COMPILER_FLAGS = "-fobjc-arc -I.."; }; };
 		1B34A98111C2FE1C00396C26 /* XADUnarchiver.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B81DD450FFEB87B005C5B23 /* XADUnarchiver.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
 		1B34A98211C2FE1F00396C26 /* XADPlatformMacOSX.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B349EF011BACA2900396C26 /* XADPlatformMacOSX.m */; };
-		1B34A98311C2FE2700396C26 /* XADArchiveParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 1BBAB6770EC26AA6007FE6A2 /* XADArchiveParser.m */; };
+		1B34A98311C2FE2700396C26 /* XADArchiveParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 1BBAB6770EC26AA6007FE6A2 /* XADArchiveParser.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
 		1B34A98411C2FE2A00396C26 /* XADMacArchiveParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B3FAD660EC5D4E8006D2F06 /* XADMacArchiveParser.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
 		1B34A98511C2FE2E00396C26 /* XADDeflateHandle.m in Sources */ = {isa = PBXBuildFile; fileRef = 1BC89F120EE0CD71006B47FE /* XADDeflateHandle.m */; };
 		1B34A98611C2FE2F00396C26 /* XADWinZipAESHandle.m in Sources */ = {isa = PBXBuildFile; fileRef = 1BC885CC0ECD11CF006B47FE /* XADWinZipAESHandle.m */; };
@@ -451,7 +451,7 @@
 		1B467A3715CD9A73001AB1DD /* XADPath.m in Sources */ = {isa = PBXBuildFile; fileRef = 1BA266DD0FC78BF600279E95 /* XADPath.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
 		1B467A3815CD9A73001AB1DD /* XADString.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B06D5BA0DDA67E000D9C000 /* XADString.m */; settings = {COMPILER_FLAGS = "-fobjc-arc -I.."; }; };
 		1B467A3915CD9A73001AB1DD /* XADUnarchiver.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B81DD450FFEB87B005C5B23 /* XADUnarchiver.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
-		1B467A3B15CD9A73001AB1DD /* XADArchiveParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 1BBAB6770EC26AA6007FE6A2 /* XADArchiveParser.m */; };
+		1B467A3B15CD9A73001AB1DD /* XADArchiveParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 1BBAB6770EC26AA6007FE6A2 /* XADArchiveParser.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
 		1B467A3C15CD9A73001AB1DD /* XADMacArchiveParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B3FAD660EC5D4E8006D2F06 /* XADMacArchiveParser.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
 		1B467A3D15CD9A73001AB1DD /* XADDeflateHandle.m in Sources */ = {isa = PBXBuildFile; fileRef = 1BC89F120EE0CD71006B47FE /* XADDeflateHandle.m */; };
 		1B467A3E15CD9A73001AB1DD /* XADWinZipAESHandle.m in Sources */ = {isa = PBXBuildFile; fileRef = 1BC885CC0ECD11CF006B47FE /* XADWinZipAESHandle.m */; };
@@ -628,7 +628,7 @@
 		1B467AEF15CD9A73001AB1DD /* XADRARInputHandle.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B4E973F1426147D00640F59 /* XADRARInputHandle.m */; };
 		1B467AF015CD9A73001AB1DD /* XADCrunchParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B06CD12145CFF2A003907F9 /* XADCrunchParser.m */; };
 		1B467AF115CD9A73001AB1DD /* XADCrunchHandles.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B06CD1B145CFF36003907F9 /* XADCrunchHandles.m */; };
-		1B467AF215CD9A73001AB1DD /* XADArchiveParserDescriptions.m in Sources */ = {isa = PBXBuildFile; fileRef = 1BBEF8AF14D8A31700790E4B /* XADArchiveParserDescriptions.m */; };
+		1B467AF215CD9A73001AB1DD /* XADArchiveParserDescriptions.m in Sources */ = {isa = PBXBuildFile; fileRef = 1BBEF8AF14D8A31700790E4B /* XADArchiveParserDescriptions.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
 		1B467AF315CD9A73001AB1DD /* XADStuffItSplitParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 1BBEFA5A14EF375400790E4B /* XADStuffItSplitParser.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
 		1B467AF415CD9A73001AB1DD /* XADAppleSingleParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B3581A615A4CFE90002A4C9 /* XADAppleSingleParser.m */; };
 		1B467AF515CD9A73001AB1DD /* XADPDFParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B3581CF15A7ABE20002A4C9 /* XADPDFParser.m */; };
@@ -1110,7 +1110,7 @@
 		1BA9F02B1892A669007D9245 /* pbkdf2_hmac_sha256.h in Headers */ = {isa = PBXBuildFile; fileRef = 1BA9F0291892A669007D9245 /* pbkdf2_hmac_sha256.h */; };
 		1BA9F02C1892A669007D9245 /* pbkdf2_hmac_sha256.c in Sources */ = {isa = PBXBuildFile; fileRef = 1BA9F02A1892A669007D9245 /* pbkdf2_hmac_sha256.c */; };
 		1BBAB6780EC26AA6007FE6A2 /* XADArchiveParser.h in Headers */ = {isa = PBXBuildFile; fileRef = 1BBAB6760EC26AA6007FE6A2 /* XADArchiveParser.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		1BBAB6790EC26AA6007FE6A2 /* XADArchiveParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 1BBAB6770EC26AA6007FE6A2 /* XADArchiveParser.m */; };
+		1BBAB6790EC26AA6007FE6A2 /* XADArchiveParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 1BBAB6770EC26AA6007FE6A2 /* XADArchiveParser.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
 		1BBAB6930EC274D8007FE6A2 /* XADArchive.h in Headers */ = {isa = PBXBuildFile; fileRef = 1B5A7AF50A24CFD200B189EB /* XADArchive.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		1BBAB6950EC340C1007FE6A2 /* XADString.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B06D5BA0DDA67E000D9C000 /* XADString.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
 		1BBC3D2610B0C9C700A05E29 /* XADXZHandle.m in Sources */ = {isa = PBXBuildFile; fileRef = 1BBC3D2410B0C9C700A05E29 /* XADXZHandle.m */; };
@@ -1128,8 +1128,8 @@
 		1BBCC54D0EE73B7F006C3AE2 /* libbz2.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 1BBCC54C0EE73B7F006C3AE2 /* libbz2.tbd */; };
 		1BBCC5790EE747F6006C3AE2 /* XADBzip2Parser.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B578C5B0DDCFFE0005B0F68 /* XADBzip2Parser.m */; };
 		1BBEF8B014D8A31800790E4B /* XADArchiveParserDescriptions.h in Headers */ = {isa = PBXBuildFile; fileRef = 1BBEF8AE14D8A31700790E4B /* XADArchiveParserDescriptions.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		1BBEF8B114D8A31800790E4B /* XADArchiveParserDescriptions.m in Sources */ = {isa = PBXBuildFile; fileRef = 1BBEF8AF14D8A31700790E4B /* XADArchiveParserDescriptions.m */; };
-		1BBEF8F414E0964E00790E4B /* XADArchiveParserDescriptions.m in Sources */ = {isa = PBXBuildFile; fileRef = 1BBEF8AF14D8A31700790E4B /* XADArchiveParserDescriptions.m */; };
+		1BBEF8B114D8A31800790E4B /* XADArchiveParserDescriptions.m in Sources */ = {isa = PBXBuildFile; fileRef = 1BBEF8AF14D8A31700790E4B /* XADArchiveParserDescriptions.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
+		1BBEF8F414E0964E00790E4B /* XADArchiveParserDescriptions.m in Sources */ = {isa = PBXBuildFile; fileRef = 1BBEF8AF14D8A31700790E4B /* XADArchiveParserDescriptions.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
 		1BBEF8F614E0964F00790E4B /* XADArchiveParserDescriptions.m in Sources */ = {isa = PBXBuildFile; fileRef = 1BBEF8AF14D8A31700790E4B /* XADArchiveParserDescriptions.m */; };
 		1BBEFA5B14EF375400790E4B /* XADStuffItSplitParser.h in Headers */ = {isa = PBXBuildFile; fileRef = 1BBEFA5914EF375400790E4B /* XADStuffItSplitParser.h */; };
 		1BBEFA5C14EF375400790E4B /* XADStuffItSplitParser.h in Headers */ = {isa = PBXBuildFile; fileRef = 1BBEFA5914EF375400790E4B /* XADStuffItSplitParser.h */; };
@@ -1581,7 +1581,7 @@
 		551BACF21EB032B500EAF64E /* emulation.c in Sources */ = {isa = PBXBuildFile; fileRef = 1B06D54F0DDA623800D9C000 /* emulation.c */; };
 		551BACF31EB032B500EAF64E /* init.c in Sources */ = {isa = PBXBuildFile; fileRef = 1B06D5520DDA623800D9C000 /* init.c */; };
 		551BACF41EB032B500EAF64E /* XADGzipParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B578C570DDCFFD0005B0F68 /* XADGzipParser.m */; };
-		551BACF51EB032B500EAF64E /* XADArchiveParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 1BBAB6770EC26AA6007FE6A2 /* XADArchiveParser.m */; };
+		551BACF51EB032B500EAF64E /* XADArchiveParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 1BBAB6770EC26AA6007FE6A2 /* XADArchiveParser.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
 		551BACF61EB032B500EAF64E /* XADString.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B06D5BA0DDA67E000D9C000 /* XADString.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
 		551BACF71EB032B500EAF64E /* CSHandle.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B3FAAEF0EC3859F006D2F06 /* CSHandle.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
 		551BACF81EB032B500EAF64E /* CSSubHandle.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B3FAAF10EC3859F006D2F06 /* CSSubHandle.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
@@ -1759,7 +1759,7 @@
 		551BADAA1EB032B500EAF64E /* XADRARInputHandle.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B4E973F1426147D00640F59 /* XADRARInputHandle.m */; };
 		551BADAB1EB032B500EAF64E /* XADCrunchParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B06CD12145CFF2A003907F9 /* XADCrunchParser.m */; };
 		551BADAC1EB032B500EAF64E /* XADCrunchHandles.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B06CD1B145CFF36003907F9 /* XADCrunchHandles.m */; };
-		551BADAD1EB032B500EAF64E /* XADArchiveParserDescriptions.m in Sources */ = {isa = PBXBuildFile; fileRef = 1BBEF8AF14D8A31700790E4B /* XADArchiveParserDescriptions.m */; };
+		551BADAD1EB032B500EAF64E /* XADArchiveParserDescriptions.m in Sources */ = {isa = PBXBuildFile; fileRef = 1BBEF8AF14D8A31700790E4B /* XADArchiveParserDescriptions.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
 		551BADAE1EB032B500EAF64E /* XADStuffItSplitParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 1BBEFA5A14EF375400790E4B /* XADStuffItSplitParser.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
 		551BADAF1EB032B500EAF64E /* XADAppleSingleParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B3581A615A4CFE90002A4C9 /* XADAppleSingleParser.m */; };
 		551BADB01EB032B500EAF64E /* XADPDFParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B3581CF15A7ABE20002A4C9 /* XADPDFParser.m */; };

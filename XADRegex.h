@@ -42,7 +42,7 @@ XADEXPORT
 }
 
 +(nullable instancetype)regexWithPattern:(NSString *)pattern options:(int)options;
-+(instancetype)regexWithPattern:(NSString *)pattern;
++(nullable instancetype)regexWithPattern:(NSString *)pattern;
 
 +(NSString *)patternForLiteralString:(NSString *)string;
 +(NSString *)patternForGlob:(NSString *)glob;
