@@ -117,7 +117,7 @@ XADEXPORT
 -(void)setIndices:(NSIndexSet *)indices;
 
 @property (NS_NONATOMIC_IOSONLY, readonly) off_t predictedTotalSize;
--(off_t)predictedTotalSizeIgnoringUnknownFiles:(BOOL)ignoreunknown;
+-(off_t)predictedTotalSizeIgnoringUnknownFiles:(BOOL)ignoreunknown NS_SWIFT_NAME(predictedTotalSize(ignoringUnknownFiles:));
 
 @property (NS_NONATOMIC_IOSONLY, readonly) NSInteger numberOfItemsExtracted;
 @property (NS_NONATOMIC_IOSONLY, readonly) BOOL wasSoloItem;

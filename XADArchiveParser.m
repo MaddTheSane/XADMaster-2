@@ -698,7 +698,7 @@ resourceFork:(XADResourceFork *)fork name:(NSString *)name propertiesToAdd:(NSMu
 
 -(void)setPassword:(NSString *)newpassword
 {
-	password=newpassword;
+	password=[newpassword copy];
 
 	// Make sure to invalidate any remaining solid handles, as they will need to change
 	// for the new password.
