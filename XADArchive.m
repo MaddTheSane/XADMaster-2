@@ -121,11 +121,8 @@ NSString *const XADFinderFlags=@"XADFinderFlags";
 		
 		parser=[XADArchiveParser archiveParserForFileURL:file error:error];
 		if (parser) {
-			XADError tmpErr=XADErrorNone;
-			if ([self _parseWithErrorPointer:&tmpErr]) {
+			if ([self _parseWithNSErrorPointer:error]) {
 				return self;
-			} else if (error) {
-				*error = [NSError errorWithDomain:XADErrorDomain code:tmpErr userInfo:@{NSURLErrorKey: file}];
 			}
 		}
 	}
@@ -175,11 +172,7 @@ NSString *const XADFinderFlags=@"XADFinderFlags";
 			parser=[XADArchiveParser archiveParserForHandle:handle name:[otherarchive nameOfEntry:n]];
 			if(parser)
 			{
-                XADError tmpErr = XADErrorNone;
-                if([self _parseWithErrorPointer:&tmpErr]) return self;
-                if (error) {
-                    *error = [NSError errorWithDomain:XADErrorDomain code:tmpErr userInfo:nil];
-                }
+                if([self _parseWithNSErrorPointer:error]) return self;
 			}
 			else if(error) *error=[NSError errorWithDomain:XADErrorDomain code:XADErrorDataFormat userInfo:nil];
 		}
@@ -276,8 +269,7 @@ NSString *const XADFinderFlags=@"XADFinderFlags";
 													   archiveParser:otherarchive->parser wantChecksum:YES nserror:error];
 		if(parser)
 		{
-            XADError tmpErr = XADErrorNone;
-			if([self _parseWithErrorPointer:&tmpErr])
+			if([self _parseWithNSErrorPointer:error])
 			{
 				if(!immediatefailed)
 				{
@@ -293,10 +285,7 @@ NSString *const XADFinderFlags=@"XADFinderFlags";
 				[self updateAttributesForDeferredDirectories];
 				immediatedestination=nil;
 				return self;
-			} else if (error) {
-				*error = [NSError errorWithDomain:XADErrorDomain code:tmpErr userInfo:nil];
 			}
-
 		}
         else if(error) *error=[NSError errorWithDomain:XADErrorDomain code:XADErrorSubArchive userInfo:nil];
 	}
@@ -323,6 +312,36 @@ NSString *const XADFinderFlags=@"XADFinderFlags";
 	}
 
 	if(immediatefailed&&error) *error=lasterror;
+
+	namedict=nil;
+
+	return lasterror==XADErrorNone||dataentries.count!=0;
+}
+
+-(BOOL)_parseWithNSErrorPointer:(NSError **)error
+{
+	NSError *tmpErr;
+	unarchiver=[[XADUnarchiver alloc] initWithArchiveParser:parser];
+
+	parser.delegate = self;
+	unarchiver.delegate = self;
+
+	namedict=[[NSMutableDictionary alloc] init];
+
+	BOOL parseerror=[parser parseWithError:&tmpErr];
+	if(!parseerror)
+	{
+		if ([tmpErr.domain isEqualToString:XADErrorDomain]) {
+			lasterror = (XADError)tmpErr.code;
+		} else {
+			lasterror = XADErrorUnknown;
+		}
+		if(error) *error=tmpErr;
+	}
+
+	if (immediatefailed && error && !parseerror) {
+		*error=[NSError errorWithDomain:XADErrorDomain code:lasterror userInfo:nil];
+	}
 
 	namedict=nil;
 
@@ -1365,9 +1384,7 @@ fileFraction:(double)fileprogress estimatedTotalFraction:(double)totalprogress
 		parser=[XADArchiveParser archiveParserForPath:file nserror:&tmpErr];
 		if(parser)
 		{
-			XADError tmpErr = 0;
-			if([self _parseWithErrorPointer:&tmpErr]) return self;
-			if(error) *error=[NSError errorWithDomain:XADErrorDomain code:tmpErr userInfo:nil];
+			if([self _parseWithNSErrorPointer:error]) return self;
 		}
 		else if(error) *error=[NSError errorWithDomain:XADErrorDomain code:XADErrorDataFormat userInfo:@{NSUnderlyingErrorKey: tmpErr}];
 	}
@@ -1389,11 +1406,7 @@ fileFraction:(double)fileprogress estimatedTotalFraction:(double)totalprogress
 		parser=[XADArchiveParser archiveParserForHandle:[CSMemoryHandle memoryHandleForReadingData:data] resourceFork:nil name:@"" nserror:&tmpErr];
 		if(parser)
 		{
-			XADError tmpErr = XADErrorNone;
-			if([self _parseWithErrorPointer:&tmpErr]) return self;
-			if (error) {
-				*error = [NSError errorWithDomain:XADErrorDomain code:tmpErr userInfo:nil];
-			}
+			if([self _parseWithNSErrorPointer:error]) return self;
 		}
 		else if(error) *error=[NSError errorWithDomain:XADErrorDomain code:XADErrorDataFormat userInfo:@{NSUnderlyingErrorKey: tmpErr}];
 	}
