@@ -581,7 +581,7 @@ resourceFork:(XADResourceFork *)fork name:(NSString *)name propertiesToAdd:(NSMu
 	parser.filename = filename.path;
 	[parser addPropertiesFromDictionary:props];
 	
-	props[XADVolumesKey] = @[filename];
+	props[XADVolumesKey] = @[filename.path];
 	[parser addPropertiesFromDictionary:props];
 	
 	return parser;
