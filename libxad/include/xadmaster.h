@@ -366,16 +366,16 @@ typedef CF_ENUM(xadUINT32, xadHookAccessCommands) {
 
 typedef CF_ENUM(xadUINT8, xadWeekDay) {
   //! monday is the first day and...
-  XADWeekDayMonday    = XADDAY_MONDAY,
+  xadWeekDayMonday    = XADDAY_MONDAY,
   
-  XADWeekDayTuesday   = XADDAY_TUESDAY,
+  xadWeekDayTuesday   = XADDAY_TUESDAY,
   
-  XADWeekDayWednesday = XADDAY_WEDNESDAY,
-  XADWeekDayThursday  = XADDAY_THURSDAY,
-  XADWeekDayFriday    = XADDAY_FRIDAY,
-  XADWeekDaySaturday  = XADDAY_SATURDAY,
+  xadWeekDayWednesday = XADDAY_WEDNESDAY,
+  xadWeekDayThursday  = XADDAY_THURSDAY,
+  xadWeekDayFriday    = XADDAY_FRIDAY,
+  xadWeekDaySaturday  = XADDAY_SATURDAY,
   //! ...sunday the last day of a week
-  XADWeekDaySunday    = XADDAY_SUNDAY
+  xadWeekDaySunday    = XADDAY_SUNDAY
 };
   
 /*! Own date structure to cover all possible dates in a human friendly

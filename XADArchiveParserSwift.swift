@@ -9,12 +9,6 @@
 import Foundation
 
 extension XADPath {
-	/// Deprecated, use `sanitizedPathString(with:)` instead.
-	@available(*, deprecated, renamed: "sanitizedPathString(with:)")
-	open func sanitizedPathString(withEncoding encoding: String.Encoding) -> String {
-		return sanitizedPathString(with: encoding)
-	}
-	
 	open func sanitizedPathString(with encoding: String.Encoding) -> String {
 		return sanitizedPathString(withEncoding: encoding.rawValue)
 	}
@@ -48,20 +42,5 @@ extension XADArchiveParser {
 		withVaList(args) { (valist) -> Void in
 			reportInterestingFile(withReason: reason, format: valist)
 		}
-	}
-	
-	/// Deprecated, use `testChecksum() throws` instead.
-	@available(*, deprecated, renamed: "testChecksum()")
-	@nonobjc open func testChecksumWithoutExceptions() throws {
-		if try testChecksum() == false {
-			// match the Objective-C method's behavior
-			throw XADError(.checksum)
-		}
-	}
-	
-	/// Deprecated, use `parse() throws` instead.
-	@available(*, deprecated, renamed: "parse()")
-	@nonobjc open func parseWithoutExceptions() throws {
-		try parse()
 	}
 }

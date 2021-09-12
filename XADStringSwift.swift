@@ -24,16 +24,6 @@ public extension XADStringProtocol {
 		}
 		return String.Encoding(rawValue: enc)
 	}
-	
-	@available(*, deprecated, renamed: "canDecode(with:)")
-	func canDecode(withEncoding encoding: String.Encoding) -> Bool {
-		return canDecode(with: encoding)
-	}
-	
-	@available(*, deprecated, renamed: "string(with:)")
-	func string(withEncoding encoding: String.Encoding) -> String? {
-		return string(with: encoding)
-	}
 }
 
 extension XADString {
@@ -44,16 +34,6 @@ extension XADString {
 	@nonobjc open class func encoding(for encoding: XADStringEncodingName) -> String.Encoding {
 		return String.Encoding(rawValue: self.encoding(forEncodingName: encoding))
 	}
-	
-	@available(*, deprecated, renamed: "encodingName(for:)")
-	@nonobjc open class func encodingName(forEncoding encoding: String.Encoding) -> XADStringEncodingName {
-		return encodingName(for: encoding)
-	}
-	
-	@available(*, deprecated, renamed: "encoding(for:)")
-	@nonobjc open class func encoding(forEncodingName encoding: XADStringEncodingName) -> String.Encoding {
-		return self.encoding(for: encoding)
-	}
 }
 
 public extension XADStringEncodingName {
@@ -63,23 +43,6 @@ public extension XADStringEncodingName {
 	
 	@inlinable var encoding: String.Encoding {
 		return XADString.encoding(for: self)
-	}
-}
-
-// We can't have this conform to ExpressibleByStringLiteral because 
-// 1. It can't be placed in the defining block because the defining block is Objective-C
-// 2. The class can't be marked as final because it is an Objective-C class.
-extension XADString /*: ExpressibleByStringLiteral*/ {
-	@nonobjc public convenience init(stringLiteral value: String) {
-		self.init(string: value)
-	}
-	
-	@nonobjc public convenience init(extendedGraphemeClusterLiteral value: String) {
-		self.init(stringLiteral: String(extendedGraphemeClusterLiteral: value))
-	}
-	
-	@nonobjc public convenience init(unicodeScalarLiteral value: String) {
-		self.init(stringLiteral: String(unicodeScalarLiteral: value))
 	}
 }
 
