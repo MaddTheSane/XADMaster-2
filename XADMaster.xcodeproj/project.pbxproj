@@ -46,7 +46,6 @@
 		1B216A750F8E8ADE001207C9 /* Progress.h in Headers */ = {isa = PBXBuildFile; fileRef = 1B216A730F8E8ADE001207C9 /* Progress.h */; };
 		1B216A760F8E8ADE001207C9 /* Progress.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B216A740F8E8ADE001207C9 /* Progress.m */; };
 		1B216A790F8E9064001207C9 /* CRC.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B216A770F8E9064001207C9 /* CRC.m */; };
-		1B216A800F8E9D9E001207C9 /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1B216A7F0F8E9D9E001207C9 /* Carbon.framework */; };
 		1B216BBE0F8E9DED001207C9 /* XADArchive.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B5A80B50A27AA9900B189EB /* XADArchive.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
 		1B23DAA01177C99900620319 /* Scanning.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B23DA9E1177C99900620319 /* Scanning.m */; };
 		1B23DB8F117BA91D00620319 /* XADNowCompressParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B23DB8D117BA91D00620319 /* XADNowCompressParser.m */; };
@@ -281,7 +280,6 @@
 		1B34AA4311C3088900396C26 /* CSZlibHandle.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B3FAAFF0EC3859F006D2F06 /* CSZlibHandle.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
 		1B34AA7211C30B3600396C26 /* libbz2.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 1BBCC54C0EE73B7F006C3AE2 /* libbz2.tbd */; };
 		1B34AA7411C30B3A00396C26 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1B3FAC5C0EC5255A006D2F06 /* Foundation.framework */; };
-		1B34AA7511C30B3D00396C26 /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1B216A7F0F8E9D9E001207C9 /* Carbon.framework */; };
 		1B34AA7611C30B5200396C26 /* libUniversalDetector.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1B23E1B11190F8CC00620319 /* libUniversalDetector.a */; };
 		1B34AA8511C30BC100396C26 /* UniversalDetector.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1B34AA8411C30BC100396C26 /* UniversalDetector.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		1B34AA9F11C30C0400396C26 /* unar.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B23DDC91185EBD600620319 /* unar.m */; };
@@ -1031,7 +1029,6 @@
 		1B91D18111E1677B0081E40A /* CSCommandLineParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B34AC0E11CED29A00396C26 /* CSCommandLineParser.m */; };
 		1B91D18411E1677B0081E40A /* libbz2.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 1BBCC54C0EE73B7F006C3AE2 /* libbz2.tbd */; };
 		1B91D18611E1677B0081E40A /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1B3FAC5C0EC5255A006D2F06 /* Foundation.framework */; };
-		1B91D18711E1677B0081E40A /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1B216A7F0F8E9D9E001207C9 /* Carbon.framework */; };
 		1B91D18811E1677B0081E40A /* libUniversalDetector.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1B23E1B11190F8CC00620319 /* libUniversalDetector.a */; };
 		1B91D18911E1677B0081E40A /* libXADMaster.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1B34A97511C2FD0500396C26 /* libXADMaster.a */; };
 		1B91D18A11E1677B0081E40A /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 1B3FABA70EC52532006D2F06 /* libz.tbd */; };
@@ -2629,7 +2626,6 @@
 				1B34AA7211C30B3600396C26 /* libbz2.tbd in Frameworks */,
 				55702A8821500B0C00372F73 /* libc++.tbd in Frameworks */,
 				1B34AA7411C30B3A00396C26 /* Foundation.framework in Frameworks */,
-				1B34AA7511C30B3D00396C26 /* Carbon.framework in Frameworks */,
 				1B34AA7611C30B5200396C26 /* libUniversalDetector.a in Frameworks */,
 				1B34AAA811C30DA400396C26 /* libXADMaster.a in Frameworks */,
 				1B34AAB811C30EDB00396C26 /* libz.tbd in Frameworks */,
@@ -2679,7 +2675,6 @@
 				1B91D18411E1677B0081E40A /* libbz2.tbd in Frameworks */,
 				55702A8921500B0C00372F73 /* libc++.tbd in Frameworks */,
 				1B91D18611E1677B0081E40A /* Foundation.framework in Frameworks */,
-				1B91D18711E1677B0081E40A /* Carbon.framework in Frameworks */,
 				1B91D18811E1677B0081E40A /* libUniversalDetector.a in Frameworks */,
 				1B91D18911E1677B0081E40A /* libXADMaster.a in Frameworks */,
 				1B91D18A11E1677B0081E40A /* libz.tbd in Frameworks */,
@@ -2729,7 +2724,6 @@
 				1B3FABA80EC52532006D2F06 /* libz.tbd in Frameworks */,
 				1B3FAC5D0EC5255A006D2F06 /* Foundation.framework in Frameworks */,
 				1BBCC54D0EE73B7F006C3AE2 /* libbz2.tbd in Frameworks */,
-				1B216A800F8E9D9E001207C9 /* Carbon.framework in Frameworks */,
 				1B34AA8511C30BC100396C26 /* UniversalDetector.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

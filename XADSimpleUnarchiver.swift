@@ -11,7 +11,7 @@ import Foundation
 public extension XADSimpleUnarchiver {
 	@nonobjc func unarchive() throws {
 		let err = __unarchive()
-		if err != .none {
+		guard err == .none else {
 			throw XADError(err)
 		}
 	}
