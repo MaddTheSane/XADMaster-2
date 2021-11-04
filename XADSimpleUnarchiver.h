@@ -107,7 +107,7 @@ XADEXPORT
 @property (NS_NONATOMIC_IOSONLY) XADForkStyle macResourceForkStyle;
 
 @property (NS_NONATOMIC_IOSONLY) BOOL preservesPermissions;
--(void)setPreserevesPermissions:(BOOL)preserve API_DEPRECATED_WITH_REPLACEMENT("setPreservesPermissions", macosx(10.0, 10.8), ios(3.0, 8.0));
+-(void)setPreserevesPermissions:(BOOL)preserve API_DEPRECATED_WITH_REPLACEMENT("-setPreservesPermissions:", macosx(10.0, 10.8), ios(3.0, 8.0));
 
 @property (NS_NONATOMIC_IOSONLY) double updateInterval;
 
