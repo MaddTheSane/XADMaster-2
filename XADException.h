@@ -19,8 +19,11 @@
  * MA 02110-1301  USA
  */
 #import <Foundation/Foundation.h>
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wquoted-include-in-framework-header"
 #import "XADTypes.h"
 #import "ClangAnalyser.h"
+#pragma clang diagnostic pop
 
 NS_ASSUME_NONNULL_BEGIN
 

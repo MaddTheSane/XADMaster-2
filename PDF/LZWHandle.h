@@ -18,8 +18,11 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA 02110-1301  USA
  */
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wquoted-include-in-framework-header"
 #import "../CSByteStreamHandle.h"
 #import "../LZW.h"
+#pragma clang diagnostic pop
 
 XADEXTERN NSExceptionName const LZWInvalidCodeException;
 

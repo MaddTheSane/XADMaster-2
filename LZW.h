@@ -23,7 +23,10 @@
 
 #include <stdint.h>
 #include <stdbool.h>
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wquoted-include-in-framework-header"
 #include "XADTypes.h"
+#pragma clang diagnostic pop
 
 #define LZWNoError 0
 #define LZWInvalidCodeError 1

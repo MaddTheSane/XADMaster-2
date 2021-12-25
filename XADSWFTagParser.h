@@ -20,9 +20,12 @@
  */
 #import <Foundation/Foundation.h>
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wquoted-include-in-framework-header"
 #import "XADSWFGeometry.h"
 
 #import "CSHandle.h"
+#pragma clang diagnostic pop
 
 #define SWFEndTag 0
 #define SWFShowFrameTag 1

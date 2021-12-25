@@ -20,9 +20,12 @@
  */
 #import <Foundation/Foundation.h>
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wquoted-include-in-framework-header"
 #import "XADArchiveParser.h"
 #import "XADUnarchiver.h"
 #import "XADException.h"
+#pragma clang diagnostic pop
 
 #ifdef __has_feature
 #  if __has_feature(modules)

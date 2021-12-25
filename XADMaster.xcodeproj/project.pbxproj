@@ -1788,6 +1788,7 @@
 		551BADCB1EB032B500EAF64E /* libbz2.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 1BBCC54C0EE73B7F006C3AE2 /* libbz2.tbd */; };
 		551BADCD1EB032B500EAF64E /* UniversalDetector.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1B34AA8411C30BC100396C26 /* UniversalDetector.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		551BADD31EB0336300EAF64E /* XADPlatformiOS.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B83727C15CEA27000B0DC9D /* XADPlatformiOS.m */; };
+		5530B3D02776754300DFECFF /* XADZipParserStructures.h in Headers */ = {isa = PBXBuildFile; fileRef = E4BB35EE22D8CE7B00EE22CB /* XADZipParserStructures.h */; };
 		5534891D21C9658500CA2CF6 /* common_utils.c in Sources */ = {isa = PBXBuildFile; fileRef = 734C13A121C7999100917EAA /* common_utils.c */; };
 		5534891E21C9658500CA2CF6 /* decorr_utils.c in Sources */ = {isa = PBXBuildFile; fileRef = 73396EE521C79DEB00D36226 /* decorr_utils.c */; };
 		5534891F21C9658500CA2CF6 /* entropy_utils.c in Sources */ = {isa = PBXBuildFile; fileRef = 73396ECF21C79D7100D36226 /* entropy_utils.c */; };
@@ -4060,6 +4061,7 @@
 				551BAC5E1EB032B500EAF64E /* XADDiskDoublerMethod2Handle.h in Headers */,
 				551BAC5F1EB032B500EAF64E /* XADDiskDoublerParser.h in Headers */,
 				551BAC601EB032B500EAF64E /* XADFastLZSSHandle.h in Headers */,
+				5530B3D02776754300DFECFF /* XADZipParserStructures.h in Headers */,
 				551BAC611EB032B500EAF64E /* XADGzipParser.h in Headers */,
 				551BAC621EB032B500EAF64E /* xadIO.h in Headers */,
 				551BAC631EB032B500EAF64E /* XADISO9660Parser.h in Headers */,
