@@ -68,6 +68,40 @@ NSString *const CSFileErrorException=@"CSFileErrorException";
 	return nil;
 }
 
++(CSFileHandle *)fileHandleForReadingAtFileURL:(NSURL *)path error:(NSError *__autoreleasing *)outErr
+{ return [self fileHandleForFileURL:path modes:@"rb" error:outErr]; }
+
++(CSFileHandle *)fileHandleForWritingAtFileURL:(NSURL *)path error:(NSError *__autoreleasing *)outErr
+{ return [self fileHandleForFileURL:path modes:@"wb" error:outErr]; }
+
++(CSFileHandle *)fileHandleForFileURL:(NSURL *)path modes:(NSString *)modes error:(NSError *__autoreleasing *)outErr
+{
+	if(!path) return nil;
+	
+#if defined(__COCOTRON__) // Cocotron
+	FILE *fileh=_wfopen([path fileSystemRepresentationW],
+						(const wchar_t *)[modes cStringUsingEncoding:NSUnicodeStringEncoding]);
+#elif defined(__MINGW32__) // GNUstep under mingw32 - sort of untested
+	FILE *fileh=_wfopen((const wchar_t *)[path fileSystemRepresentation],
+						(const wchar_t *)[modes cStringUsingEncoding:NSUnicodeStringEncoding]);
+#else // Cocoa or GNUstep under Linux
+	FILE *fileh=fopen(path.fileSystemRepresentation,modes.UTF8String);
+#endif
+	
+	if(!fileh) {
+		if (outErr) {
+			*outErr = [NSError errorWithDomain:NSPOSIXErrorDomain code:errno userInfo:@{NSURLErrorKey: path}];
+		}
+		return nil;
+	}
+	
+	CSFileHandle *handle=[[CSFileHandle alloc] initWithFilePointer:fileh closeOnDealloc:YES path:path.path];
+	if(handle) return handle;
+	
+	fclose(fileh);
+	return nil;
+}
+
 +(CSFileHandle *)fileHandleForReadingAtPath:(NSString *)path
 { return [self fileHandleForPath:path modes:@"rb"]; }
 

@@ -46,9 +46,12 @@ XADEXPORT
 +(CSFileHandle *)fileHandleForReadingAtPath:(NSString *)path;
 +(CSFileHandle *)fileHandleForWritingAtPath:(NSString *)path;
 +(CSFileHandle *)fileHandleForPath:(NSString *)path modes:(NSString *)modes;
-+(CSFileHandle *)fileHandleForReadingAtFileURL:(NSURL *)path;
-+(CSFileHandle *)fileHandleForWritingAtFileURL:(NSURL *)path;
-+(CSFileHandle *)fileHandleForFileURL:(NSURL *)path modes:(NSString *)modes;
++(CSFileHandle *)fileHandleForReadingAtFileURL:(NSURL *)path NS_SWIFT_UNAVAILABLE("Use throwing methods instead");
++(CSFileHandle *)fileHandleForWritingAtFileURL:(NSURL *)path NS_SWIFT_UNAVAILABLE("Use throwing methods instead");
++(CSFileHandle *)fileHandleForFileURL:(NSURL *)path modes:(NSString *)modes NS_SWIFT_UNAVAILABLE("Use throwing methods instead");
++(CSFileHandle *)fileHandleForReadingAtFileURL:(NSURL *)path error:(NSError**)outErr;
++(CSFileHandle *)fileHandleForWritingAtFileURL:(NSURL *)path error:(NSError**)outErr;
++(CSFileHandle *)fileHandleForFileURL:(NSURL *)path modes:(NSString *)modes error:(NSError**)outErr;
 +(CSFileHandle *)fileHandleForStandardInput;
 +(CSFileHandle *)fileHandleForStandardOutput;
 +(CSFileHandle *)fileHandleForStandardError;
