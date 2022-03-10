@@ -65,14 +65,14 @@ NSString *const XADExceptionReasonKey=@"XADExceptionReason";
 		{
 			return [e.userInfo[@"XADError"] intValue];
 		}
-		else if([name isEqual:CSCannotOpenFileException]) return XADErrorOpenFile;
-		else if([name isEqual:CSFileErrorException]) return XADErrorUnknown; // TODO: use ErrNo in userInfo to figure out better error
-		else if([name isEqual:CSOutOfMemoryException]) return XADErrorOutOfMemory;
-		else if([name isEqual:CSEndOfFileException]) return XADErrorInput;
-		else if([name isEqual:CSNotImplementedException]) return XADErrorNotSupported;
-		else if([name isEqual:CSNotSupportedException]) return XADErrorNotSupported;
-		else if([name isEqual:CSZlibException]) return XADErrorDecrunch;
-		else if([name isEqual:CSBzip2Exception]) return XADErrorDecrunch;
+		else if([name isEqualToString:CSCannotOpenFileException]) return XADErrorOpenFile;
+		else if([name isEqualToString:CSFileErrorException]) return XADErrorUnknown; // TODO: use ErrNo in userInfo to figure out better error
+		else if([name isEqualToString:CSOutOfMemoryException]) return XADErrorOutOfMemory;
+		else if([name isEqualToString:CSEndOfFileException]) return XADErrorInput;
+		else if([name isEqualToString:CSNotImplementedException]) return XADErrorNotSupported;
+		else if([name isEqualToString:CSNotSupportedException]) return XADErrorNotSupported;
+		else if([name isEqualToString:CSZlibException]) return XADErrorDecrunch;
+		else if([name isEqualToString:CSBzip2Exception]) return XADErrorDecrunch;
 	}
 
 	return XADErrorUnknown;
@@ -86,29 +86,29 @@ NSString *const XADExceptionReasonKey=@"XADExceptionReason";
 		NSString *name=[e name];
 		NSMutableDictionary *usrInfo = [NSMutableDictionary dictionaryWithDictionary:e.userInfo ?: @{}];
 		usrInfo[XADExceptionReasonKey] = e.reason;
-		if ([name isEqual:XADExceptionName]) {
+		if ([name isEqualToString:XADExceptionName]) {
 			XADError errVal = [[e userInfo][@"XADError"] intValue];
 			return [NSError errorWithDomain:XADErrorDomain code:errVal userInfo:usrInfo];
-		} else if([name isEqual:CSCannotOpenFileException]) {
+		} else if([name isEqualToString:CSCannotOpenFileException]) {
 			return [NSError errorWithDomain:XADErrorDomain code:XADErrorOpenFile userInfo:usrInfo];
-		} else if([name isEqual:CSFileErrorException]) {
+		} else if([name isEqualToString:CSFileErrorException]) {
 			if (usrInfo && [usrInfo objectForKey:@"ErrNo"]) {
 				int errNo = [usrInfo[@"ErrNo"] intValue];
 				[usrInfo removeObjectForKey:@"ErrNo"];
 				return [NSError errorWithDomain:NSPOSIXErrorDomain code:errNo userInfo:usrInfo];
 			}
 			return [NSError errorWithDomain:XADErrorDomain code:XADErrorUnknown userInfo:usrInfo];
-		} else if([name isEqual:CSOutOfMemoryException]) {
+		} else if([name isEqualToString:CSOutOfMemoryException]) {
 			return [NSError errorWithDomain:XADErrorDomain code:XADErrorOutOfMemory userInfo:usrInfo];
-		} else if([name isEqual:CSEndOfFileException]) {
+		} else if([name isEqualToString:CSEndOfFileException]) {
 			return [NSError errorWithDomain:XADErrorDomain code:XADErrorInput userInfo:usrInfo];
-		} else if([name isEqual:CSNotImplementedException]) {
+		} else if([name isEqualToString:CSNotImplementedException]) {
 			return [NSError errorWithDomain:XADErrorDomain code:XADErrorNotSupported userInfo:usrInfo];
-		} else if([name isEqual:CSNotSupportedException]) {
+		} else if([name isEqualToString:CSNotSupportedException]) {
 			return [NSError errorWithDomain:XADErrorDomain code:XADErrorNotSupported userInfo:usrInfo];
-		} else if([name isEqual:CSZlibException]) {
+		} else if([name isEqualToString:CSZlibException]) {
 			return [NSError errorWithDomain:XADErrorDomain code:XADErrorDecrunch userInfo:usrInfo];
-		} else if([name isEqual:CSBzip2Exception]) {
+		} else if([name isEqualToString:CSBzip2Exception]) {
 			CSBzip2Error bzErr = [e.userInfo[@"BZ2ErrorType"] intValue];
 			NSError *err = [NSError errorWithDomain:CSBzip2ErrorDomain code:bzErr userInfo:nil];
 			usrInfo[NSUnderlyingErrorKey] = err;
