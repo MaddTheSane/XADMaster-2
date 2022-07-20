@@ -9,7 +9,7 @@
 import Foundation
 
 extension XADPath {
-	open func sanitizedPathString(with encoding: String.Encoding) -> String {
+	public func sanitizedPathString(with encoding: String.Encoding) -> String {
 		return sanitizedPathString(withEncoding: encoding.rawValue)
 	}
 }
@@ -29,18 +29,12 @@ extension XADArchiveParser {
 	/// Tests the checksum of the archive.
 	/// - returns: `true` if the checksum is valid, `false` otherwise.
 	/// - throws: If the checksum couldn't be checked for whatever reason.
-	@nonobjc open func testChecksum() throws -> Bool {
+	@nonobjc public func testChecksum() throws -> Bool {
 		do {
 			try __testChecksum()
 			return true
 		} catch XADError.checksum {
 			return false
-		}
-	}
-	
-	open func reportInterestingFile(withReason reason: String, _ args: [CVarArg]) {
-		withVaList(args) { (valist) -> Void in
-			reportInterestingFile(withReason: reason, format: valist)
 		}
 	}
 }
