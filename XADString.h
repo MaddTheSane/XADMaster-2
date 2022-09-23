@@ -28,8 +28,15 @@ NS_ASSUME_NONNULL_BEGIN
 
 @class XADStringSource, UniversalDetector;
 
+#if defined(__swift__) && defined(__APPLE__)
+// Swift wrapping needed to make sure the Swift doesn't try to unwrap
+// an NSNumber posing as an NSString
+//! The supported encodings used by \c XADString
+typedef NSObject<NSCopying, NSSecureCoding> *XADStringEncodingName NS_TYPED_ENUM;
+#else
 //! The supported encodings used by \c XADString
 typedef NSString *XADStringEncodingName NS_TYPED_ENUM;
+#endif
 
 XADEXTERN XADStringEncodingName const XADUTF8StringEncodingName NS_SWIFT_NAME(XADStringEncodingName.utf8);
 XADEXTERN XADStringEncodingName const XADASCIIStringEncodingName NS_SWIFT_NAME(XADStringEncodingName.ascii);
