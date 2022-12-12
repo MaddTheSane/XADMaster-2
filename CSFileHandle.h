@@ -62,7 +62,7 @@ XADEXPORT
 -(void)close;
 
 // Public methods
-@property (NS_NONATOMIC_IOSONLY, readonly) FILE *filePointer;
+@property (NS_NONATOMIC_IOSONLY, readonly) FILE *filePointer NS_RETURNS_INNER_POINTER;
 
 // Implemented by this class
 @property (NS_NONATOMIC_IOSONLY, readonly) off_t fileSize;
