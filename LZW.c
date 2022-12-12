@@ -114,7 +114,7 @@ int ReplaceLZWSymbol(LZW *self,int oldsymbol,int symbol)
 	return LZWNoError;
 }
 
-int LZWOutputLength(LZW *self)
+int LZWOutputLength(const LZW *self)
 {
 	int symbol=self->prevsymbol;
 	int n=0;
@@ -128,7 +128,7 @@ int LZWOutputLength(LZW *self)
 	return n;
 }
 
-int LZWOutputToBuffer(LZW *self,uint8_t *buffer)
+int LZWOutputToBuffer(const LZW *self,uint8_t *buffer)
 {
 	int symbol=self->prevsymbol;
 	int n=LZWOutputLength(self);
@@ -143,7 +143,7 @@ int LZWOutputToBuffer(LZW *self,uint8_t *buffer)
 	return n;
 }
 
-int LZWReverseOutputToBuffer(LZW *self,uint8_t *buffer)
+int LZWReverseOutputToBuffer(const LZW *self,uint8_t *buffer)
 {
 	int symbol=self->prevsymbol;
 	int n=0;

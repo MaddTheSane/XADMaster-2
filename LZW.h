@@ -56,12 +56,12 @@ XADEXTERN void ClearLZWTable(LZW *self);
 
 XADEXTERN int NextLZWSymbol(LZW *self,int symbol);
 XADEXTERN int ReplaceLZWSymbol(LZW *self,int oldsymbol,int symbol);
-XADEXTERN int LZWOutputLength(LZW *self);
-XADEXTERN int LZWOutputToBuffer(LZW *self,uint8_t *buffer);
-XADEXTERN int LZWReverseOutputToBuffer(LZW *self,uint8_t *buffer);
+XADEXTERN int LZWOutputLength(const LZW *self);
+XADEXTERN int LZWOutputToBuffer(const LZW *self,uint8_t *buffer);
+XADEXTERN int LZWReverseOutputToBuffer(const LZW *self,uint8_t *buffer);
 XADEXTERN int LZWOutputToInternalBuffer(LZW *self);
 
-static inline int LZWSuggestedSymbolSize(LZW *self)
+static inline int LZWSuggestedSymbolSize(const LZW *self)
 {
 	return self->symbolsize;
 }
@@ -71,12 +71,12 @@ static inline uint8_t *LZWInternalBuffer(LZW *self)
 	return self->buffer;
 }
 
-static inline int LZWSymbolCount(LZW *self)
+static inline int LZWSymbolCount(const LZW *self)
 {
 	return self->numsymbols;
 }
 
-static inline bool LZWSymbolListFull(LZW *self)
+static inline bool LZWSymbolListFull(const LZW *self)
 {
 	return self->numsymbols==self->maxsymbols;
 }
