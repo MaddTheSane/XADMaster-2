@@ -166,7 +166,7 @@
 		1B34A9A311C2FF2400396C26 /* RARAudioDecoder.c in Sources */ = {isa = PBXBuildFile; fileRef = 1B34A55711BDC1AC00396C26 /* RARAudioDecoder.c */; };
 		1B34A9A411C2FF2800396C26 /* RARVirtualMachine.c in Sources */ = {isa = PBXBuildFile; fileRef = 1B4C03A911B34E1A00CDACC1 /* RARVirtualMachine.c */; };
 		1B34A9A511C2FF3300396C26 /* XADRAR30Handle.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B4CFB68119B7F1600CDACC1 /* XADRAR30Handle.m */; };
-		1B34A9A611C2FF3500396C26 /* XADRARAESHandle.m in Sources */ = {isa = PBXBuildFile; fileRef = 1BC89DEB0EDDBB33006B47FE /* XADRARAESHandle.m */; };
+		1B34A9A611C2FF3500396C26 /* XADRARAESHandle.m in Sources */ = {isa = PBXBuildFile; fileRef = 1BC89DEB0EDDBB33006B47FE /* XADRARAESHandle.m */; settings = {COMPILER_FLAGS = "-UUSE_COMMON_CRYPTO -DUSE_COMMON_CRYPTO=0"; }; };
 		1B34A9A811C2FF3B00396C26 /* XADRARParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B06D5A70DDA667A00D9C000 /* XADRARParser.m */; };
 		1B34A9A911C2FF3D00396C26 /* XADRARVirtualMachine.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B4CFDAD119EDD0D00CDACC1 /* XADRARVirtualMachine.m */; };
 		1B34A9AA11C2FF4500396C26 /* Bra.c in Sources */ = {isa = PBXBuildFile; fileRef = 1BCD61540EF349EE00D86C43 /* Bra.c */; };
@@ -286,7 +286,7 @@
 		1B34AAA811C30DA400396C26 /* libXADMaster.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1B34A97511C2FD0500396C26 /* libXADMaster.a */; };
 		1B34AAAD11C30DFF00396C26 /* clients.c in Sources */ = {isa = PBXBuildFile; fileRef = 1B06D52E0DDA623800D9C000 /* clients.c */; };
 		1B34AAAE11C30E0200396C26 /* emulation.c in Sources */ = {isa = PBXBuildFile; fileRef = 1B06D54F0DDA623800D9C000 /* emulation.c */; };
-		1B34AAB111C30E6A00396C26 /* RARBug.c in Sources */ = {isa = PBXBuildFile; fileRef = 1BCD65510EF8164900D86C43 /* RARBug.c */; };
+		1B34AAB111C30E6A00396C26 /* RARBug.c in Sources */ = {isa = PBXBuildFile; fileRef = 1BCD65510EF8164900D86C43 /* RARBug.c */; settings = {COMPILER_FLAGS = "-UUSE_COMMON_CRYPTO -DUSE_COMMON_CRYPTO=0"; }; };
 		1B34AAB811C30EDB00396C26 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 1B3FABA70EC52532006D2F06 /* libz.tbd */; };
 		1B34AAC711C30F9A00396C26 /* BraIA64.c in Sources */ = {isa = PBXBuildFile; fileRef = 1BCD61550EF349EE00D86C43 /* BraIA64.c */; };
 		1B34AB2D11C3196800396C26 /* StuffItXEnglishDictionary.c in Sources */ = {isa = PBXBuildFile; fileRef = 1B34AB2C11C3196800396C26 /* StuffItXEnglishDictionary.c */; };
@@ -467,7 +467,7 @@
 		1B467A4A15CD9A73001AB1DD /* RARAudioDecoder.c in Sources */ = {isa = PBXBuildFile; fileRef = 1B34A55711BDC1AC00396C26 /* RARAudioDecoder.c */; };
 		1B467A4B15CD9A73001AB1DD /* RARVirtualMachine.c in Sources */ = {isa = PBXBuildFile; fileRef = 1B4C03A911B34E1A00CDACC1 /* RARVirtualMachine.c */; };
 		1B467A4C15CD9A73001AB1DD /* XADRAR30Handle.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B4CFB68119B7F1600CDACC1 /* XADRAR30Handle.m */; };
-		1B467A4D15CD9A73001AB1DD /* XADRARAESHandle.m in Sources */ = {isa = PBXBuildFile; fileRef = 1BC89DEB0EDDBB33006B47FE /* XADRARAESHandle.m */; };
+		1B467A4D15CD9A73001AB1DD /* XADRARAESHandle.m in Sources */ = {isa = PBXBuildFile; fileRef = 1BC89DEB0EDDBB33006B47FE /* XADRARAESHandle.m */; settings = {COMPILER_FLAGS = "-UUSE_COMMON_CRYPTO -DUSE_COMMON_CRYPTO=0"; }; };
 		1B467A4E15CD9A73001AB1DD /* XADRARParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B06D5A70DDA667A00D9C000 /* XADRARParser.m */; };
 		1B467A4F15CD9A73001AB1DD /* XADRARVirtualMachine.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B4CFDAD119EDD0D00CDACC1 /* XADRARVirtualMachine.m */; };
 		1B467A5015CD9A73001AB1DD /* Bra.c in Sources */ = {isa = PBXBuildFile; fileRef = 1BCD61540EF349EE00D86C43 /* Bra.c */; };
@@ -581,7 +581,7 @@
 		1B467ABD15CD9A73001AB1DD /* CSZlibHandle.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B3FAAFF0EC3859F006D2F06 /* CSZlibHandle.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
 		1B467ABE15CD9A73001AB1DD /* clients.c in Sources */ = {isa = PBXBuildFile; fileRef = 1B06D52E0DDA623800D9C000 /* clients.c */; };
 		1B467ABF15CD9A73001AB1DD /* emulation.c in Sources */ = {isa = PBXBuildFile; fileRef = 1B06D54F0DDA623800D9C000 /* emulation.c */; };
-		1B467AC015CD9A73001AB1DD /* RARBug.c in Sources */ = {isa = PBXBuildFile; fileRef = 1BCD65510EF8164900D86C43 /* RARBug.c */; };
+		1B467AC015CD9A73001AB1DD /* RARBug.c in Sources */ = {isa = PBXBuildFile; fileRef = 1BCD65510EF8164900D86C43 /* RARBug.c */; settings = {COMPILER_FLAGS = "-UUSE_COMMON_CRYPTO -DUSE_COMMON_CRYPTO=0"; }; };
 		1B467AC115CD9A73001AB1DD /* BraIA64.c in Sources */ = {isa = PBXBuildFile; fileRef = 1BCD61550EF349EE00D86C43 /* BraIA64.c */; };
 		1B467AC215CD9A73001AB1DD /* StuffItXEnglishDictionary.c in Sources */ = {isa = PBXBuildFile; fileRef = 1B34AB2C11C3196800396C26 /* StuffItXEnglishDictionary.c */; };
 		1B467AC315CD9A73001AB1DD /* XADStringCFString.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B91D0AC11DFC0480081E40A /* XADStringCFString.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
@@ -1072,6 +1072,7 @@
 		1BA23E7C163CDA70000D8174 /* aes_modes.c in Sources */ = {isa = PBXBuildFile; fileRef = 1BA23E7A163CDA70000D8174 /* aes_modes.c */; };
 		1BA23E7D163CDA70000D8174 /* aes_modes.c in Sources */ = {isa = PBXBuildFile; fileRef = 1BA23E7A163CDA70000D8174 /* aes_modes.c */; };
 		1BA23E7E163CDA70000D8174 /* aes_modes.c in Sources */ = {isa = PBXBuildFile; fileRef = 1BA23E7A163CDA70000D8174 /* aes_modes.c */; };
+		1BA23F95163DD4E9000D8174 /* sha.c in Sources */ = {isa = PBXBuildFile; fileRef = 1BE97610163CC2A100BB34EA /* sha.c */; };
 		1BA23F98163DFBE4000D8174 /* hmac_sha1.c in Sources */ = {isa = PBXBuildFile; fileRef = 1BA23F96163DFBE4000D8174 /* hmac_sha1.c */; };
 		1BA23F99163DFBE4000D8174 /* hmac_sha1.c in Sources */ = {isa = PBXBuildFile; fileRef = 1BA23F96163DFBE4000D8174 /* hmac_sha1.c */; };
 		1BA23F9A163DFBE4000D8174 /* hmac_sha1.c in Sources */ = {isa = PBXBuildFile; fileRef = 1BA23F96163DFBE4000D8174 /* hmac_sha1.c */; };
@@ -1167,7 +1168,7 @@
 		1BC89BC20EDB5C2E006B47FE /* XADStuffIt13Handle.m in Sources */ = {isa = PBXBuildFile; fileRef = 1BC89A770EDB12F8006B47FE /* XADStuffIt13Handle.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
 		1BC89C720EDC5E18006B47FE /* XADRARParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B06D5A70DDA667A00D9C000 /* XADRARParser.m */; };
 		1BC89C9F0EDCAA51006B47FE /* Checksums.m in Sources */ = {isa = PBXBuildFile; fileRef = 1BC89C9D0EDCAA51006B47FE /* Checksums.m */; };
-		1BC89DED0EDDBB33006B47FE /* XADRARAESHandle.m in Sources */ = {isa = PBXBuildFile; fileRef = 1BC89DEB0EDDBB33006B47FE /* XADRARAESHandle.m */; };
+		1BC89DED0EDDBB33006B47FE /* XADRARAESHandle.m in Sources */ = {isa = PBXBuildFile; fileRef = 1BC89DEB0EDDBB33006B47FE /* XADRARAESHandle.m */; settings = {COMPILER_FLAGS = "-UUSE_COMMON_CRYPTO -DUSE_COMMON_CRYPTO=0"; }; };
 		1BC89F140EE0CD71006B47FE /* XADDeflateHandle.m in Sources */ = {isa = PBXBuildFile; fileRef = 1BC89F120EE0CD71006B47FE /* XADDeflateHandle.m */; };
 		1BC8A07C0EE4C4DA006B47FE /* XADALZipParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 1BC8A07A0EE4C4DA006B47FE /* XADALZipParser.m */; };
 		1BC8A0F10EE61C42006B47FE /* CSBzip2Handle.h in Headers */ = {isa = PBXBuildFile; fileRef = 1BC8A0EF0EE61C42006B47FE /* CSBzip2Handle.h */; };
@@ -1189,7 +1190,7 @@
 		1BCD64250EF6CA0500D86C43 /* XADLZMAAloneParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 1BCD64230EF6CA0500D86C43 /* XADLZMAAloneParser.m */; };
 		1BCD642A0EF6CA3F00D86C43 /* XADCRCSuffixHandle.m in Sources */ = {isa = PBXBuildFile; fileRef = 1BCD64260EF6CA3F00D86C43 /* XADCRCSuffixHandle.m */; };
 		1BCD642C0EF6CA3F00D86C43 /* XADCRCHandle.m in Sources */ = {isa = PBXBuildFile; fileRef = 1BCD64280EF6CA3F00D86C43 /* XADCRCHandle.m */; };
-		1BCD65530EF8164900D86C43 /* RARBug.c in Sources */ = {isa = PBXBuildFile; fileRef = 1BCD65510EF8164900D86C43 /* RARBug.c */; };
+		1BCD65530EF8164900D86C43 /* RARBug.c in Sources */ = {isa = PBXBuildFile; fileRef = 1BCD65510EF8164900D86C43 /* RARBug.c */; settings = {COMPILER_FLAGS = "-UUSE_COMMON_CRYPTO -DUSE_COMMON_CRYPTO=0"; }; };
 		1BCE676F12636C27007FB44E /* XADZooParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 1BCE676D12636C27007FB44E /* XADZooParser.m */; };
 		1BCE677012636C27007FB44E /* XADZooParser.h in Headers */ = {isa = PBXBuildFile; fileRef = 1BCE676C12636C27007FB44E /* XADZooParser.h */; };
 		1BCE677112636C27007FB44E /* XADZooParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 1BCE676D12636C27007FB44E /* XADZooParser.m */; };
@@ -1260,8 +1261,12 @@
 		1BE9762B163CC2A100BB34EA /* brg_endian.h in Headers */ = {isa = PBXBuildFile; fileRef = 1BE9760E163CC2A100BB34EA /* brg_endian.h */; };
 		1BE9762C163CC2A100BB34EA /* brg_endian.h in Headers */ = {isa = PBXBuildFile; fileRef = 1BE9760E163CC2A100BB34EA /* brg_endian.h */; };
 		1BE9762D163CC2A100BB34EA /* brg_endian.h in Headers */ = {isa = PBXBuildFile; fileRef = 1BE9760E163CC2A100BB34EA /* brg_endian.h */; };
+		1BE97633163CC2A100BB34EA /* sha.c in Sources */ = {isa = PBXBuildFile; fileRef = 1BE97610163CC2A100BB34EA /* sha.c */; };
 		1BE97634163CC2A100BB34EA /* sha.c in Sources */ = {isa = PBXBuildFile; fileRef = 1BE97610163CC2A100BB34EA /* sha.c */; };
+		1BE97635163CC2A100BB34EA /* sha.c in Sources */ = {isa = PBXBuildFile; fileRef = 1BE97610163CC2A100BB34EA /* sha.c */; };
+		1BE97636163CC2A100BB34EA /* sha.h in Headers */ = {isa = PBXBuildFile; fileRef = 1BE97611163CC2A100BB34EA /* sha.h */; };
 		1BE97638163CC2A100BB34EA /* sha.h in Headers */ = {isa = PBXBuildFile; fileRef = 1BE97611163CC2A100BB34EA /* sha.h */; };
+		1BE97639163CC2A100BB34EA /* sha.h in Headers */ = {isa = PBXBuildFile; fileRef = 1BE97611163CC2A100BB34EA /* sha.h */; };
 		1BF0EE2E13FF2FA3007B8CF8 /* ArithmeticDecoder.c in Sources */ = {isa = PBXBuildFile; fileRef = 1BF0EE2213FF2FA3007B8CF8 /* ArithmeticDecoder.c */; };
 		1BF0EE2F13FF2FA3007B8CF8 /* ArithmeticDecoder.c in Sources */ = {isa = PBXBuildFile; fileRef = 1BF0EE2213FF2FA3007B8CF8 /* ArithmeticDecoder.c */; };
 		1BF0EE3013FF2FA3007B8CF8 /* ArithmeticDecoder.c in Sources */ = {isa = PBXBuildFile; fileRef = 1BF0EE2213FF2FA3007B8CF8 /* ArithmeticDecoder.c */; };
@@ -1621,7 +1626,7 @@
 		551BAD1D1EB032B500EAF64E /* XADStuffIt13Handle.m in Sources */ = {isa = PBXBuildFile; fileRef = 1BC89A770EDB12F8006B47FE /* XADStuffIt13Handle.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
 		551BAD1E1EB032B500EAF64E /* XADRARParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B06D5A70DDA667A00D9C000 /* XADRARParser.m */; };
 		551BAD1F1EB032B500EAF64E /* Checksums.m in Sources */ = {isa = PBXBuildFile; fileRef = 1BC89C9D0EDCAA51006B47FE /* Checksums.m */; };
-		551BAD201EB032B500EAF64E /* XADRARAESHandle.m in Sources */ = {isa = PBXBuildFile; fileRef = 1BC89DEB0EDDBB33006B47FE /* XADRARAESHandle.m */; };
+		551BAD201EB032B500EAF64E /* XADRARAESHandle.m in Sources */ = {isa = PBXBuildFile; fileRef = 1BC89DEB0EDDBB33006B47FE /* XADRARAESHandle.m */; settings = {COMPILER_FLAGS = "-UUSE_COMMON_CRYPTO -DUSE_COMMON_CRYPTO=0"; }; };
 		551BAD211EB032B500EAF64E /* XADDeflateHandle.m in Sources */ = {isa = PBXBuildFile; fileRef = 1BC89F120EE0CD71006B47FE /* XADDeflateHandle.m */; };
 		551BAD221EB032B500EAF64E /* XADALZipParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 1BC8A07A0EE4C4DA006B47FE /* XADALZipParser.m */; };
 		551BAD231EB032B500EAF64E /* CSBzip2Handle.m in Sources */ = {isa = PBXBuildFile; fileRef = 1BC8A0F00EE61C42006B47FE /* CSBzip2Handle.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
@@ -1642,7 +1647,7 @@
 		551BAD321EB032B500EAF64E /* XADLZMAAloneParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 1BCD64230EF6CA0500D86C43 /* XADLZMAAloneParser.m */; };
 		551BAD331EB032B500EAF64E /* XADCRCSuffixHandle.m in Sources */ = {isa = PBXBuildFile; fileRef = 1BCD64260EF6CA3F00D86C43 /* XADCRCSuffixHandle.m */; };
 		551BAD341EB032B500EAF64E /* XADCRCHandle.m in Sources */ = {isa = PBXBuildFile; fileRef = 1BCD64280EF6CA3F00D86C43 /* XADCRCHandle.m */; };
-		551BAD351EB032B500EAF64E /* RARBug.c in Sources */ = {isa = PBXBuildFile; fileRef = 1BCD65510EF8164900D86C43 /* RARBug.c */; };
+		551BAD351EB032B500EAF64E /* RARBug.c in Sources */ = {isa = PBXBuildFile; fileRef = 1BCD65510EF8164900D86C43 /* RARBug.c */; settings = {COMPILER_FLAGS = "-UUSE_COMMON_CRYPTO -DUSE_COMMON_CRYPTO=0"; }; };
 		551BAD361EB032B500EAF64E /* XADStuffItXParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 1BC9A7030F007A760094C7B5 /* XADStuffItXParser.m */; };
 		551BAD371EB032B500EAF64E /* XADStuffItXCyanideHandle.m in Sources */ = {isa = PBXBuildFile; fileRef = 1BC9A7070F007A910094C7B5 /* XADStuffItXCyanideHandle.m */; };
 		551BAD381EB032B500EAF64E /* CarrylessRangeCoder.m in Sources */ = {isa = PBXBuildFile; fileRef = 1BC9A70B0F007AA20094C7B5 /* CarrylessRangeCoder.m */; };
@@ -1823,6 +1828,7 @@
 		557C6A931FCB597700936524 /* XADErrors.strings in Resources */ = {isa = PBXBuildFile; fileRef = 557C6A961FCB597700936524 /* XADErrors.strings */; };
 		55A2D4AA1FBFB2D000939897 /* ClangAnalyser.h in Headers */ = {isa = PBXBuildFile; fileRef = 1B4B51DD1C061E3100C1074D /* ClangAnalyser.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		55B3B2541DBCC51400ECC61D /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 55B3B2531DBCC51400ECC61D /* Security.framework */; };
+		55EE6BE12947915E00C1AAE7 /* sha.c in Sources */ = {isa = PBXBuildFile; fileRef = 1BE97610163CC2A100BB34EA /* sha.c */; };
 		55F8D5602832F087001E86DF /* XADMaster.h in Headers */ = {isa = PBXBuildFile; fileRef = DF05DCF52806EF40001E9C52 /* XADMaster.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		73032E6C2626D3DD000C2751 /* XADWARCParserTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 73032E6B2626D3DD000C2751 /* XADWARCParserTests.m */; };
 		73032E6E2626DB7C000C2751 /* WARCFixtures in Resources */ = {isa = PBXBuildFile; fileRef = 73032E6D2626DB7C000C2751 /* WARCFixtures */; };
@@ -2804,11 +2810,11 @@
 				1B06D53C0DDA623800D9C000 /* filename.c */,
 				1B06D53D0DDA623800D9C000 /* fileunarc.c */,
 				1B06D53E0DDA623800D9C000 /* gpl.txt */,
-				1B06D53F0DDA623800D9C000 /* hook.c */,
 				1B06D5400DDA623800D9C000 /* hook_diskarc.c */,
 				1B06D5410DDA623800D9C000 /* hook_mem.c */,
 				1B06D5420DDA623800D9C000 /* hook_splitted.c */,
 				1B06D5430DDA623800D9C000 /* hook_stream.c */,
+				1B06D53F0DDA623800D9C000 /* hook.c */,
 				1B06D5440DDA623800D9C000 /* include */,
 				1B06D54A0DDA623800D9C000 /* info.c */,
 				1B06D54B0DDA623800D9C000 /* lgpl.txt */,
@@ -3839,6 +3845,7 @@
 				1BE97621163CC2A100BB34EA /* aesopt.h in Headers */,
 				1BE97629163CC2A100BB34EA /* aestab.h in Headers */,
 				1BE9762D163CC2A100BB34EA /* brg_endian.h in Headers */,
+				1BE97639163CC2A100BB34EA /* sha.h in Headers */,
 				1BA23F9F163DFBE4000D8174 /* hmac_sha1.h in Headers */,
 				1BA241F7163E1E6F000D8174 /* des.h in Headers */,
 				1B6F13D3163E25160054C1AE /* XADMD5Handle.h in Headers */,
@@ -4376,6 +4383,7 @@
 				1BE9761E163CC2A100BB34EA /* aesopt.h in Headers */,
 				1BE97626163CC2A100BB34EA /* aestab.h in Headers */,
 				1BE9762A163CC2A100BB34EA /* brg_endian.h in Headers */,
+				1BE97636163CC2A100BB34EA /* sha.h in Headers */,
 				1BA23F9C163DFBE4000D8174 /* hmac_sha1.h in Headers */,
 				1BA241F4163E1E6F000D8174 /* des.h in Headers */,
 				1B6F13D0163E25160054C1AE /* XADMD5Handle.h in Headers */,
@@ -4885,6 +4893,7 @@
 				1BE97617163CC2A100BB34EA /* aescrypt.c in Sources */,
 				1BE9761B163CC2A100BB34EA /* aeskey.c in Sources */,
 				1BE97623163CC2A100BB34EA /* aestab.c in Sources */,
+				1BE97633163CC2A100BB34EA /* sha.c in Sources */,
 				1BA23E7C163CDA70000D8174 /* aes_modes.c in Sources */,
 				734C13A321C7999200917EAA /* common_utils.c in Sources */,
 				1BA23F99163DFBE4000D8174 /* hmac_sha1.c in Sources */,
@@ -5115,6 +5124,7 @@
 				1BE97619163CC2A100BB34EA /* aescrypt.c in Sources */,
 				1BE9761D163CC2A100BB34EA /* aeskey.c in Sources */,
 				1BE97625163CC2A100BB34EA /* aestab.c in Sources */,
+				1BE97635163CC2A100BB34EA /* sha.c in Sources */,
 				1BA23E7E163CDA70000D8174 /* aes_modes.c in Sources */,
 				1BA23F9B163DFBE4000D8174 /* hmac_sha1.c in Sources */,
 				73396ED521C79D7200D36226 /* entropy_utils.c in Sources */,
@@ -5465,6 +5475,7 @@
 				551BAD271EB032B500EAF64E /* XADRegex.m in Sources */,
 				551BAD281EB032B500EAF64E /* XAD7ZipParser.m in Sources */,
 				551BAD291EB032B500EAF64E /* XADLZMAHandle.m in Sources */,
+				55EE6BE12947915E00C1AAE7 /* sha.c in Sources */,
 				551BAD2A1EB032B500EAF64E /* LzmaDec.c in Sources */,
 				551BAD2B1EB032B500EAF64E /* Bra86.c in Sources */,
 				551BAD2C1EB032B500EAF64E /* Bra.c in Sources */,
@@ -5871,6 +5882,7 @@
 				1BA9F02C1892A669007D9245 /* pbkdf2_hmac_sha256.c in Sources */,
 				1BE97622163CC2A100BB34EA /* aestab.c in Sources */,
 				1BA23E7B163CDA70000D8174 /* aes_modes.c in Sources */,
+				1BA23F95163DD4E9000D8174 /* sha.c in Sources */,
 				734C13A221C7999200917EAA /* common_utils.c in Sources */,
 				1BA23F98163DFBE4000D8174 /* hmac_sha1.c in Sources */,
 				1BA9F0251891DB01007D9245 /* hmac_sha256.c in Sources */,

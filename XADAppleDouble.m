@@ -175,14 +175,13 @@ extendedAttributes:(NSDictionary *)extattrs
 
 	// Sort keys and iterate over them.
 	NSArray *keys=[extattrs.allKeys sortedArrayUsingSelector:@selector(compare:)];
-	NSEnumerator *enumerator=[keys objectEnumerator];
 	NSString *key;
-	while((key=[enumerator nextObject]))
+	for (key in keys)
 	{
 		// Ignore FinderInfo.
 		if([key isEqual:@"com.apple.FinderInfo"]) continue;
 
-		 NSData *data=extattrs[key];
+		NSData *data=extattrs[key];
 		NSData *keydata=[key dataUsingEncoding:NSUTF8StringEncoding];
 		int namelen=(int)keydata.length+1;
 		if(namelen>128) continue; // Skip entries with too long names.
