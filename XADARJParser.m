@@ -93,7 +93,7 @@ static NSData *ReadNullTerminatedString(CSHandle *fh);
 	int firstsize=headerbytes[0];
 	//int version=headerbytes[1];
 	//int minversion=headerbytes[2];
-	//int os=headerbytes[3];
+	int os=headerbytes[3];
 	//int archiveflags=headerbytes[4];
 	//int securityversion=headerbytes[5];
 	int filetype=headerbytes[6];
@@ -112,8 +112,17 @@ static NSData *ReadNullTerminatedString(CSHandle *fh);
 	const char *comment=(const char *)&headerbytes[firstsize+filenamelen+1];
 	int commentlen=StringLength(comment,(const char *)&headerbytes[headersize]);
 
-	properties[XADCreationDateKey] = [NSDate XADDateWithMSDOSDateTime:archivecreataion];
-	properties[XADLastModificationDateKey] = [NSDate XADDateWithMSDOSDateTime:archivemodification];
+	if(os==2) // Unix dates
+	{
+		[properties setObject:[NSDate dateWithTimeIntervalSince1970:archivecreataion] forKey:XADCreationDateKey];
+		[properties setObject:[NSDate dateWithTimeIntervalSince1970:archivemodification] forKey:XADLastModificationDateKey];
+	}
+	else // MS-DOS/Windows dates
+	{
+		properties[XADCreationDateKey] = [NSDate XADDateWithMSDOSDateTime:archivecreataion];
+		properties[XADLastModificationDateKey] = [NSDate XADDateWithMSDOSDateTime:archivemodification];
+	}
+
 	if(filenamelen) properties[@"ARJOriginalArchiveName"] = [self XADStringWithBytes:filename length:filenamelen];
 	if(commentlen) properties[XADCommentKey] = [self XADStringWithBytes:comment length:commentlen];
 
@@ -202,9 +211,8 @@ static NSData *ReadNullTerminatedString(CSHandle *fh);
 			case 9: osname=@"VAX VMS"; break;
 			case 10: osname=@"Windows 95"; break;
 			case 11: osname=@"Win32"; break;
-			default: osname=@"Unknown"; break;
 		}
-		dict[@"ARJOSName"] = [self XADStringWithString:osname];
+		if(osname) dict[@"ARJOSName"] = [self XADStringWithString:osname];
 
 		NSString *methodname=nil;
 		switch(method)
@@ -214,9 +222,8 @@ static NSData *ReadNullTerminatedString(CSHandle *fh);
 			case 2: methodname=@"Medium"; break;
 			case 3: methodname=@"Fast"; break;
 			case 4: methodname=@"Fastest"; break;
-			default: methodname=@"Unknown"; break;
 		}
-		dict[XADCompressionNameKey] = [self XADStringWithString:methodname];
+		if(methodname) dict[XADCompressionNameKey] = [self XADStringWithString:methodname];
 
 		if(comment.length) dict[XADCommentKey] = [self XADStringWithData:comment];
 
