@@ -19,6 +19,7 @@
  * MA 02110-1301  USA
  */
 #import "CSFileHandle.h"
+#import "XADException.h"
 
 #include <sys/stat.h>
 
@@ -76,7 +77,12 @@ NSString *const CSFileErrorException=@"CSFileErrorException";
 
 +(CSFileHandle *)fileHandleForFileURL:(NSURL *)path modes:(NSString *)modes error:(NSError *__autoreleasing *)outErr
 {
-	if(!path) return nil;
+	if(!path) {
+		if (outErr) {
+			*outErr = [NSError errorWithDomain:XADErrorDomain code:XADErrorBadParameters userInfo:nil];
+		}
+		return nil;
+	}
 	
 #if defined(__COCOTRON__) // Cocotron
 	FILE *fileh=_wfopen([path fileSystemRepresentationW],
@@ -99,6 +105,9 @@ NSString *const CSFileErrorException=@"CSFileErrorException";
 	if(handle) return handle;
 	
 	fclose(fileh);
+	if (outErr) {
+		*outErr = [NSError errorWithDomain:XADErrorDomain code:XADErrorUnknown userInfo:@{NSURLErrorKey: path}];
+	}
 	return nil;
 }
 
