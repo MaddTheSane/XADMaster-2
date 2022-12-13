@@ -936,10 +936,7 @@ separators:(const char *)pathseparators parent:(XADPath *)parentpath
 	[mutabledata appendData:data];
 }
 
--(XADStringSource *)_sourceForPart
-{
-	return source;
-}
+@synthesize _sourceForPart=source;
 
 -(BOOL)isEqual:(id)other
 {
