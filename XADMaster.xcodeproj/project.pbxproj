@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 46;
+	objectVersion = 55;
 	objects = {
 
 /* Begin PBXAggregateTarget section */
@@ -137,7 +137,7 @@
 		1B34444213AACE2000C89872 /* XADAppleDouble.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B34444113AACE1F00C89872 /* XADAppleDouble.m */; };
 		1B34444313AACE2000C89872 /* XADAppleDouble.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B34444113AACE1F00C89872 /* XADAppleDouble.m */; };
 		1B34444413AACE2000C89872 /* XADAppleDouble.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B34444113AACE1F00C89872 /* XADAppleDouble.m */; };
-		1B349EF211BACA2900396C26 /* XADPlatformMacOSX.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B349EF011BACA2900396C26 /* XADPlatformMacOSX.m */; };
+		1B349EF211BACA2900396C26 /* XADPlatformMacOSX.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B349EF011BACA2900396C26 /* XADPlatformMacOSX.m */; platformFilters = (macos, ); };
 		1B34A55B11BDC1AD00396C26 /* RARAudioDecoder.c in Sources */ = {isa = PBXBuildFile; fileRef = 1B34A55711BDC1AC00396C26 /* RARAudioDecoder.c */; };
 		1B34A65011C01A5A00396C26 /* XADRAR15Handle.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B4CFB6B119B7F2500CDACC1 /* XADRAR15Handle.m */; };
 		1B34A7B511C2D97500396C26 /* XADRAR15CryptHandle.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B34A7B111C2D97500396C26 /* XADRAR15CryptHandle.m */; };
@@ -1820,6 +1820,7 @@
 		554B4AB521181D68002B3BAE /* XADArchive.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55541F711EA7FBC3001A6927 /* XADArchive.swift */; };
 		554B4AB621181D68002B3BAE /* XADSimpleUnarchiver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55541F761EA91BE0001A6927 /* XADSimpleUnarchiver.swift */; };
 		554B4AB721181D68002B3BAE /* XADHandle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 551FC04221120AE500FC1109 /* XADHandle.swift */; };
+		555563E52948784400827C90 /* XADPlatformiOS.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B83727C15CEA27000B0DC9D /* XADPlatformiOS.m */; platformFilters = (ios, maccatalyst, tvos, ); };
 		55702A53214D756D00372F73 /* XADTypes.h in Headers */ = {isa = PBXBuildFile; fileRef = 55702A52214D756D00372F73 /* XADTypes.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		55702A54214D756D00372F73 /* XADTypes.h in Headers */ = {isa = PBXBuildFile; fileRef = 55702A52214D756D00372F73 /* XADTypes.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		55702A8821500B0C00372F73 /* libc++.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 55702A8721500B0C00372F73 /* libc++.tbd */; };
@@ -5686,6 +5687,7 @@
 				1BC882B20ECA4D67006B47FE /* XADZipParser.m in Sources */,
 				1BC884820ECCCE41006B47FE /* XADZipImplodeHandle.m in Sources */,
 				1BC884860ECCCE69006B47FE /* XADZipShrinkHandle.m in Sources */,
+				555563E52948784400827C90 /* XADPlatformiOS.m in Sources */,
 				1BC885CA0ECD11BC006B47FE /* XADZipCryptHandle.m in Sources */,
 				1BC885CE0ECD11CF006B47FE /* XADWinZipAESHandle.m in Sources */,
 				1BC889680ECF9AD5006B47FE /* XADTarParser.m in Sources */,
@@ -6019,7 +6021,6 @@
 				);
 				GCC_WARN_ABOUT_DEPRECATED_FUNCTIONS = NO;
 				INSTALL_PATH = /usr/local/lib;
-				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				OTHER_LDFLAGS = "";
 				PRODUCT_NAME = XADMaster;
 			};
@@ -6135,7 +6136,8 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				MTL_ENABLE_DEBUG_INFO = NO;
-				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				SWIFT_VERSION = 5.0;
 				TVOS_DEPLOYMENT_TARGET = 12.0;
 				USE_HEADERMAP = NO;
@@ -6167,7 +6169,6 @@
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "@executable_path/../Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = "@loader_path";
-				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				OTHER_CFLAGS = "";
 				OTHER_LDFLAGS = (
 					"-weak_framework",
@@ -6177,6 +6178,10 @@
 				PRODUCT_NAME = XADMaster;
 				SDKROOT = macosx;
 				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "appletvos appletvsimulator iphoneos iphonesimulator macosx";
+				SUPPORTS_MACCATALYST = YES;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = YES;
+				TARGETED_DEVICE_FAMILY = "1,2,3";
 				WRAPPER_EXTENSION = framework;
 			};
 			name = Release;
@@ -6197,7 +6202,6 @@
 					"$(inherited)",
 				);
 				INSTALL_PATH = /usr/local/lib;
-				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				OTHER_LDFLAGS = "";
 				PRODUCT_NAME = XADMaster;
 			};
@@ -6587,7 +6591,6 @@
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "@executable_path/../Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = "@loader_path";
-				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				OTHER_CFLAGS = "";
 				OTHER_LDFLAGS = (
 					"-weak_framework",
@@ -6597,6 +6600,10 @@
 				PRODUCT_NAME = XADMaster;
 				SDKROOT = macosx;
 				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "appletvos appletvsimulator iphoneos iphonesimulator macosx";
+				SUPPORTS_MACCATALYST = YES;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = YES;
+				TARGETED_DEVICE_FAMILY = "1,2,3";
 				WRAPPER_EXTENSION = framework;
 			};
 			name = Debug;
@@ -6773,7 +6780,11 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				INFOPLIST_FILE = XADMasterTests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
 				MTL_ENABLE_DEBUG_INFO = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.macpaw.XADMasterTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -6814,7 +6825,11 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				INFOPLIST_FILE = XADMasterTests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
 				MTL_ENABLE_DEBUG_INFO = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = com.macpaw.XADMasterTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";

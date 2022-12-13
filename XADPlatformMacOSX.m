@@ -178,7 +178,7 @@ preservePermissions:(BOOL)preservepermissions
 	NSDictionary *extattrs=[parser extendedAttributesForDictionary:dict];
 	if(extattrs)
 	{
-		for(NSString *key in extattrs)
+		for (NSString *key in extattrs)
 		{
 			NSData *data=extattrs[key];
 

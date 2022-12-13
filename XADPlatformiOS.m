@@ -33,7 +33,7 @@
 
 +(void)load
 {
-	if (@available(iOS 9, macOS 10.11, *)) {
+	if (@available(macCatalyst 12.0, iOS 9, macOS 10.11, *)) {
 		[NSError setUserInfoValueProviderForDomain:XADErrorDomain provider:^id _Nullable(NSError * _Nonnull err, NSErrorUserInfoKey  _Nonnull userInfoKey) {
 			if ([userInfoKey isEqualToString:NSLocalizedDescriptionKey]) {
 				return [XADException localizedDescribeXADError:(XADError)err.code];
@@ -63,7 +63,7 @@ unarchiver:(XADUnarchiver *)unarchiver toPath:(NSString *)destpath
 forEntryWithDictionary:(NSDictionary *)dict parser:(XADArchiveParser *)parser
 preservePermissions:(BOOL)preservepermissions
 {
-	const char *cpath=[path fileSystemRepresentation];
+	const char *cpath=path.fileSystemRepresentation;
 
 	// Read file permissions.
 	struct stat st;
@@ -76,17 +76,15 @@ preservePermissions:(BOOL)preservepermissions
 	NSDictionary *extattrs=[parser extendedAttributesForDictionary:dict];
 	if(extattrs)
 	{
-		NSEnumerator *enumerator=[extattrs keyEnumerator];
-		NSString *key;
-		while((key=[enumerator nextObject]))
+		for (NSString *key in extattrs)
 		{
-			NSData *data=[extattrs objectForKey:key];
+			NSData *data=extattrs[key];
 
 			NSInteger namelen=[key lengthOfBytesUsingEncoding:NSUTF8StringEncoding];
 			char namebytes[namelen+1];
 			[key getCString:namebytes maxLength:sizeof(namebytes) encoding:NSUTF8StringEncoding];
 
-			setxattr(cpath,namebytes,[data bytes],[data length],0,XATTR_NOFOLLOW);
+			setxattr(cpath,namebytes,data.bytes,data.length,0,XATTR_NOFOLLOW);
 		}
 	}
 
@@ -103,26 +101,26 @@ preservePermissions:(BOOL)preservepermissions
 	if(creation)
 	{
 		list.commonattr|=ATTR_CMN_CRTIME;
-		*((struct timespec *)attrptr)=[creation timespecStruct];
+		*((struct timespec *)attrptr)=creation.timespecStruct;
 		attrptr+=sizeof(struct timeval);
 	}
 	if(modification)
 	{
 		list.commonattr|=ATTR_CMN_MODTIME;
-		*((struct timespec *)attrptr)=[modification timespecStruct];
+		*((struct timespec *)attrptr)=modification.timespecStruct;
 		attrptr+=sizeof(struct timeval);
 	}
 	if(access)
 	{
 		list.commonattr|=ATTR_CMN_ACCTIME;
-		*((struct timespec *)attrptr)=[access timespecStruct];
+		*((struct timespec *)attrptr)=access.timespecStruct;
 		attrptr+=sizeof(struct timeval);
 	}
 
 	// Figure out permissions, or reuse the earlier value.
 	mode_t mode=st.st_mode;
 	NSNumber *permissions=[dict objectForKey:XADPosixPermissionsKey];
-	if(permissions)
+	if(permissions != nil)
 	{
 		mode=[permissions unsignedShortValue];
 		if(!preservepermissions)
