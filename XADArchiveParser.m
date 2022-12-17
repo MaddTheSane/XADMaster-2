@@ -159,6 +159,10 @@ static NSComparisonResult CompareParserSignaturesLocations(id first,id second,vo
 	return [offset1 compare:offset2];
 }
 
+@interface XADArchiveParser ()
++ (void)throwExceptionFromError:(NSError*)error CLANG_ANALYZER_NORETURN;
+@end
+
 @implementation XADArchiveParser
 @synthesize delegate;
 @synthesize wasStopped = shouldstop;
@@ -1022,6 +1026,21 @@ regex:(XADRegex *)regex firstFileExtension:(NSString *)firstext
 
 
 
+// Hack: the current XADArchiveParser expects exceptions, and it'll take awhile to rewrite ALL the subclasses to work with NSErrors instead.
+// So we repackage the error as an exception.
++ (void)throwExceptionFromError:(NSError *)error
+{
+	if (![error.domain isEqualToString:XADErrorDomain]) {
+		[XADException raiseExceptionWithXADError:XADErrorDecrunch underlyingError:error];
+		return;
+	}
+	NSMutableDictionary *exceptionUserInfo = [error.userInfo mutableCopy];
+	exceptionUserInfo[@"XADError"] = @((XADError)error.code);
+	[[[NSException alloc] initWithName:XADExceptionName reason:[XADException describeXADError:(XADError)error.code]
+							  userInfo:exceptionUserInfo] raise];
+
+}
+
 -(void)addEntryWithDictionary:(NSMutableDictionary *)dict
 {
 	[self addEntryWithDictionary:dict retainPosition:NO];
@@ -1147,7 +1166,22 @@ regex:(XADRegex *)regex firstFileExtension:(NSString *)firstext
 
 
 	@autoreleasepool {
-		if ([delegate respondsToSelector:@selector(archiveParser:foundEntryWithDictionary:)]) {
+		if ([delegate respondsToSelector:@selector(archiveParser:foundEntryWithDictionary:error:)]) {
+			NSError *tmpErr = nil;
+			if (retainpos) {
+				off_t pos=sourcehandle.offsetInFile;
+				BOOL success = [delegate archiveParser:self foundEntryWithDictionary:dict error:&tmpErr];
+				if (!success) {
+					[XADArchiveParser throwExceptionFromError:tmpErr];
+				}
+				[sourcehandle seekToFileOffset:pos];
+			} else {
+				BOOL success = [delegate archiveParser:self foundEntryWithDictionary:dict error:&tmpErr];
+				if (!success) {
+					[XADArchiveParser throwExceptionFromError:tmpErr];
+				}
+			}
+		} else if ([delegate respondsToSelector:@selector(archiveParser:foundEntryWithDictionary:)]) {
 			if (retainpos) {
 				off_t pos=sourcehandle.offsetInFile;
 				[delegate archiveParser:self foundEntryWithDictionary:dict];

@@ -293,7 +293,8 @@ name:(NSString *)name;
 @protocol XADArchiveParserDelegate <NSObject>
 @optional
 
--(void)archiveParser:(XADArchiveParser *)parser foundEntryWithDictionary:(NSDictionary<XADArchiveKeys,id> *)dict;
+-(void)archiveParser:(XADArchiveParser *)parser foundEntryWithDictionary:(NSDictionary<XADArchiveKeys,id> *)dict NS_SWIFT_UNAVAILABLE("");
+-(BOOL)archiveParser:(XADArchiveParser *)parser foundEntryWithDictionary:(NSDictionary<XADArchiveKeys,id> *)dict error:(NSError**)outError;
 -(BOOL)archiveParsingShouldStop:(XADArchiveParser *)parser;
 -(void)archiveParserNeedsPassword:(XADArchiveParser *)parser;
 -(void)archiveParser:(XADArchiveParser *)parser findsFileInterestingForReason:(NSString *)reason;
