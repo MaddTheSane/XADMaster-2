@@ -28,7 +28,11 @@
 # endif
 #endif
 
+#ifdef __cplusplus
+#define XADEXTERN extern "C" XADEXPORT
+#else
 #define XADEXTERN extern XADEXPORT
+#endif
 
 #ifndef NS_TYPED_ENUM
 #define NS_TYPED_ENUM
