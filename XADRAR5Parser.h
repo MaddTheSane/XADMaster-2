@@ -26,10 +26,10 @@ typedef struct RAR5Block
 	uint64_t headersize,type,flags;
 	uint64_t extrasize,datasize;
 	off_t start,outerstart;
-	CSHandle *fh;
+	__unsafe_unretained CSHandle *fh;
 } RAR5Block;
 
-typedef enum {
+typedef NS_OPTIONS(uint64_t, RAR5ArchiveFlags) {
     RAR5ArchiveFlagsNone                   = 0,
     RAR5ArchiveFlagsVolume                 = 0x0001, // Volume. Archive is a part of multivolume set.
     RAR5ArchiveFlagsVolumeNumberPresent    = 0x0002, // Volume number field is present.
@@ -37,16 +37,16 @@ typedef enum {
     RAR5ArchiveFlagsSolid                  = 0x0004, // Solid archive.
     RAR5ArchiveFlagsRecoveryRecordPresent  = 0x0008, // Recovery record is present.
     RAR5ArchiveFlagsLocked                 = 0x0010, // Locked archive.
-} RAR5ArchiveFlags;
+};
 
-typedef enum {
+typedef NS_ENUM(uint64_t, RAR5HeaderType) {
    RAR5HeaderTypeUnknown    =  0,
    RAR5HeaderTypeMain       =  1, //   Main archive header.
    RAR5HeaderTypeFile       =  2, //   File header.
    RAR5HeaderTypeService    =  3, //   Service header.
    RAR5HeaderTypeEncryption =  4, //   Archive encryption header.
    RAR5HeaderTypeEnd        =  5, //   End of archive header.
-} RAR5HeaderType;
+};
 
 typedef struct RAR5HeaderBlock
 {
