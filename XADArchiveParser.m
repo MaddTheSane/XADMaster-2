@@ -77,6 +77,10 @@
 #import "XADZipSFXParsers.h"
 #import "XADZooParser.h"
 
+#if TARGET_OS_MAC
+#include <UniformTypeIdentifiers/UniformTypeIdentifiers.h>
+#endif
+
 #include <dirent.h>
 
 #if !__has_feature(objc_arc)
@@ -1656,6 +1660,53 @@ name:(NSString *)name { return nil; }
 		CFRetain(baseUTI);
 	}
 	return CFBridgingRelease(possibleOSUTI);
+}
+
++(UTType*)possibleContentTypeForDictionary:(NSDictionary<XADArchiveKeys,id> *)dict
+{
+	if (dict[XADIsFIFOKey] && [dict[XADIsFIFOKey] boolValue]) {
+		// TODO: find the UTI
+		return UTTypeContent;
+	}
+	
+	if (dict[XADIsCharacterDeviceKey] && [dict[XADIsCharacterDeviceKey] boolValue]) {
+		// TODO: find the UTI
+		return UTTypeContent;
+	}
+
+	if (dict[XADIsBlockDeviceKey] && [dict[XADIsBlockDeviceKey] boolValue]) {
+		// TODO: find the UTI
+		return UTTypeContent;
+	}
+
+	if (dict[XADIsLinkKey] != nil && [dict[XADIsLinkKey] boolValue]) {
+		return UTTypeSymbolicLink;
+	}
+
+	UTType *baseUTI = UTTypeData;
+	if (dict[XADIsDirectoryKey] != nil && [dict[XADIsDirectoryKey] boolValue]) {
+		baseUTI = UTTypeDirectory;
+	}
+
+#if TARGET_OS_OSX
+	if (dict[XADFileTypeKey] != nil && [dict[XADFileTypeKey] unsignedIntValue] != 0
+		// To my knowledge, no directory has an OSType
+		&& baseUTI != UTTypeDirectory) {
+		NSNumber *numOSType = dict[XADFileTypeKey];
+		NSString *strOSType = CFBridgingRelease(UTCreateStringForOSType(numOSType.unsignedIntValue));
+		UTType *possibleOSUTI = [UTType typeWithTag:strOSType tagClass:@"com.apple.ostype" conformingToType:baseUTI];
+		if (possibleOSUTI && possibleOSUTI.isDeclared) {
+			baseUTI = possibleOSUTI;
+		}
+	}
+#endif
+
+	NSString *lastPathComp = [[dict[XADFileNameKey] string] lastPathComponent].pathExtension;
+	UTType *possibleOSUTI = [UTType typeWithTag:lastPathComp tagClass:UTTagClassFilenameExtension conformingToType:baseUTI];
+	if (possibleOSUTI == NULL || !possibleOSUTI.isDeclared) {
+		return baseUTI;
+	}
+	return possibleOSUTI;
 }
 #endif
 

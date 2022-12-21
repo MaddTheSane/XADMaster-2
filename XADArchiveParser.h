@@ -34,69 +34,71 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class UTType;
+
 typedef NSString *XADArchiveKeys NS_TYPED_EXTENSIBLE_ENUM;
 
-XADEXTERN XADArchiveKeys const XADFileNameKey;
-XADEXTERN XADArchiveKeys const XADCommentKey;
-XADEXTERN XADArchiveKeys const XADFileSizeKey;
-XADEXTERN XADArchiveKeys const XADCompressedSizeKey;
-XADEXTERN XADArchiveKeys const XADCompressionNameKey;
+XADEXTERN XADArchiveKeys const XADFileNameKey NS_SWIFT_NAME(fileName);
+XADEXTERN XADArchiveKeys const XADCommentKey NS_SWIFT_NAME(comment);
+XADEXTERN XADArchiveKeys const XADFileSizeKey NS_SWIFT_NAME(fileSize);
+XADEXTERN XADArchiveKeys const XADCompressedSizeKey NS_SWIFT_NAME(compressedSize);
+XADEXTERN XADArchiveKeys const XADCompressionNameKey NS_SWIFT_NAME(compressionName);
 
-XADEXTERN XADArchiveKeys const XADLastModificationDateKey;
-XADEXTERN XADArchiveKeys const XADLastAccessDateKey;
-XADEXTERN XADArchiveKeys const XADLastAttributeChangeDateKey;
-XADEXTERN XADArchiveKeys const XADLastBackupDateKey;
-XADEXTERN XADArchiveKeys const XADCreationDateKey;
+XADEXTERN XADArchiveKeys const XADLastModificationDateKey NS_SWIFT_NAME(lastModificationDate);
+XADEXTERN XADArchiveKeys const XADLastAccessDateKey NS_SWIFT_NAME(lastAccessDate);
+XADEXTERN XADArchiveKeys const XADLastAttributeChangeDateKey NS_SWIFT_NAME(lastAttributeChangeDate);
+XADEXTERN XADArchiveKeys const XADLastBackupDateKey NS_SWIFT_NAME(lastBackupDate);
+XADEXTERN XADArchiveKeys const XADCreationDateKey NS_SWIFT_NAME(creationDate);
 
-XADEXTERN XADArchiveKeys const XADIsDirectoryKey;
-XADEXTERN XADArchiveKeys const XADIsResourceForkKey;
-XADEXTERN XADArchiveKeys const XADIsArchiveKey;
-XADEXTERN XADArchiveKeys const XADIsHiddenKey;
-XADEXTERN XADArchiveKeys const XADIsLinkKey;
-XADEXTERN XADArchiveKeys const XADIsHardLinkKey;
-XADEXTERN XADArchiveKeys const XADLinkDestinationKey;
-XADEXTERN XADArchiveKeys const XADIsCharacterDeviceKey;
-XADEXTERN XADArchiveKeys const XADIsBlockDeviceKey;
-XADEXTERN XADArchiveKeys const XADDeviceMajorKey;
-XADEXTERN XADArchiveKeys const XADDeviceMinorKey;
-XADEXTERN XADArchiveKeys const XADIsFIFOKey;
-XADEXTERN XADArchiveKeys const XADIsEncryptedKey;
-XADEXTERN XADArchiveKeys const XADIsCorruptedKey;
+XADEXTERN XADArchiveKeys const XADIsDirectoryKey NS_SWIFT_NAME(isDirectory);
+XADEXTERN XADArchiveKeys const XADIsResourceForkKey NS_SWIFT_NAME(isResourceFork);
+XADEXTERN XADArchiveKeys const XADIsArchiveKey NS_SWIFT_NAME(isArchive);
+XADEXTERN XADArchiveKeys const XADIsHiddenKey NS_SWIFT_NAME(isHidden);
+XADEXTERN XADArchiveKeys const XADIsLinkKey NS_SWIFT_NAME(isLink);
+XADEXTERN XADArchiveKeys const XADIsHardLinkKey NS_SWIFT_NAME(isHardLink);
+XADEXTERN XADArchiveKeys const XADLinkDestinationKey NS_SWIFT_NAME(linkDestination);
+XADEXTERN XADArchiveKeys const XADIsCharacterDeviceKey NS_SWIFT_NAME(isCharacterDevice);
+XADEXTERN XADArchiveKeys const XADIsBlockDeviceKey NS_SWIFT_NAME(isBlockDevice);
+XADEXTERN XADArchiveKeys const XADDeviceMajorKey NS_SWIFT_NAME(deviceMajor);
+XADEXTERN XADArchiveKeys const XADDeviceMinorKey NS_SWIFT_NAME(deviceMinor);
+XADEXTERN XADArchiveKeys const XADIsFIFOKey NS_SWIFT_NAME(isFIFO);
+XADEXTERN XADArchiveKeys const XADIsEncryptedKey NS_SWIFT_NAME(isEncrypted);
+XADEXTERN XADArchiveKeys const XADIsCorruptedKey NS_SWIFT_NAME(isCorrupted);
 
-XADEXTERN XADArchiveKeys const XADExtendedAttributesKey;
-XADEXTERN XADArchiveKeys const XADFileTypeKey;
-XADEXTERN XADArchiveKeys const XADFileCreatorKey;
-XADEXTERN XADArchiveKeys const XADFinderFlagsKey;
-XADEXTERN XADArchiveKeys const XADFinderInfoKey;
-XADEXTERN XADArchiveKeys const XADPosixPermissionsKey;
-XADEXTERN XADArchiveKeys const XADPosixUserKey;
-XADEXTERN XADArchiveKeys const XADPosixGroupKey;
-XADEXTERN XADArchiveKeys const XADPosixUserNameKey;
-XADEXTERN XADArchiveKeys const XADPosixGroupNameKey;
-XADEXTERN XADArchiveKeys const XADDOSFileAttributesKey NS_SWIFT_NAME(dosFileAttributesKey);
-XADEXTERN XADArchiveKeys const XADWindowsFileAttributesKey;
-XADEXTERN XADArchiveKeys const XADAmigaProtectionBitsKey;
+XADEXTERN XADArchiveKeys const XADExtendedAttributesKey NS_SWIFT_NAME(extendedAttributes);
+XADEXTERN XADArchiveKeys const XADFileTypeKey NS_SWIFT_NAME(fileType);
+XADEXTERN XADArchiveKeys const XADFileCreatorKey NS_SWIFT_NAME(fileCreator);
+XADEXTERN XADArchiveKeys const XADFinderFlagsKey NS_SWIFT_NAME(finderFlags);
+XADEXTERN XADArchiveKeys const XADFinderInfoKey NS_SWIFT_NAME(finderInfo);
+XADEXTERN XADArchiveKeys const XADPosixPermissionsKey NS_SWIFT_NAME(posixPermissions);
+XADEXTERN XADArchiveKeys const XADPosixUserKey NS_SWIFT_NAME(posixUser);
+XADEXTERN XADArchiveKeys const XADPosixGroupKey NS_SWIFT_NAME(posixGroup);
+XADEXTERN XADArchiveKeys const XADPosixUserNameKey NS_SWIFT_NAME(posixUserName);
+XADEXTERN XADArchiveKeys const XADPosixGroupNameKey NS_SWIFT_NAME(posixGroupName);
+XADEXTERN XADArchiveKeys const XADDOSFileAttributesKey NS_SWIFT_NAME(dosFileAttributes);
+XADEXTERN XADArchiveKeys const XADWindowsFileAttributesKey NS_SWIFT_NAME(windowsFileAttributes);
+XADEXTERN XADArchiveKeys const XADAmigaProtectionBitsKey NS_SWIFT_NAME(amigaProtectionBits);
 
-XADEXTERN XADArchiveKeys const XADIndexKey;
-XADEXTERN XADArchiveKeys const XADDataOffsetKey;
-XADEXTERN XADArchiveKeys const XADDataLengthKey;
-XADEXTERN XADArchiveKeys const XADSkipOffsetKey;
-XADEXTERN XADArchiveKeys const XADSkipLengthKey;
+XADEXTERN XADArchiveKeys const XADIndexKey NS_SWIFT_NAME(index);
+XADEXTERN XADArchiveKeys const XADDataOffsetKey NS_SWIFT_NAME(dataOffset);
+XADEXTERN XADArchiveKeys const XADDataLengthKey NS_SWIFT_NAME(dataLength);
+XADEXTERN XADArchiveKeys const XADSkipOffsetKey NS_SWIFT_NAME(skipOffset);
+XADEXTERN XADArchiveKeys const XADSkipLengthKey NS_SWIFT_NAME(skipLength);
 
-XADEXTERN XADArchiveKeys const XADIsSolidKey;
-XADEXTERN XADArchiveKeys const XADFirstSolidIndexKey;
-XADEXTERN XADArchiveKeys const XADFirstSolidEntryKey;
-XADEXTERN XADArchiveKeys const XADNextSolidIndexKey;
-XADEXTERN XADArchiveKeys const XADNextSolidEntryKey;
-XADEXTERN XADArchiveKeys const XADSolidObjectKey;
-XADEXTERN XADArchiveKeys const XADSolidOffsetKey;
-XADEXTERN XADArchiveKeys const XADSolidLengthKey;
+XADEXTERN XADArchiveKeys const XADIsSolidKey NS_SWIFT_NAME(isSolid);
+XADEXTERN XADArchiveKeys const XADFirstSolidIndexKey NS_SWIFT_NAME(firstSolidIndex);
+XADEXTERN XADArchiveKeys const XADFirstSolidEntryKey NS_SWIFT_NAME(firstSolidEntry);
+XADEXTERN XADArchiveKeys const XADNextSolidIndexKey NS_SWIFT_NAME(nextSolidIndex);
+XADEXTERN XADArchiveKeys const XADNextSolidEntryKey NS_SWIFT_NAME(nextSolidEntry);
+XADEXTERN XADArchiveKeys const XADSolidObjectKey NS_SWIFT_NAME(solidObject);
+XADEXTERN XADArchiveKeys const XADSolidOffsetKey NS_SWIFT_NAME(solidOffset);
+XADEXTERN XADArchiveKeys const XADSolidLengthKey NS_SWIFT_NAME(solidLength);
 
 // Archive properties only
-XADEXTERN XADArchiveKeys const XADArchiveNameKey;
-XADEXTERN XADArchiveKeys const XADVolumesKey;
-XADEXTERN XADArchiveKeys const XADVolumeScanningFailedKey;
-XADEXTERN XADArchiveKeys const XADDiskLabelKey;
+XADEXTERN XADArchiveKeys const XADArchiveNameKey NS_SWIFT_NAME(archiveName);
+XADEXTERN XADArchiveKeys const XADVolumesKey NS_SWIFT_NAME(volumes);
+XADEXTERN XADArchiveKeys const XADVolumeScanningFailedKey NS_SWIFT_NAME(volumeScanningFailed);
+XADEXTERN XADArchiveKeys const XADDiskLabelKey NS_SWIFT_NAME(diskLabel);
 
 XADEXTERN XADArchiveKeys const XADSignatureOffset;
 XADEXTERN XADArchiveKeys const XADParserClass;
@@ -192,6 +194,8 @@ propertiesToAdd:(NSMutableDictionary<XADArchiveKeys,id> *)props;
 -(nullable NSData *)finderInfoForDictionary:(NSDictionary<XADArchiveKeys,id> *)dict;
 #if __APPLE__
 +(NSString*)possibleUTIForDictionary:(NSDictionary<XADArchiveKeys,id> *)dict;
+
++(UTType*)possibleContentTypeForDictionary:(NSDictionary<XADArchiveKeys,id> *)dict API_AVAILABLE(macos(11.0), macCatalyst(14.0), ios(14.0), watchos(7.0), tvos(14.0));
 #endif
 
 @property (NS_NONATOMIC_IOSONLY, readonly) BOOL wasStopped;
