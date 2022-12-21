@@ -20,6 +20,7 @@
  */
 #import "CSHandle.h"
 #import "CSSubHandle.h"
+#import "XADException.h"
 
 #include <sys/stat.h>
 
@@ -527,5 +528,122 @@ CSWriteValueImpl(uint32_t,writeID,CSSetUInt32BE)
 {
 	return [[[self class] allocWithZone:zone] initAsCopyOf:self];
 }
+
+@end
+
+@implementation CSHandle (NSErrorMethods)
+
+-(nullable NSData *)fileContentsWithError:(NSError *__autoreleasing  _Nullable *)error
+{
+	@try {
+		return [self fileContents];
+	} @catch (NSException *exception) {
+		if (error) {
+			*error = [XADException parseExceptionReturningNSError:exception];
+		}
+		return nil;
+	}
+}
+
+-(nullable NSData *)remainingFileContentsWithError:(NSError**)error
+{
+	@try {
+		return [self remainingFileContents];
+	} @catch (NSException *exception) {
+		if (error) {
+			*error = [XADException parseExceptionReturningNSError:exception];
+		}
+		return nil;
+	}
+}
+
+-(nullable NSData *)readDataOfLength:(int)length error:(NSError**)error
+{
+	@try {
+		return [self readDataOfLength:length];
+	} @catch (NSException *exception) {
+		if (error) {
+			*error = [XADException parseExceptionReturningNSError:exception];
+		}
+		return nil;
+	}
+}
+
+-(nullable NSData *)readDataOfLengthAtMost:(int)length error:(NSError**)error
+{
+	@try {
+		return [self readDataOfLengthAtMost:length];
+	} @catch (NSException *exception) {
+		if (error) {
+			*error = [XADException parseExceptionReturningNSError:exception];
+		}
+		return nil;
+	}
+}
+
+-(nullable NSData *)copyDataOfLength:(int)length error:(NSError**)error
+{
+	@try {
+		return [self copyDataOfLength:length];
+	} @catch (NSException *exception) {
+		if (error) {
+			*error = [XADException parseExceptionReturningNSError:exception];
+		}
+		return nil;
+	}
+}
+
+-(nullable NSData *)copyDataOfLengthAtMost:(int)length error:(NSError**)error
+{
+	@try {
+		return [self copyDataOfLengthAtMost:length];
+	} @catch (NSException *exception) {
+		if (error) {
+			*error = [XADException parseExceptionReturningNSError:exception];
+		}
+		return nil;
+	}
+
+}
+
+-(BOOL)readBytes:(int)num toBuffer:(void *)buffer error:(NSError**)error
+{
+	@try {
+		[self readBytes:num toBuffer:buffer];
+		return YES;
+	} @catch (NSException *exception) {
+		if (error) {
+			*error = [XADException parseExceptionReturningNSError:exception];
+		}
+		return NO;
+	}
+}
+
+
+- (off_t)readAndDiscardAtMost:(off_t)num error:(NSError *__autoreleasing  _Nullable *)error
+{
+	@try {
+		return [self readAndDiscardAtMost:num];
+	} @catch (NSException *exception) {
+		if (error) {
+			*error = [XADException parseExceptionReturningNSError:exception];
+		}
+		return -1;
+	}
+}
+
+- (BOOL)readAndDiscardBytes:(off_t)num error:(NSError *__autoreleasing  _Nullable *)error
+{
+	@try {
+		[self readAndDiscardBytes:num];
+		return YES;
+	} @catch (NSException *exception) {
+		if (error) {
+			*error = [XADException parseExceptionReturningNSError:exception];
+		}
+		return NO;
+	}
+}
+
 
 @end

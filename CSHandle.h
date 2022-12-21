@@ -114,16 +114,16 @@ XADEXPORT
 -(nullable NSString *)readLineWithEncoding:(NSStringEncoding)encoding;
 -(nullable NSString *)readUTF8Line;
 
--(NSData *)fileContents;
--(NSData *)remainingFileContents;
--(NSData *)readDataOfLength:(int)length;
--(NSData *)readDataOfLengthAtMost:(int)length;
--(NSData *)copyDataOfLength:(int)length;
--(NSData *)copyDataOfLengthAtMost:(int)length;
--(void)readBytes:(int)num toBuffer:(void *)buffer;
+-(NSData *)fileContents NS_SWIFT_UNAVAILABLE("Call can throw exception");
+-(NSData *)remainingFileContents NS_SWIFT_UNAVAILABLE("Call can throw exception");
+-(NSData *)readDataOfLength:(int)length NS_SWIFT_UNAVAILABLE("Call can throw exception");
+-(NSData *)readDataOfLengthAtMost:(int)length NS_SWIFT_UNAVAILABLE("Call can throw exception");
+-(NSData *)copyDataOfLength:(int)length NS_SWIFT_UNAVAILABLE("Call can throw exception");
+-(NSData *)copyDataOfLengthAtMost:(int)length NS_SWIFT_UNAVAILABLE("Call can throw exception");
+-(void)readBytes:(int)num toBuffer:(void *)buffer NS_SWIFT_UNAVAILABLE("Call can throw exception");
 
--(off_t)readAndDiscardAtMost:(off_t)num;
--(void)readAndDiscardBytes:(off_t)num;
+-(off_t)readAndDiscardAtMost:(off_t)num NS_SWIFT_UNAVAILABLE("Call can throw exception");
+-(void)readAndDiscardBytes:(off_t)num NS_SWIFT_UNAVAILABLE("Call can throw exception");
 
 -(CSHandle *)subHandleOfLength:(off_t)length;
 -(CSHandle *)subHandleFrom:(off_t)start length:(off_t)length;
@@ -166,6 +166,22 @@ XADEXPORT
 @property (NS_NONATOMIC_IOSONLY, readonly, copy, nullable) NSString *name;
 @property (NS_NONATOMIC_IOSONLY, strong, nullable) CSHandle *parentHandle;
 
+@end
+
+@interface CSHandle (NSErrorMethods)
+#pragma mark - NSError data reading methods
+-(nullable NSData *)fileContentsWithError:(NSError**)error;
+-(nullable NSData *)remainingFileContentsWithError:(NSError**)error;
+-(nullable NSData *)readDataOfLength:(int)length error:(NSError**)error;
+-(nullable NSData *)readDataOfLengthAtMost:(int)length error:(NSError**)error;
+-(nullable NSData *)copyDataOfLength:(int)length error:(NSError**)error;
+-(nullable NSData *)copyDataOfLengthAtMost:(int)length error:(NSError**)error;
+-(BOOL)readBytes:(int)num toBuffer:(void *)buffer error:(NSError**)error;
+
+-(off_t)readAndDiscardAtMost:(off_t)num error:(NSError**)error NS_REFINED_FOR_SWIFT;
+-(BOOL)readAndDiscardBytes:(off_t)num error:(NSError**)error;
+
+#pragma mark -
 @end
 
 static inline int16_t CSInt16BE(const uint8_t *b) { return ((int16_t)b[0]<<8)|(int16_t)b[1]; }
