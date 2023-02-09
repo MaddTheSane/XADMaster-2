@@ -27,18 +27,18 @@ public extension XADStringProtocol {
 }
 
 extension XADString {
-	@nonobjc public class func encodingName(for encoding: String.Encoding) -> XADStringEncodingName {
+	@nonobjc @inlinable public class func encodingName(for encoding: String.Encoding) -> XADString.EncodingName {
 		return encodingName(forEncoding: encoding.rawValue)
 	}
 	
-	@nonobjc public class func encoding(for encoding: XADStringEncodingName) -> String.Encoding {
+	@nonobjc public class func encoding(for encoding: XADString.EncodingName) -> String.Encoding {
 		return String.Encoding(rawValue: self.encoding(forEncodingName: encoding))
 	}
 }
 
-public extension XADStringEncodingName {
+public extension XADString.EncodingName {
 	@inlinable init(forEncoding encoding: String.Encoding) {
-		self = XADString.encodingName(for: encoding)
+		self = XADString.encodingName(forEncoding: encoding.rawValue)
 	}
 	
 	@inlinable var encoding: String.Encoding {

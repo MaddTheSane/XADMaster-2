@@ -32,10 +32,10 @@ NS_ASSUME_NONNULL_BEGIN
 // Swift wrapping needed to make sure the Swift doesn't try to unwrap
 // an NSNumber posing as an NSString
 //! The supported encodings used by \c XADString
-typedef NSObject<NSCopying, NSSecureCoding> *XADStringEncodingName NS_TYPED_ENUM;
+typedef NSObject<NSCopying, NSSecureCoding> *XADStringEncodingName NS_TYPED_ENUM NS_SWIFT_NAME(XADString.EncodingName);
 #else
 //! The supported encodings used by \c XADString
-typedef NSString *XADStringEncodingName NS_TYPED_ENUM;
+typedef NSString *XADStringEncodingName NS_TYPED_ENUM NS_SWIFT_NAME(XADString.EncodingName);
 #endif
 
 XADEXTERN XADStringEncodingName const XADUTF8StringEncodingName NS_SWIFT_NAME(XADStringEncodingName.utf8);
@@ -158,9 +158,8 @@ XADEXPORT
 +(nullable NSData *)dataForString:(NSString *)string encodingName:(XADStringEncodingName)encoding;
 #if __has_feature(objc_class_property)
 @property (class, NS_NONATOMIC_IOSONLY, readonly, copy) NSArray<NSArray<NSString*>*> *availableEncodingNames;
-#else
-+(NSArray<NSArray<NSString*>*> *)availableEncodingNames;
 #endif
++(NSArray<NSArray<NSString*>*> *)availableEncodingNames;
 
 #ifdef __APPLE__
 +(XADStringEncodingName)encodingNameForEncoding:(NSStringEncoding)encoding;

@@ -9,7 +9,7 @@
 import Foundation
 
 extension XADUnarchiver {
-	@nonobjc public func extractEntry(with dictionary: [XADArchiveKeys: Any], as path: String? = nil, forceDirectories: Bool = false) throws {
+	@nonobjc public func extractEntry(with dictionary: [XADArchiveParser.Keys: Any], as path: String? = nil, forceDirectories: Bool = false) throws {
 		try extractEntry(with: dictionary, as: path, forceDirectories: forceDirectories, error: ())
 	}
 }
