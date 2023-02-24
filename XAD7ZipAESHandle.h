@@ -21,15 +21,7 @@
 
 #import "CSBlockStreamHandle.h"
 
-#import "Crypto/aes.h"
-
 @interface XAD7ZipAESHandle:CSBlockStreamHandle
-{
-	off_t startoffs;
-
-	aes_decrypt_ctx aes;
-	uint8_t iv[16],block[16],buffer[65536];
-}
 
 +(int)logRoundsForPropertyData:(NSData *)propertydata;
 +(NSData *)saltForPropertyData:(NSData *)propertydata;

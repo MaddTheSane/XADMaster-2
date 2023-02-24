@@ -21,7 +21,6 @@
 #import "PDFEncryptionUtils.h"
 #if defined(USE_COMMON_CRYPTO) && USE_COMMON_CRYPTO
 #include <CommonCrypto/CommonCrypto.h>
-#include <Security/Security.h>
 typedef CC_MD5_CTX XADMD5;
 #define XADMD5_Init CC_MD5_Init
 #define XADMD5_Update CC_MD5_Update
@@ -34,8 +33,6 @@ typedef MD5_CTX XADMD5;
 #define XADMD5_Update MD5_Update
 #define XADMD5_Final MD5_Final
 #endif
-
-#import "../Crypto/aes.h"
 
 
 NSString *const PDFMD5FinishedException=@"PDFMD5FinishedException";
@@ -113,12 +110,13 @@ NSString *const PDFMD5FinishedException=@"PDFMD5FinishedException";
 	
 	NSData *key,*iv;
 	
-#if (defined(USE_COMMON_CRYPTO) && USE_COMMON_CRYPTO) && TARGET_OS_OSX
-	SecKeyRef aeskey;
+#if (defined(USE_COMMON_CRYPTO) && USE_COMMON_CRYPTO)
+	CCCryptorRef aeskey;
 #else
 	aes_decrypt_ctx aes;
+	uint8_t ivbuffer[16];
 #endif
-	uint8_t ivbuffer[16],streambuffer[16];
+	uint8_t streambuffer[16];
 }
 
 -(id)initWithHandle:(CSHandle *)handle key:(NSData *)keydata
@@ -132,9 +130,8 @@ NSString *const PDFMD5FinishedException=@"PDFMD5FinishedException";
 
 		[self setBlockPointer:streambuffer];
 
-#if (defined(USE_COMMON_CRYPTO) && USE_COMMON_CRYPTO) && TARGET_OS_OSX
-		NSDictionary *keyStuff = @{(id)kSecAttrKeyType : (id)kSecAttrKeyTypeAES};
-		aeskey = SecKeyCreateFromData((CFDictionaryRef)keyStuff, (CFDataRef)key, NULL);
+#if (defined(USE_COMMON_CRYPTO) && USE_COMMON_CRYPTO)
+		CCCryptorStatus status = CCCryptorCreateWithMode(kCCDecrypt, kCCModeCBC, kCCAlgorithmAES, 0, iv.bytes, key.bytes, key.length, NULL, 0, 0, 0, &aeskey);
 #else
 		aes_decrypt_key([key bytes],(int)[key length]*8,&aes);
 #endif
@@ -146,8 +143,8 @@ NSString *const PDFMD5FinishedException=@"PDFMD5FinishedException";
 {
 	[key release];
 	[iv release];
-#if (defined(USE_COMMON_CRYPTO) && USE_COMMON_CRYPTO) && TARGET_OS_OSX
-	CFRelease(aeskey);
+#if (defined(USE_COMMON_CRYPTO) && USE_COMMON_CRYPTO)
+	CCCryptorRelease(aeskey);
 #endif
 	[super dealloc];
 }
@@ -155,26 +152,19 @@ NSString *const PDFMD5FinishedException=@"PDFMD5FinishedException";
 -(void)resetBlockStream
 {
 	[parent seekToFileOffset:startoffs];
+#if (defined(USE_COMMON_CRYPTO) && USE_COMMON_CRYPTO)
+	CCCryptorReset(aeskey, iv.bytes);
+#else
 	memcpy(ivbuffer,[iv bytes],16);
+#endif
 }
 
 -(int)produceBlockAtOffset:(off_t)pos
 {
 	uint8_t inbuf[16];
 	[parent readBytes:16 toBuffer:inbuf];
-#if (defined(USE_COMMON_CRYPTO) && USE_COMMON_CRYPTO) && TARGET_OS_OSX
-	SecTransformRef decrypt = SecDecryptTransformCreate(aeskey, NULL);
-	SecTransformSetAttribute(decrypt, kSecEncryptionMode, kSecModeCBCKey, NULL);
-	SecTransformSetAttribute(decrypt, kSecIVKey, (CFDataRef)[NSData dataWithBytesNoCopy:ivbuffer length:16 freeWhenDone:NO], NULL);
-	NSData *encData = [NSData dataWithBytes:inbuf length:sizeof(inbuf)];
-	
-	SecTransformSetAttribute(decrypt, kSecTransformInputAttributeName,
-							 (CFDataRef)encData, NULL);
-	
-	NSData *decryptedData = CFBridgingRelease(SecTransformExecute(decrypt, NULL));
-	[decryptedData getBytes:streambuffer length:16];
-	CFRelease(decrypt);
-	
+#if (defined(USE_COMMON_CRYPTO) && USE_COMMON_CRYPTO)
+	CCCryptorUpdate(aeskey, inbuf, sizeof(inbuf), streambuffer, 16, NULL);
 #else
 	
 	aes_cbc_decrypt(inbuf,streambuffer,16,ivbuffer,&aes);

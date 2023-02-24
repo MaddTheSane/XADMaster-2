@@ -29,6 +29,7 @@ typedef CC_SHA256_CTX XADSHA256;
 #define XADSHA256_Update CC_SHA256_Update
 #else
 #include "Crypto/sha.h"
+#include "Crypto/aes.h"
 typedef SHA_CTX XADSHA256;
 #define XADSHA256_Init SHA256_Init
 #define XADSHA256_Final SHA256_Final
@@ -36,6 +37,19 @@ typedef SHA_CTX XADSHA256;
 #endif
 
 @implementation XAD7ZipAESHandle
+{
+	off_t startoffs;
+
+#if defined(USE_COMMON_CRYPTO) && USE_COMMON_CRYPTO
+	// TODO: make sure this acutally works!
+	CCCryptorRef cryptor;
+	uint8_t iv[kCCBlockSizeAES128];
+#else
+	aes_decrypt_ctx aes;
+	uint8_t iv[16],block[16];
+#endif
+	uint8_t buffer[65536];
+}
 
 +(int)logRoundsForPropertyData:(NSData *)propertydata
 {
@@ -158,7 +172,11 @@ typedef SHA_CTX XADSHA256;
 		memcpy(iv,ivbytes,ivlength);
 
 		const uint8_t *keybytes=keydata.bytes;
+#if defined(USE_COMMON_CRYPTO) && USE_COMMON_CRYPTO
+		CCCryptorStatus status = CCCryptorCreateWithMode(kCCDecrypt, kCCModeCBC, kCCAlgorithmAES, 0, iv, keybytes, keydata.length, NULL, 0, 0, 0, &cryptor);
+#else
 		aes_decrypt_key256(keybytes,&aes);
+#endif
 	}
 
 	return self;
@@ -168,7 +186,11 @@ typedef SHA_CTX XADSHA256;
 {
 	[parent seekToFileOffset:startoffs];
 	[self setBlockPointer:buffer];
+#if defined(USE_COMMON_CRYPTO) && USE_COMMON_CRYPTO
+	CCCryptorReset(cryptor, iv);
+#else
 	memcpy(block,iv,sizeof(iv));
+#endif
 }
 
 -(int)produceBlockAtOffset:(off_t)pos
@@ -176,9 +198,22 @@ typedef SHA_CTX XADSHA256;
 	int actual=[parent readAtMost:sizeof(buffer) toBuffer:buffer];
 	if(actual==0) return -1;
 
+#if defined(USE_COMMON_CRYPTO) && USE_COMMON_CRYPTO
+	size_t retVal;
+	CCCryptorUpdate(cryptor, buffer, actual&~15, buffer, actual&~15, &retVal);
+#else
 	aes_cbc_decrypt(buffer,buffer,actual&~15,block,&aes);
+#endif
 
 	return actual;
 }
+
+#if defined(USE_COMMON_CRYPTO) && USE_COMMON_CRYPTO
+- (void)dealloc
+{
+	CCCryptorRelease(cryptor);
+	[super dealloc];
+}
+#endif
 
 @end
