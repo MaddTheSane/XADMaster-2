@@ -309,6 +309,7 @@
 // FIXME: Improve extractEntryWithDictionary:as:forceDirectories:error: with an NSError value.
 -(BOOL)extractEntryWithDictionary:(NSDictionary<XADArchiveKeys,id> *)dict as:(nullable NSString *)path forceDirectories:(BOOL)force error:(NSError**)outErr
 {
+	NSError *tmpErr = nil;
 	@autoreleasepool {
 
 	NSNumber *dirnum=dict[XADIsDirectoryKey];
@@ -346,7 +347,6 @@
 	}
 
 	XADError error=0;
-	NSError *tmpErr = nil;
 	
 	BOOL okay=[self _ensureDirectoryExists:path.stringByDeletingLastPathComponent error:&tmpErr];
 	if(!okay) goto end;

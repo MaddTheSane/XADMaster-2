@@ -1657,7 +1657,7 @@ name:(NSString *)name { return nil; }
 		}
 	}
 	if (needsRelease) {
-		CFRetain(baseUTI);
+		CFRelease(baseUTI);
 	}
 	return CFBridgingRelease(possibleOSUTI);
 }
