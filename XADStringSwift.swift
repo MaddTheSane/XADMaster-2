@@ -26,12 +26,12 @@ public extension XADStringProtocol {
 	}
 }
 
-extension XADString {
-	@nonobjc @inlinable public class func encodingName(for encoding: String.Encoding) -> XADString.EncodingName {
+public extension XADString {
+	@nonobjc @inlinable class func encodingName(for encoding: String.Encoding) -> XADString.EncodingName {
 		return encodingName(forEncoding: encoding.rawValue)
 	}
 	
-	@nonobjc public class func encoding(for encoding: XADString.EncodingName) -> String.Encoding {
+	@nonobjc class func encoding(for encoding: XADString.EncodingName) -> String.Encoding {
 		return String.Encoding(rawValue: self.encoding(forEncodingName: encoding))
 	}
 }
@@ -42,12 +42,12 @@ public extension XADString.EncodingName {
 	}
 	
 	@inlinable var encoding: String.Encoding {
-		return XADString.encoding(for: self)
+		return String.Encoding(rawValue: XADString.encoding(forEncodingName: self))
 	}
 }
 
-extension XADStringSource {
-    @nonobjc public var encoding: String.Encoding? {
+public extension XADStringSource {
+    @nonobjc var encoding: String.Encoding? {
 		let enc = __encoding
 		guard enc != 0 else {
 			return nil
@@ -55,7 +55,7 @@ extension XADStringSource {
 		return String.Encoding(rawValue: enc)
 	}
 	
-    @nonobjc public var fixedEncoding: String.Encoding? {
+    @nonobjc var fixedEncoding: String.Encoding? {
 		get {
 			let encVal = __fixedEncoding
 			guard encVal != 0 else {
