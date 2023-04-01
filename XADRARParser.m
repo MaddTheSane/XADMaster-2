@@ -623,7 +623,7 @@ isCorrupted:(BOOL)iscorrupted
 		@try
 		{
 			int highbyte=[fh readUInt8]<<8;
-			int flagbyte,flagbits=0;
+			int flagbyte=0,flagbits=0;
 
 			while(!fh.atEndOfFile)
 			{

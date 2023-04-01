@@ -411,7 +411,7 @@
 	{
 		int flags=CSInputNextBitString(input,7);
 
-		int maxalloc;
+		int maxalloc=0;
 		if(flags&0x20) maxalloc=CSInputNextByte(input);
 		//else check if memory allocated at all else die
 

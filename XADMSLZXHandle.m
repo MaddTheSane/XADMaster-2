@@ -280,7 +280,7 @@
 		while(i<count)
 		{
 			int val=CSInputNextSymbolUsingCode(input,precode);
-			int n,length;
+			int n=0,length=0;
 
 			if(val<=16)
 			{
