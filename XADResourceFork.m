@@ -55,7 +55,12 @@
 		return nil;
 	}
 
-	@try { return [self resourceForkWithHandle:handle]; }
+	@try {
+		XADResourceFork *result = [self resourceForkWithHandle:handle];
+		if (result) {
+			return result;
+		}
+	}
 	@catch(id exception) {
 		if(errorptr)
 			*errorptr=[XADException parseExceptionReturningNSError:exception];

@@ -1568,7 +1568,12 @@ name:(NSString *)name { return nil; }
 
 +(XADArchiveParser *)archiveParserForHandle:(CSHandle *)handle resourceFork:(XADResourceFork *)fork name:(NSString *)name nserror:(NSError *_Nullable __autoreleasing *_Nullable)errorptr
 {
-	@try { return [self archiveParserForHandle:handle resourceFork:fork name:name]; }
+	@try {
+		XADArchiveParser *parser = [self archiveParserForHandle:handle resourceFork:fork name:name];
+		if (parser) {
+			return parser;
+		}
+	}
 	@catch(id exception) {
 		if(errorptr) {
 			*errorptr=[XADException parseExceptionReturningNSError:exception];
