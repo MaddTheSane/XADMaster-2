@@ -18,7 +18,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA 02110-1301  USA
  */
-@import Foundation;
+#import <Foundation/Foundation.h>
 
 //! Project version number for XADMaster.
 FOUNDATION_EXPORT double XADMasterVersionNumber;
