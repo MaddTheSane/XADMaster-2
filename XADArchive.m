@@ -1185,8 +1185,12 @@ fileFraction:(double)fileprogress estimatedTotalFraction:(double)totalprogress
 	else return NO;
 }
 
-
-
+-(void)unarchiver:(XADUnarchiver *)unarchiver didCreateDirectory:(NSString *)directory
+{
+	if([delegate respondsToSelector:@selector(archive:didCreateDirectory:)]) {
+        [delegate archive:self didCreateDirectory:directory];
+    }
+}
 
 
 //
@@ -1332,6 +1336,13 @@ fileFraction:(double)fileprogress estimatedTotalFraction:(double)totalprogress
 		return [delegate archive:arc shouldCreateDirectory:directory];
 	} else {
 		return YES;
+	}
+}
+
+-(void)archive:(XADArchive *)arc didCreateDirectory:(NSString *)directory
+{
+	if ([delegate respondsToSelector:@selector(archive:didCreateDirectory:)]) {
+		[delegate archive:arc didCreateDirectory:directory];
 	}
 }
 

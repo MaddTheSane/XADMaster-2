@@ -70,8 +70,7 @@ NSString *const CSBzip2ErrorDomain = @"de.dstoecker.xadmaster.bz2.error";
 
 	if(inited) BZ2_bzDecompressEnd(&bzs);
 	memset(&bzs,0,sizeof(bzs));
-	BZ2_bzDecompressInit(&bzs,0,0);
-
+	inited=(BZ2_bzDecompressInit(&bzs,0,0)==BZ_OK);
 	checksumcorrect=YES;
 }
 
@@ -115,7 +114,7 @@ NSString *const CSBzip2ErrorDomain = @"de.dstoecker.xadmaster.bz2.error";
 			}
 
 			BZ2_bzDecompressEnd(&bzs);
-			BZ2_bzDecompressInit(&bzs,0,0);
+			inited=(BZ2_bzDecompressInit(&bzs,0,0)==BZ_OK);
 		}
 		else if(err!=BZ_OK)
 		{

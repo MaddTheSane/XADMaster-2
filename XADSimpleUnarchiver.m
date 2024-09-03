@@ -905,6 +905,12 @@
 	return YES;
 }
 
+-(void)unarchiver:(XADUnarchiver *)unarchiver didCreateDirectory:(NSString *)directory {
+    if(propagatemetadata && metadata) {
+        [XADPlatform writeCloneableMetadata:metadata toPath:directory];
+    }
+}
+
 -(BOOL)unarchiver:(XADUnarchiver *)unarchiver shouldDeleteFileAndCreateDirectory:(NSString *)directory
 {
 	// If a resource fork entry for a directory was accidentally extracted

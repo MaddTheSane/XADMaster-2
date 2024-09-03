@@ -637,7 +637,9 @@ resourceForkDictionary:(NSDictionary *)forkdict wantChecksum:(BOOL)checksum erro
 
 	NSString *linkdest=nil;
 	if(delegate) linkdest=[delegate unarchiver:self destinationForLink:link from:destpath];
-	if(!linkdest) return XADErrorNone; // Handle nil returns as a request to skip.
+    // linkdest can be empty or nil if the link points to a deleted file.
+    // linkdest must have a value to be used in the fileSystemRepresentation, otherwise it will crash.
+	if(!linkdest || linkdest.length == 0) return XADErrorNone; // Handle nil returns as a request to skip.
 
 	// Check if the link destination is an absolute path, or if it contains
 	// any .. path components.
@@ -846,7 +848,12 @@ deferDirectories:(BOOL)defer
 	}
 
 	if([manager createDirectoryAtPath:path
-	withIntermediateDirectories:NO attributes:nil error:NULL]) return XADErrorNone;
+          withIntermediateDirectories:NO attributes:nil error:NULL]) {
+		if ([delegate respondsToSelector:@selector(unarchiver:didCreateDirectory:)]) {
+            [delegate unarchiver:self didCreateDirectory:path];
+        }
+		return XADErrorNone;
+    }
 	else return XADErrorMakeDirectory;
 }
 

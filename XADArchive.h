@@ -61,6 +61,7 @@ XADEXTERN NSString *const XADFinderFlags;
 
 -(BOOL)archiveExtractionShouldStop:(XADArchive *)archive;
 -(BOOL)archive:(XADArchive *)archive shouldCreateDirectory:(NSString *)directory;
+-(void)archive:(XADArchive *)arch didCreateDirectory:(NSString *)directory;
 -(XADAction)archive:(XADArchive *)archive entry:(NSInteger)n collidesWithFile:(NSString *)file newFilename:(NSString *__nullable*__nullable)newname;
 -(XADAction)archive:(XADArchive *)archive entry:(NSInteger)n collidesWithDirectory:(NSString *)file newFilename:(NSString *__nullable*__nullable)newname;
 -(XADAction)archive:(XADArchive *)archive creatingDirectoryDidFailForEntry:(NSInteger)n;

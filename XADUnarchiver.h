@@ -136,6 +136,7 @@ outputTarget:(id)target selector:(SEL)sel argument:(id)arg error:(NSError**)outE
 @required
 -(BOOL)unarchiver:(XADUnarchiver *)unarchiver shouldCreateDirectory:(NSString *)directory;
 @optional
+-(void)unarchiver:(XADUnarchiver *)unarchiver didCreateDirectory:(NSString *)directory;
 -(BOOL)unarchiver:(XADUnarchiver *)unarchiver shouldDeleteFileAndCreateDirectory:(NSString *)directory;
 
 @optional
