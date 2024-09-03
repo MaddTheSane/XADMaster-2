@@ -21,7 +21,6 @@
 #import "PDFEncryptionUtils.h"
 #if defined(USE_COMMON_CRYPTO) && USE_COMMON_CRYPTO
 #include <CommonCrypto/CommonCrypto.h>
-#include <Security/Security.h>
 typedef CC_MD5_CTX XADMD5;
 #define XADMD5_Init CC_MD5_Init
 #define XADMD5_Update CC_MD5_Update
@@ -113,11 +112,7 @@ NSString *const PDFMD5FinishedException=@"PDFMD5FinishedException";
 	
 	NSData *key,*iv;
 	
-#if (defined(USE_COMMON_CRYPTO) && USE_COMMON_CRYPTO) && TARGET_OS_OSX
-	SecKeyRef aeskey;
-#else
 	aes_decrypt_ctx aes;
-#endif
 	uint8_t ivbuffer[16],streambuffer[16];
 }
 
@@ -132,12 +127,7 @@ NSString *const PDFMD5FinishedException=@"PDFMD5FinishedException";
 
 		[self setBlockPointer:streambuffer];
 
-#if (defined(USE_COMMON_CRYPTO) && USE_COMMON_CRYPTO) && TARGET_OS_OSX
-		NSDictionary *keyStuff = @{(id)kSecAttrKeyType : (id)kSecAttrKeyTypeAES};
-		aeskey = SecKeyCreateFromData((CFDictionaryRef)keyStuff, (CFDataRef)key, NULL);
-#else
 		aes_decrypt_key([key bytes],(int)[key length]*8,&aes);
-#endif
 	}
 	return self;
 }
@@ -146,9 +136,6 @@ NSString *const PDFMD5FinishedException=@"PDFMD5FinishedException";
 {
 	[key release];
 	[iv release];
-#if (defined(USE_COMMON_CRYPTO) && USE_COMMON_CRYPTO) && TARGET_OS_OSX
-	CFRelease(aeskey);
-#endif
 	[super dealloc];
 }
 
@@ -162,23 +149,8 @@ NSString *const PDFMD5FinishedException=@"PDFMD5FinishedException";
 {
 	uint8_t inbuf[16];
 	[parent readBytes:16 toBuffer:inbuf];
-#if (defined(USE_COMMON_CRYPTO) && USE_COMMON_CRYPTO) && TARGET_OS_OSX
-	SecTransformRef decrypt = SecDecryptTransformCreate(aeskey, NULL);
-	SecTransformSetAttribute(decrypt, kSecEncryptionMode, kSecModeCBCKey, NULL);
-	SecTransformSetAttribute(decrypt, kSecIVKey, (CFDataRef)[NSData dataWithBytesNoCopy:ivbuffer length:16 freeWhenDone:NO], NULL);
-	NSData *encData = [NSData dataWithBytes:inbuf length:sizeof(inbuf)];
-	
-	SecTransformSetAttribute(decrypt, kSecTransformInputAttributeName,
-							 (CFDataRef)encData, NULL);
-	
-	NSData *decryptedData = CFBridgingRelease(SecTransformExecute(decrypt, NULL));
-	[decryptedData getBytes:streambuffer length:16];
-	CFRelease(decrypt);
-	
-#else
 	
 	aes_cbc_decrypt(inbuf,streambuffer,16,ivbuffer,&aes);
-#endif
 
 	if(parent.atEndOfFile)
 	{
