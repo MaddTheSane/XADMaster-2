@@ -1364,12 +1364,12 @@
 		554B4AB521181D68002B3BAE /* XADArchive.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55541F711EA7FBC3001A6927 /* XADArchive.swift */; };
 		554B4AB621181D68002B3BAE /* XADSimpleUnarchiver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55541F761EA91BE0001A6927 /* XADSimpleUnarchiver.swift */; };
 		554B4AB721181D68002B3BAE /* XADHandle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 551FC04221120AE500FC1109 /* XADHandle.swift */; };
-		555563E52948784400827C90 /* XADPlatformiOS.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B83727C15CEA27000B0DC9D /* XADPlatformiOS.m */; platformFilters = (ios, maccatalyst, tvos, ); };
+		555563E52948784400827C90 /* XADPlatformiOS.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B83727C15CEA27000B0DC9D /* XADPlatformiOS.m */; platformFilters = (ios, maccatalyst, tvos, xros, ); };
 		55702A53214D756D00372F73 /* XADTypes.h in Headers */ = {isa = PBXBuildFile; fileRef = 55702A52214D756D00372F73 /* XADTypes.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		55702A8821500B0C00372F73 /* libc++.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 55702A8721500B0C00372F73 /* libc++.tbd */; };
 		55702A8921500B0C00372F73 /* libc++.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 55702A8721500B0C00372F73 /* libc++.tbd */; };
-		557C6A921FCB597700936524 /* XADErrors.strings in Resources */ = {isa = PBXBuildFile; fileRef = 557C6A961FCB597700936524 /* XADErrors.strings */; };
 		55B3B2541DBCC51400ECC61D /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 55B3B2531DBCC51400ECC61D /* Security.framework */; };
+		55DE404C2C8702EF00DD2C2E /* XADErrors.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 55DE404B2C8702EF00DD2C2E /* XADErrors.xcstrings */; };
 		73032E6C2626D3DD000C2751 /* XADWARCParserTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 73032E6B2626D3DD000C2751 /* XADWARCParserTests.m */; };
 		73032E6E2626DB7C000C2751 /* WARCFixtures in Resources */ = {isa = PBXBuildFile; fileRef = 73032E6D2626DB7C000C2751 /* WARCFixtures */; };
 		7318A41D248C67E400D327B9 /* XADRARParserTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 7318A41C248C67E400D327B9 /* XADRARParserTests.m */; };
@@ -2063,28 +2063,9 @@
 		555EF07B1EA7DB57000CAE58 /* XADArchiveParserSwift.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = XADArchiveParserSwift.swift; sourceTree = "<group>"; };
 		55702A52214D756D00372F73 /* XADTypes.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XADTypes.h; sourceTree = "<group>"; usesTabs = 1; };
 		55702A8721500B0C00372F73 /* libc++.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = "libc++.tbd"; path = "usr/lib/libc++.tbd"; sourceTree = SDKROOT; };
-		557C6A951FCB597700936524 /* en */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/XADErrors.strings; sourceTree = "<group>"; };
-		557C6A971FCB59C500936524 /* de */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/XADErrors.strings; sourceTree = "<group>"; };
-		557C6A981FCB59C800936524 /* fr */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/XADErrors.strings; sourceTree = "<group>"; };
-		557C6A991FCB5A2400936524 /* it */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = it; path = it.lproj/XADErrors.strings; sourceTree = "<group>"; };
-		557C6A9A1FCB5A2900936524 /* ru */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/XADErrors.strings; sourceTree = "<group>"; };
-		557C6A9B1FCB5A3800936524 /* pl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = pl; path = pl.lproj/XADErrors.strings; sourceTree = "<group>"; };
-		557C6A9C1FCB5A4000936524 /* es */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/XADErrors.strings; sourceTree = "<group>"; };
-		557C6A9D1FCB5A4A00936524 /* tr */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = tr; path = tr.lproj/XADErrors.strings; sourceTree = "<group>"; };
-		557C6A9E1FCB5A5B00936524 /* lv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = lv; path = lv.lproj/XADErrors.strings; sourceTree = "<group>"; };
-		557C6A9F1FCB5A6E00936524 /* pt-PT */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = "pt-PT"; path = "pt-PT.lproj/XADErrors.strings"; sourceTree = "<group>"; };
-		557C6AA01FCB5A7300936524 /* nb */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = nb; path = nb.lproj/XADErrors.strings; sourceTree = "<group>"; };
-		557C6AA11FCB5A7A00936524 /* ar */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = ar; path = ar.lproj/XADErrors.strings; sourceTree = "<group>"; };
-		557C6AA21FCB5A8300936524 /* cs */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = cs; path = cs.lproj/XADErrors.strings; sourceTree = "<group>"; };
-		557C6AA31FCB5A8F00936524 /* zh-Hans */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/XADErrors.strings"; sourceTree = "<group>"; };
-		557C6AA41FCB5A9B00936524 /* bg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = bg; path = bg.lproj/XADErrors.strings; sourceTree = "<group>"; };
-		557C6AA51FCB5AA300936524 /* pt-BR */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = "pt-BR"; path = "pt-BR.lproj/XADErrors.strings"; sourceTree = "<group>"; };
-		557C6AA61FCB5AA900936524 /* nl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = nl; path = nl.lproj/XADErrors.strings; sourceTree = "<group>"; };
-		557C6AA71FCB5AAF00936524 /* hu */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = hu; path = hu.lproj/XADErrors.strings; sourceTree = "<group>"; };
-		557C6AA81FCB5ABB00936524 /* sv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = sv; path = sv.lproj/XADErrors.strings; sourceTree = "<group>"; };
-		557C6AA91FCB5AC200936524 /* ja */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = ja; path = ja.lproj/XADErrors.strings; sourceTree = "<group>"; };
 		5591221D1EB3D21D007CF99D /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = System/Library/Frameworks/CoreFoundation.framework; sourceTree = SDKROOT; };
 		55B3B2531DBCC51400ECC61D /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
+		55DE404B2C8702EF00DD2C2E /* XADErrors.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = XADErrors.xcstrings; sourceTree = "<group>"; };
 		56FBC92B0A57541300BE98CF /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = SOURCE_ROOT; };
 		73032E6B2626D3DD000C2751 /* XADWARCParserTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = XADWARCParserTests.m; sourceTree = "<group>"; };
 		73032E6D2626DB7C000C2751 /* WARCFixtures */ = {isa = PBXFileReference; lastKnownFileType = folder; path = WARCFixtures; sourceTree = "<group>"; };
@@ -2274,7 +2255,7 @@
 			isa = PBXGroup;
 			children = (
 				56FBC92B0A57541300BE98CF /* Info.plist */,
-				557C6A961FCB597700936524 /* XADErrors.strings */,
+				55DE404B2C8702EF00DD2C2E /* XADErrors.xcstrings */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -3927,7 +3908,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				557C6A921FCB597700936524 /* XADErrors.strings in Resources */,
+				55DE404C2C8702EF00DD2C2E /* XADErrors.xcstrings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4977,36 +4958,6 @@
 		};
 /* End PBXTargetDependency section */
 
-/* Begin PBXVariantGroup section */
-		557C6A961FCB597700936524 /* XADErrors.strings */ = {
-			isa = PBXVariantGroup;
-			children = (
-				557C6A951FCB597700936524 /* en */,
-				557C6A971FCB59C500936524 /* de */,
-				557C6A981FCB59C800936524 /* fr */,
-				557C6A991FCB5A2400936524 /* it */,
-				557C6A9A1FCB5A2900936524 /* ru */,
-				557C6AA91FCB5AC200936524 /* ja */,
-				557C6A9B1FCB5A3800936524 /* pl */,
-				557C6A9C1FCB5A4000936524 /* es */,
-				557C6A9D1FCB5A4A00936524 /* tr */,
-				557C6A9E1FCB5A5B00936524 /* lv */,
-				557C6A9F1FCB5A6E00936524 /* pt-PT */,
-				557C6AA01FCB5A7300936524 /* nb */,
-				557C6AA11FCB5A7A00936524 /* ar */,
-				557C6AA21FCB5A8300936524 /* cs */,
-				557C6AA31FCB5A8F00936524 /* zh-Hans */,
-				557C6AA41FCB5A9B00936524 /* bg */,
-				557C6AA51FCB5AA300936524 /* pt-BR */,
-				557C6AA61FCB5AA900936524 /* nl */,
-				557C6AA71FCB5AAF00936524 /* hu */,
-				557C6AA81FCB5ABB00936524 /* sv */,
-			);
-			name = XADErrors.strings;
-			sourceTree = "<group>";
-		};
-/* End PBXVariantGroup section */
-
 /* Begin XCBuildConfiguration section */
 		1B23DDC21185EBA500620319 /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -5166,9 +5117,11 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				SWIFT_STRICT_CONCURRENCY = complete;
 				SWIFT_VERSION = 5.0;
@@ -5214,7 +5167,7 @@
 				PRODUCT_NAME = XADMaster;
 				SDKROOT = macosx;
 				SKIP_INSTALL = YES;
-				SUPPORTED_PLATFORMS = "appletvos appletvsimulator iphoneos iphonesimulator macosx";
+				SUPPORTED_PLATFORMS = "appletvos appletvsimulator iphoneos iphonesimulator macosx xrsimulator xros";
 				SUPPORTS_MACCATALYST = YES;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = YES;
 				TARGETED_DEVICE_FAMILY = "1,2,3";
@@ -5640,7 +5593,7 @@
 				PRODUCT_NAME = XADMaster;
 				SDKROOT = macosx;
 				SKIP_INSTALL = YES;
-				SUPPORTED_PLATFORMS = "appletvos appletvsimulator iphoneos iphonesimulator macosx";
+				SUPPORTED_PLATFORMS = "appletvos appletvsimulator iphoneos iphonesimulator macosx xrsimulator xros";
 				SUPPORTS_MACCATALYST = YES;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = YES;
 				TARGETED_DEVICE_FAMILY = "1,2,3";
@@ -5694,9 +5647,11 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_STRICT_CONCURRENCY = complete;
 				SWIFT_VERSION = 5.0;
