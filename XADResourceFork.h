@@ -40,7 +40,8 @@ XADEXPORT
 
 -(instancetype)init NS_DESIGNATED_INITIALIZER;
 
--(void)parseFromHandle:(CSHandle *)handle;
+-(void)parseFromHandle:(CSHandle *)handle NS_SWIFT_UNAVAILABLE("Call may throw, use `parse(from:) throws` instead");
+-(BOOL)parseFromHandle:(CSHandle *)handle error:(NSError*__autoreleasing __nullable* __nullable)errorptr;
 -(nullable NSData *)resourceDataForType:(uint32_t)type identifier:(int16_t)identifier;
 
 -(nullable NSMutableDictionary<NSNumber*,NSData*> *)_parseResourceDataFromHandle:(CSHandle *)handle;

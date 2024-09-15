@@ -36,7 +36,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @class UTType;
 
-typedef NSString *XADArchiveKeys NS_TYPED_EXTENSIBLE_ENUM NS_SWIFT_NAME(XADArchiveParser.Keys);
+typedef NSString *XADArchiveKeys NS_TYPED_EXTENSIBLE_ENUM NS_SWIFT_NAME(XADArchiveParser.Key);
 
 XADEXTERN XADArchiveKeys const XADFileNameKey NS_SWIFT_NAME(fileName);
 XADEXTERN XADArchiveKeys const XADCommentKey NS_SWIFT_NAME(comment);

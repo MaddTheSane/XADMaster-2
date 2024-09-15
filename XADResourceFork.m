@@ -102,6 +102,25 @@
 	resources=[self _parseMapFromHandle:maphandle withDataObjects:dataobjects];
 }
 
+-(BOOL)parseFromHandle:(CSHandle *)handle error:(NSError*__autoreleasing __nullable* __nullable)errorptr
+{
+	if(!handle) {
+		if (errorptr) {
+			*errorptr=[NSError errorWithDomain:XADErrorDomain code:XADErrorBadParameters userInfo:nil];
+		}
+		return NO;
+	}
+	@try {
+		[self parseFromHandle:handle];
+		return YES;
+	}
+	@catch(id exception) {
+		if(errorptr)
+			*errorptr=[XADException parseExceptionReturningNSError:exception];
+		return NO;
+	}
+}
+
 -(NSData *)resourceDataForType:(uint32_t)type identifier:(int16_t)identifier
 {
 	NSNumber *typekey=@(type);
