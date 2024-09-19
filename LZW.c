@@ -23,10 +23,10 @@
 
 LZW *AllocLZW(int maxsymbols,int reservedsymbols)
 {
+	if(maxsymbols<256+reservedsymbols) return NULL;
+
 	LZW *self=(LZW *)malloc(sizeof(LZW)+sizeof(LZWTreeNode)*maxsymbols);
 	if(!self) return NULL;
-
-	if(maxsymbols<256+reservedsymbols) return NULL;
 
 	self->maxsymbols=maxsymbols;
 	self->reservedsymbols=reservedsymbols;

@@ -307,9 +307,10 @@
 }
 
 // FIXME: Improve extractEntryWithDictionary:as:forceDirectories:error: with an NSError value.
--(BOOL)extractEntryWithDictionary:(NSDictionary<XADArchiveKeys,id> *)dict as:(nullable NSString *)path forceDirectories:(BOOL)force error:(NSError**)outErr
+-(BOOL)extractEntryWithDictionary:(NSDictionary<XADArchiveKeys,id> *)dict as:(nullable NSString *)path forceDirectories:(BOOL)force error:(NSError*__autoreleasing*)outErr
 {
-	NSError *tmpErr = nil;
+	__strong NSError *tmpErr = nil;
+	BOOL okay;
 	@autoreleasepool {
 
 	NSNumber *dirnum=dict[XADIsDirectoryKey];
@@ -348,7 +349,7 @@
 
 	XADError error=0;
 	
-	BOOL okay=[self _ensureDirectoryExists:path.stringByDeletingLastPathComponent error:&tmpErr];
+	okay=[self _ensureDirectoryExists:path.stringByDeletingLastPathComponent error:&tmpErr];
 	if(!okay) goto end;
 
 	// Attempt to extract embedded archives if requested.
@@ -470,12 +471,12 @@
 	{
 		[delegate unarchiver:self didExtractEntryWithDictionary:dict to:path nserror:okay ? nil : tmpErr];
 	}
+	}
 	if (outErr && tmpErr) {
 		*outErr = tmpErr;
 	}
 
 	return okay;
-	}
 }
 
 
