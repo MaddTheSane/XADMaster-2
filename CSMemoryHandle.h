@@ -69,7 +69,7 @@ XADEXPORT
 -(NSData *)copyDataOfLength:(int)length;
 -(NSData *)copyDataOfLengthAtMost:(int)length;
 
--(NSString *)name;
+@property (NS_NONATOMIC_IOSONLY, readonly, copy, nullable) NSString *name;
 
 @end
 
