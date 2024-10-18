@@ -32,7 +32,7 @@ XADEXPORT
 }
 
 +(nullable CSHandle *)handleWithPathArray:(NSArray<NSString*> *)patharray;
-+(nullable CSHandle *)handleWithPaths:(NSString *)firstpath,...;
++(nullable CSHandle *)handleWithPaths:(NSString *)firstpath,... NS_REQUIRES_NIL_TERMINATION;
 
 // Initializers
 -(nullable instancetype)initWithPaths:(NSArray<NSString*> *)patharray;
