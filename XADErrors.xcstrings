@@ -255,6 +255,12 @@
             "value" : "الأمر غير مدعوم"
           }
         },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Command is not supported"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1402,6 +1408,12 @@
           "stringUnit" : {
             "state" : "needs_review",
             "value" : "تجاوز حدود المخازن المؤقتة لبيانات الإدخال"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Input data buffers border exceeded"
           }
         },
         "es" : {
@@ -2807,6 +2819,12 @@
           "stringUnit" : {
             "state" : "needs_review",
             "value" : "المستخدم يكسر في خطاف التقدم"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "User break in progress hook"
           }
         },
         "es" : {
