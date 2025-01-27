@@ -278,12 +278,12 @@ name:(NSString *)name;
 -(nullable CSHandle *)handleForSolidStreamWithObject:(id)obj wantChecksum:(BOOL)checksum;
 
 //! Exception-free wrapper for subclass method.<br>
-//! Will, in addition, return \c XADBreakError if the delegate
+//! Will, in addition, return `XADBreakError` if the delegate
 //! requested parsing to stop.
 -(XADError)parseWithoutExceptions NS_REFINED_FOR_SWIFT;
 
 //! Exception-free wrapper for subclass method.<br>
-//! Will, in addition, pass \c XADErrorBreak and return \c NO if the delegate
+//! Will, in addition, pass `XADErrorBreak` and return `NO` if the delegate
 //! requested parsing to stop.
 -(BOOL)parseWithError:(NSError *__autoreleasing __nullable*__nullable)error;
 

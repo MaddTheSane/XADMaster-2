@@ -31,10 +31,10 @@ NS_ASSUME_NONNULL_BEGIN
 #if defined(__swift__) && defined(__APPLE__)
 // Swift wrapping needed to make sure the Swift doesn't try to unwrap
 // an NSNumber posing as an NSString
-//! The supported encodings used by \c XADString
+//! The supported encodings used by `XADString`.
 typedef NSObject<NSCopying, NSSecureCoding> *XADStringEncodingName NS_TYPED_ENUM NS_SWIFT_NAME(XADString.EncodingName);
 #else
-//! The supported encodings used by \c XADString
+//! The supported encodings used by `XADString`.
 typedef NSString *XADStringEncodingName NS_TYPED_ENUM NS_SWIFT_NAME(XADString.EncodingName);
 #endif
 

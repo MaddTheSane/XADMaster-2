@@ -2,7 +2,6 @@
   "sourceLanguage" : "en",
   "strings" : {
     "Attempted to read more data than was available" : {
-      "comment" : "Common errors",
       "extractionState" : "manual",
       "localizations" : {
         "ar" : {
@@ -1401,7 +1400,6 @@
       }
     },
     "Input data buffers border exceeded" : {
-      "comment" : "Common errors",
       "extractionState" : "manual",
       "localizations" : {
         "ar" : {
@@ -2437,7 +2435,6 @@
       }
     },
     "Unknown error" : {
-      "comment" : "Uncommon or unused errors",
       "extractionState" : "manual",
       "localizations" : {
         "ar" : {

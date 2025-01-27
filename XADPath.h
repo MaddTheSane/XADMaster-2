@@ -120,7 +120,8 @@ separators:(XADPathSeparator)pathseparators;
 @property (NS_NONATOMIC_IOSONLY, readonly) NSUInteger hash;
 
 // Deprecated.
-@property (NS_NONATOMIC_IOSONLY, readonly, copy, null_unspecified) XADPath *safePath DEPRECATED_ATTRIBUTE; // Deprecated. Use sanitizedPathString: instead.
+/// Deprecated. Use `-sanitizedPathString:` instead.
+@property (NS_NONATOMIC_IOSONLY, readonly, copy, null_unspecified) XADPath *safePath DEPRECATED_ATTRIBUTE;
 
 // Subclass methods.
 @property (NS_NONATOMIC_IOSONLY, readonly) BOOL _isPartAbsolute;
