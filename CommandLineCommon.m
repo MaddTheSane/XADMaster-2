@@ -41,9 +41,7 @@ BOOL IsListRequest(NSString *encoding)
 
 void PrintEncodingList()
 {
-	NSEnumerator *enumerator=[[XADString availableEncodingNames] objectEnumerator];
-	NSArray *encodingarray;
-	while((encodingarray=[enumerator nextObject]))
+	for(NSArray *encodingarray in [XADString availableEncodingNames])
 	{
 		NSString *description=[encodingarray objectAtIndex:0];
 		if((id)description==[NSNull null]||[description length]==0) description=nil;

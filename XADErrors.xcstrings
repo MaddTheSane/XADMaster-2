@@ -250,7 +250,7 @@
       "localizations" : {
         "ar" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "الأمر غير مدعوم"
           }
         },
@@ -274,7 +274,7 @@
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "不支援命令"
           }
         }
@@ -1404,7 +1404,7 @@
       "localizations" : {
         "ar" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "تجاوز حدود المخازن المؤقتة لبيانات الإدخال"
           }
         },
@@ -1416,7 +1416,7 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Se superó el límite de los búferes de datos de entrada"
           }
         },
@@ -1428,7 +1428,7 @@
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "超過輸入資料緩衝區邊界"
           }
         }
@@ -2814,7 +2814,7 @@
       "localizations" : {
         "ar" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "المستخدم يكسر في خطاف التقدم"
           }
         },
@@ -2826,7 +2826,7 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "El usuario rompe el gancho en progreso"
           }
         },
@@ -2838,7 +2838,7 @@
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "使用者在進度鉤子中斷"
           }
         }
