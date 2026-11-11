@@ -1,7 +1,7 @@
 /*
  * XADRegex.m
  *
- * Copyright (c) 2017-present, MacPaw Inc. All rights reserved.
+ * Copyright (c) 2017-present, MacPaw Way Ltd. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -40,10 +40,20 @@ static BOOL IsRegexSpecialCharacter(unichar c)
 +(instancetype)regexWithPattern:(NSString *)pattern
 { return [[self alloc] initWithPattern:pattern options:0]; }
 
+static NSString *nullstring=nil;
+
++(void)initialize
+{
+	// A unique object, used by allMatches to mark a capture group that took no part in the
+	// match. It has to be tellable apart from a group that did take part and matched an
+	// empty string, and identity is the only way — hence not a literal, which the compiler
+	// interns, and mutable, since initWithString: on an immutable class is free to hand
+	// back a shared instance.
+	if(self==[XADRegex class]) nullstring=[[NSMutableString alloc] initWithString:@""];
+}
+
 +(NSString *)null
 {
-	static NSString *nullstring=nil;
-	if(!nullstring) nullstring=[[NSMutableString alloc] initWithString:@""];
 	return nullstring;
 }
 

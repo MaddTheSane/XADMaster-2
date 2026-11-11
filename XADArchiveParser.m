@@ -1,7 +1,7 @@
 /*
  * XADArchiveParser.m
  *
- * Copyright (c) 2017-present, MacPaw Inc. All rights reserved.
+ * Copyright (c) 2017-present, MacPaw Way Ltd. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -175,7 +175,7 @@ static NSComparisonResult CompareParserSignaturesLocations(id first,id second,vo
 @synthesize handle = sourcehandle;
 @synthesize passwordEncodingName = passwordencodingname;
 
-static NSMutableArray<Class> *parserclasses=nil;
+static NSArray<Class> *parserclasses=nil;
 static NSArray<Class> *parsersWithFloatingSignaturesClasses=nil;
 
 static int maxheader=0;
@@ -186,7 +186,7 @@ static int maxheader=0;
 	if(hasinitialized) return;
 	hasinitialized=YES;
 
-	parserclasses=[[NSMutableArray alloc] initWithObjects:
+	parserclasses=[NSArray arrayWithObjects:
 		// Common formats
 		[XADZipParser class],
 		[XADRARParser class],

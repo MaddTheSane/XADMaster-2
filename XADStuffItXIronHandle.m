@@ -1,7 +1,7 @@
 /*
  * XADStuffItXIronHandle.m
  *
- * Copyright (c) 2017-present, MacPaw Inc. All rights reserved.
+ * Copyright (c) 2017-present, MacPaw Way Ltd. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -23,6 +23,7 @@
 #import "StuffItXUtilities.h"
 #import "CarrylessRangeCoder.h"
 #import "BWT.h"
+#import <limits.h>
 
 
 
@@ -93,12 +94,20 @@ static int NextBitWithDoubleWeights(CarrylessRangeCoder *coder,uint32_t *weight1
 
 	if(CSInputNextBitLE(input)==1) return -1;
 
-	unsigned int blocksize=(unsigned int)CSInputNextSitxP2(input);
+	uint64_t rawblocksize=CSInputNextSitxP2(input);
+	// Values above INT_MAX overflow when cast to int later (e.g. decodeBlockWithLength:).
+	if(rawblocksize>INT_MAX) [XADException raiseIllegalDataException];
+	unsigned int blocksize=(unsigned int)rawblocksize;
 
 	if(blocksize>currsize)
 	{
+		// blocksize*6 must not overflow size_t.
+		if((size_t)blocksize>SIZE_MAX/6)
+		{
+			[XADException raiseIllegalDataException];
+		}
 		free(block);
-		block=malloc(blocksize*6);
+		block=malloc((size_t)blocksize*6);
 		if(!block) [XADException raiseOutOfMemoryException];
 		sorted=block+blocksize;
 		table=(uint32_t *)(block+2*blocksize);

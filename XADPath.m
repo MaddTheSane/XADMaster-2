@@ -1,7 +1,7 @@
 /*
  * XADPath.m
  *
- * Copyright (c) 2017-present, MacPaw Inc. All rights reserved.
+ * Copyright (c) 2017-present, MacPaw Way Ltd. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -38,10 +38,15 @@ static BOOL IsDataASCIIOrSeparator(NSData *data,const char *separators);
 
 @implementation XADPath
 
+static XADPath *emptypath=nil;
+
++(void)initialize
+{
+	if(self==[XADPath class]) emptypath=[[XADPath alloc] init];
+}
+
 +(XADPath *)emptyPath
 {
-	static XADPath *emptypath=nil;
-	if(!emptypath) emptypath=[[XADPath alloc] init];
 	return emptypath;
 }
 
