@@ -272,6 +272,12 @@
             "value" : "サポート外のコマンドです"
           }
         },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Команда не поддерживается"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1424,6 +1430,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "アーカイブファイルが不完全です"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Превышена граница буферов входных данных"
           }
         },
         "zh-Hans" : {
@@ -2834,6 +2846,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "ユーザにより中止されました"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Прерывание пользователем в процессе выполнения"
           }
         },
         "zh-Hans" : {
